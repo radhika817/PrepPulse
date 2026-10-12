@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { Question } from '../models/Question.js';
 import { UserQuestionState } from '../models/UserQuestionState.js';
 
@@ -92,6 +93,92 @@ export const getQuestions = async (req, res, next) => {
   }
 };
 
+/**
+ * GET /api/v1/questions/meta
+ * Returns list of categories and distinct topics for each category
+ * (approved questions only) for filter dropdowns.
+ */
+export const getQuestionsMeta = async (req, res, next) => {
+  try {
+    const meta = await Question.aggregate([
+      { $match: { reviewStatus: 'approved' } },
+      { $group: { _id: '$category', topics: { $addToSet: '$topic' } } },
+      { $project: { _id: 0, category: '$_id', topics: 1 } },
+      { $sort: { category: 1 } },
+    ]);
+
+    // Sort topics alphabetically within each category
+    meta.forEach((group) => {
+      if (Array.isArray(group.topics)) {
+        group.topics.sort((a, b) => a.localeCompare(b));
+      }
+    });
+
+    return res.json({ categories: meta });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * GET /api/v1/questions/:id
+ * Retrieve a single approved question by ID.
+ * Returns same fields as list item, including isBookmarked for current user.
+ * Answer and explanation are strictly excluded.
+ */
+export const getQuestionById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        error: {
+          code: 'INVALID_ID',
+          message: 'Invalid question ID format',
+        },
+      });
+    }
+
+    const question = await Question.findOne({
+      _id: id,
+      reviewStatus: 'approved',
+    })
+      .select('-explanation -answer -normalizedQuestion -__v')
+      .lean();
+
+    if (!question) {
+      return res.status(404).json({
+        error: {
+          code: 'NOT_FOUND',
+          message: 'Question not found or not approved',
+        },
+      });
+    }
+
+    // Check if bookmarked by current user
+    const bookmark = await UserQuestionState.findOne({
+      userId: req.user._id,
+      questionId: id,
+      bookmarked: true,
+    })
+      .select('_id')
+      .lean();
+
+    const { answer: _ans, explanation: _exp, ...cleanQuestion } = question;
+
+    return res.json({
+      ...cleanQuestion,
+      isBookmarked: !!bookmark,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getQuestions,
+  getQuestionsMeta,
+  getQuestionById,
 };
+
