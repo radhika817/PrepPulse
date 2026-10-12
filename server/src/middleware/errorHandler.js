@@ -6,7 +6,9 @@ import { ZodError } from 'zod';
  * matching SYSTEM_DESIGN.md section 4.
  */
 export const errorHandler = (err, req, res, _next) => {
-  console.error(`[Error] ${req.method} ${req.originalUrl}:`, err);
+  if (process.env.NODE_ENV !== 'test') {
+    console.error(`[Error] ${req.method} ${req.originalUrl}:`, err.message || err);
+  }
 
   // Handle Zod validation errors
   if (err instanceof ZodError) {

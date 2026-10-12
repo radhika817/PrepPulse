@@ -52,6 +52,22 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// Note: Unique index on email is created automatically via `unique: true`
+// Guarantee passwordHash and internal __v are never leaked in JSON responses
+userSchema.set('toJSON', {
+  transform: (_doc, ret) => {
+    delete ret.passwordHash;
+    delete ret.__v;
+    return ret;
+  },
+});
+
+userSchema.set('toObject', {
+  transform: (_doc, ret) => {
+    delete ret.passwordHash;
+    delete ret.__v;
+    return ret;
+  },
+});
+
 export const User = mongoose.model('User', userSchema);
 export default User;
