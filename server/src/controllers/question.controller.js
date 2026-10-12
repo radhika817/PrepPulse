@@ -191,9 +191,120 @@ export const getQuestionById = async (req, res, next) => {
   }
 };
 
+/**
+ * POST /api/v1/questions/:id/bookmark
+ * Toggles bookmarked status on UserQuestionState document for (userId, questionId),
+ * creating it if missing (upsert).
+ * Returns { bookmarked: boolean }.
+ * 404 if question does not exist.
+ */
+export const toggleBookmark = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        error: {
+          code: 'INVALID_ID',
+          message: 'Invalid question ID format',
+        },
+      });
+    }
+
+    const question = await Question.findById(id);
+    if (!question) {
+      return res.status(404).json({
+        error: {
+          code: 'NOT_FOUND',
+          message: 'Question not found',
+        },
+      });
+    }
+
+    let state = await UserQuestionState.findOne({
+      userId: req.user._id,
+      questionId: id,
+    });
+
+    let bookmarked;
+    if (!state) {
+      state = await UserQuestionState.create({
+        userId: req.user._id,
+        questionId: id,
+        bookmarked: true,
+      });
+      bookmarked = true;
+    } else {
+      state.bookmarked = !state.bookmarked;
+      await state.save();
+      bookmarked = state.bookmarked;
+    }
+
+    return res.json({ bookmarked });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * GET /api/v1/bookmarks
+ * Paginated list of current user's bookmarked questions,
+ * newest bookmark first. Answer and explanation are strictly excluded.
+ */
+export const getBookmarks = async (req, res, next) => {
+  try {
+    const { page, limit } = req.query;
+    const skip = (page - 1) * limit;
+
+    const filter = {
+      userId: req.user._id,
+      bookmarked: true,
+    };
+
+    const total = await UserQuestionState.countDocuments(filter);
+
+    // Newest bookmark first (sorted by updatedAt descending)
+    const states = await UserQuestionState.find(filter)
+      .sort({ updatedAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: 'questionId',
+        select: '-explanation -answer -normalizedQuestion -__v',
+      })
+      .lean();
+
+    const items = states
+      .filter((s) => s.questionId)
+      .map((s) => {
+        const q = s.questionId;
+        const { answer: _ans, explanation: _exp, ...cleanQ } = q;
+        return {
+          ...cleanQ,
+          isBookmarked: true,
+        };
+      });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return res.json({
+      items,
+      page,
+      limit,
+      total,
+      totalPages,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getQuestions,
   getQuestionsMeta,
   getQuestionById,
+  toggleBookmark,
+  getBookmarks,
 };
+
 

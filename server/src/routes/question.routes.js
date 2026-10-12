@@ -6,6 +6,7 @@ import {
   getQuestions,
   getQuestionsMeta,
   getQuestionById,
+  toggleBookmark,
 } from '../controllers/question.controller.js';
 
 const router = express.Router();
@@ -23,5 +24,9 @@ router.get('/meta', getQuestionsMeta);
 // GET /api/v1/questions/:id - single question details (excluding answer/explanation)
 router.get('/:id', getQuestionById);
 
+// POST /api/v1/questions/:id/bookmark - toggle bookmark status for current user
+router.post('/:id/bookmark', toggleBookmark);
+
 export default router;
+
 
