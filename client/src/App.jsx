@@ -27,6 +27,7 @@ export const App = () => {
           <Route path="daily" element={<Daily />} />
           <Route path="questions" element={<Questions />} />
           <Route path="practice" element={<Practice />} />
+          <Route path="practice/:id" element={<Practice />} />
           <Route path="revision" element={<Revision />} />
           <Route path="bookmarks" element={<Bookmarks />} />
           <Route path="profile" element={<Profile />} />
