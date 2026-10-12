@@ -199,10 +199,5 @@ CLIENT_URL=http://localhost:5173
 
 Suggestions and feedback are welcome. Contribution guidelines will be added as development progresses.
 
-## Licence
-
-To be decided before public release. Third-party question content is used only under applicable permissions and licences.
-
----
 
 **PrepPulse — Practice Every Day. Prepare with Purpose.**
