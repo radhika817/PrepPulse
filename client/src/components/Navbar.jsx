@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Compass,
   Calendar,
@@ -10,12 +10,21 @@ import {
   Activity,
   CheckCircle2,
   AlertCircle,
+  LogOut,
 } from 'lucide-react';
 import useHealth from '../hooks/useHealth';
+import { useAuth } from '../context/AuthContext';
 
 export const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { status } = useHealth();
+  const { user, isAuthenticated, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   const navLinks = [
     { to: '/dashboard', label: 'Dashboard', icon: Compass },
@@ -46,7 +55,7 @@ export const Navbar = () => {
               </div>
             </Link>
 
-            {/* Navigation items */}
+            {/* Navigation links (accessible to all or highlighted) */}
             <nav className="hidden md:flex items-center gap-1">
               {navLinks.map(({ to, label, icon: Icon }) => {
                 const isActive = location.pathname === to;
@@ -68,7 +77,7 @@ export const Navbar = () => {
             </nav>
           </div>
 
-          {/* Right side controls: Health pill + Profile/Auth */}
+          {/* Right side controls: Health pill + Auth states */}
           <div className="flex items-center gap-3">
             {/* Backend Health Badge */}
             <div
@@ -91,28 +100,42 @@ export const Navbar = () => {
               <span>API {status === 'ok' ? 'Online' : status === 'checking' ? 'Connecting...' : 'Offline'}</span>
             </div>
 
-            {/* Auth actions */}
-            <div className="flex items-center gap-2">
-              <Link
-                to="/login"
-                className="px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
-              >
-                Log In
-              </Link>
-              <Link
-                to="/register"
-                className="px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg shadow-sm shadow-indigo-600/30 transition-all hover:scale-[1.02]"
-              >
-                Get Started
-              </Link>
-              <Link
-                to="/profile"
-                className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
-                title="Profile"
-              >
-                <User className="w-5 h-5" />
-              </Link>
-            </div>
+            {/* Auth Condition: Logged in vs Logged out */}
+            {isAuthenticated && user ? (
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/70 hover:bg-slate-800 text-slate-200 text-xs font-semibold border border-slate-700/60 transition-colors"
+                >
+                  <User className="w-3.5 h-3.5 text-indigo-400" />
+                  <span className="max-w-[120px] truncate">{user.name}</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors border border-transparent hover:border-rose-500/20"
+                  title="Sign out"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Logout</span>
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/login"
+                  className="px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+                >
+                  Log In
+                </Link>
+                <Link
+                  to="/register"
+                  className="px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg shadow-sm shadow-indigo-600/30 transition-all hover:scale-[1.02]"
+                >
+                  Get Started
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -15,16 +16,23 @@ export const App = () => {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
+        {/* Public Routes */}
         <Route index element={<Landing />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="daily" element={<Daily />} />
-        <Route path="questions" element={<Questions />} />
-        <Route path="practice" element={<Practice />} />
-        <Route path="revision" element={<Revision />} />
-        <Route path="bookmarks" element={<Bookmarks />} />
-        <Route path="profile" element={<Profile />} />
+
+        {/* Protected Routes (Require Authentication) */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="daily" element={<Daily />} />
+          <Route path="questions" element={<Questions />} />
+          <Route path="practice" element={<Practice />} />
+          <Route path="revision" element={<Revision />} />
+          <Route path="bookmarks" element={<Bookmarks />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
+
+        {/* Catch-all redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
