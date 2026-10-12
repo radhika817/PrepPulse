@@ -114,11 +114,26 @@ export const getQuestionsMeta = async (req, res, next) => {
       }
     });
 
+    // Sort categories in logical curriculum order
+    const categoryOrder = {
+      DSA: 1,
+      DBMS: 2,
+      OS: 3,
+      CN: 4,
+      OOP: 5,
+      SQL: 6,
+      WEB: 7,
+      APTITUDE: 8,
+      HR: 9,
+    };
+    meta.sort((a, b) => (categoryOrder[a.category] || 99) - (categoryOrder[b.category] || 99));
+
     return res.json({ categories: meta });
   } catch (error) {
     next(error);
   }
 };
+
 
 /**
  * GET /api/v1/questions/:id
