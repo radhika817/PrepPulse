@@ -1,0 +1,367 @@
+[
+  {
+    "category": "OS",
+    "topic": "Deadlock",
+    "difficulty": "easy",
+    "type": "mcq",
+    "question": "Which of the following is NOT one of the four necessary Coffman conditions required for a system deadlock to occur?",
+    "options": [
+      "Mutual Exclusion",
+      "Hold and Wait",
+      "Preemption Allowed",
+      "Circular Wait"
+    ],
+    "answer": "Preemption Allowed",
+    "explanation": "The four Coffman conditions are Mutual Exclusion, Hold and Wait, No Preemption, and Circular Wait. If preemption is allowed (resources can be forcibly taken from a process), deadlock cannot occur.",
+    "tags": ["deadlock", "coffman", "concurrency"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Process Management",
+    "difficulty": "easy",
+    "type": "mcq",
+    "question": "Which operating system data structure contains the program counter, CPU registers, process state, and memory-management information for a process?",
+    "options": [
+      "Process Control Block (PCB)",
+      "File Control Block (FCB)",
+      "Translation Lookaside Buffer (TLB)",
+      "Interrupt Vector Table (IVT)"
+    ],
+    "answer": "Process Control Block (PCB)",
+    "explanation": "A Process Control Block (PCB), also known as a task control block, stores all metadata required to pause and resume a process during context switching, including CPU registers, PC, and memory limits.",
+    "tags": ["pcb", "processes", "context-switch"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Memory Management",
+    "difficulty": "medium",
+    "type": "mcq",
+    "question": "Which page replacement algorithm can experience Belady's Anomaly, where increasing the number of page frames leads to an increase in page faults?",
+    "options": [
+      "Least Recently Used (LRU)",
+      "Optimal Page Replacement (OPT)",
+      "First-In, First-Out (FIFO)",
+      "Least Frequently Used (LFU) with stack property"
+    ],
+    "answer": "First-In, First-Out (FIFO)",
+    "explanation": "FIFO does not satisfy the inclusion/stack property, which means the set of pages in a smaller frame allocation is not guaranteed to be a subset of a larger allocation, leading to Belady's Anomaly.",
+    "tags": ["virtual-memory", "paging", "belady-anomaly"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "CPU Scheduling",
+    "difficulty": "medium",
+    "type": "mcq",
+    "question": "Which CPU scheduling algorithm gives the minimum average waiting time for a given set of stationary processes, but suffers from potential starvation of long processes?",
+    "options": [
+      "Round Robin (RR)",
+      "Shortest Job First (SJF)",
+      "First-Come, First-Served (FCFS)",
+      "Priority Scheduling with Aging"
+    ],
+    "answer": "Shortest Job First (SJF)",
+    "explanation": "Shortest Job First (SJF) is mathematically optimal for minimizing average waiting time. However, if short jobs continuously arrive, longer jobs may starve unless an aging mechanism is used.",
+    "tags": ["scheduling", "sjf", "starvation"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Memory Management",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is the primary purpose of a Translation Lookaside Buffer (TLB) in a modern paged virtual memory system?",
+    "options": [],
+    "answer": "To cache recently translated virtual-to-physical page mappings and speed up memory address resolution without querying page tables in main memory.",
+    "explanation": "The TLB is a high-speed associative hardware cache. Without a TLB, every memory reference requires at least two memory accesses: one to look up the page table entry and another to access the actual physical data address.",
+    "tags": ["tlb", "paging", "hardware-cache"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Concurrency",
+    "difficulty": "medium",
+    "type": "mcq",
+    "question": "What fundamental difference distinguishes a Mutex from a Counting Semaphore?",
+    "options": [
+      "A mutex can only be locked by multiple processes simultaneously",
+      "A mutex enforces ownership such that only the thread that acquired the lock can release it",
+      "A semaphore cannot be used for signaling between distinct processes",
+      "A mutex requires hardware spinlocks whereas semaphores never put threads to sleep"
+    ],
+    "answer": "A mutex enforces ownership such that only the thread that acquired the lock can release it",
+    "explanation": "A mutex is a locking mechanism with ownership: only the thread that successfully locks the mutex is allowed to unlock it. A semaphore is a signaling mechanism with an integer counter, and any thread can signal (increment) or wait (decrement) on it.",
+    "tags": ["mutex", "semaphore", "concurrency", "synchronization"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "File Systems",
+    "difficulty": "medium",
+    "type": "mcq",
+    "question": "In a Unix-like file system, what happens when you create a hard link to an existing file?",
+    "options": [
+      "A new inode is allocated with a copy of all data blocks",
+      "A new directory entry points to the existing inode and the link count on that inode is incremented",
+      "A small text file is created storing the path to the original target file",
+      "The original file is moved into a read-only partition"
+    ],
+    "answer": "A new directory entry points to the existing inode and the link count on that inode is incremented",
+    "explanation": "Hard links create a new name pointing to the exact same inode. The inode's link count increments by 1. Only when the link count reaches 0 and no processes hold open descriptors are the blocks deallocated.",
+    "tags": ["file-systems", "inodes", "hard-links"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DBMS",
+    "topic": "Transactions",
+    "difficulty": "easy",
+    "type": "mcq",
+    "question": "Which ACID property guarantees that either all operations within a database transaction complete successfully, or all changes are rolled back with no partial effects remaining?",
+    "options": [
+      "Atomicity",
+      "Consistency",
+      "Isolation",
+      "Durability"
+    ],
+    "answer": "Atomicity",
+    "explanation": "Atomicity treats a transaction as an indivisible unit of work ('all-or-nothing'). If any statement fails or the system crashes before commit, the database recovers to the state before the transaction began.",
+    "tags": ["acid", "transactions", "atomicity"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DBMS",
+    "topic": "Normalization",
+    "difficulty": "medium",
+    "type": "mcq",
+    "question": "A relational table is in Boyce-Codd Normal Form (BCNF) if and only if for every non-trivial functional dependency X -> Y:",
+    "options": [
+      "Y is a prime attribute",
+      "X is a superkey of the relation",
+      "X and Y share at least one common column",
+      "The relation is partitioned into exactly two tables"
+    ],
+    "answer": "X is a superkey of the relation",
+    "explanation": "BCNF is a stricter version of 3NF. In 3NF, X -> Y is valid if X is a superkey OR Y is a prime attribute. In BCNF, the determinant X must strictly be a superkey for every non-trivial dependency.",
+    "tags": ["normalization", "bcnf", "relational-design"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DBMS",
+    "topic": "Indexing",
+    "difficulty": "medium",
+    "type": "mcq",
+    "question": "Why are B+ Trees widely preferred over standard B Trees for disk-based database indexes?",
+    "options": [
+      "B+ Trees store records in random order to prevent disk fragmentation",
+      "All record pointers reside only in leaf nodes, creating smaller internal nodes and linked sequential range scans",
+      "B+ Trees do not require rebalancing during insertions and deletions",
+      "B+ Trees eliminate the need for primary keys"
+    ],
+    "answer": "All record pointers reside only in leaf nodes, creating smaller internal nodes and linked sequential range scans",
+    "explanation": "Because internal nodes in a B+ Tree store only routing keys, more keys fit into a single disk block (higher fan-out, lower height). Furthermore, leaf nodes are linked sequentially, making range queries very efficient.",
+    "tags": ["indexing", "b-plus-tree", "storage"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DBMS",
+    "topic": "Concurrency Control",
+    "difficulty": "medium",
+    "type": "mcq",
+    "question": "Under SQL-92 isolation levels, which anomaly occurs when Transaction A reads a row modified by Transaction B before Transaction B commits, and Transaction B subsequently rolls back?",
+    "options": [
+      "Dirty Read",
+      "Non-Repeatable Read",
+      "Phantom Read",
+      "Lost Update"
+    ],
+    "answer": "Dirty Read",
+    "explanation": "A dirty read occurs when a transaction reads uncommitted data written by a concurrent transaction that later rolls back. Read Committed isolation prevents dirty reads.",
+    "tags": ["transactions", "isolation", "dirty-read"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DBMS",
+    "topic": "Relational Algebra",
+    "difficulty": "easy",
+    "type": "mcq",
+    "question": "Which relational algebra operation combines tuples from two relations based on equality of all identically named attributes without duplicating columns in the output?",
+    "options": [
+      "Cartesian Product",
+      "Natural Join",
+      "Left Outer Join",
+      "Intersection"
+    ],
+    "answer": "Natural Join",
+    "explanation": "A Natural Join (denoted by ⨝) automatically matches columns with the same attribute name in both relations, performs an equi-join, and projects away duplicate columns.",
+    "tags": ["relational-algebra", "joins", "theory"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DBMS",
+    "topic": "SQL",
+    "difficulty": "easy",
+    "type": "mcq",
+    "question": "In standard SQL, what is the key difference between the WHERE clause and the HAVING clause?",
+    "options": [
+      "WHERE filters rows before aggregation, while HAVING filters aggregated group results",
+      "HAVING can only be used with primary keys, whereas WHERE works on any column",
+      "WHERE works only on views, while HAVING works on base tables",
+      "HAVING runs before the GROUP BY clause is evaluated"
+    ],
+    "answer": "WHERE filters rows before aggregation, while HAVING filters aggregated group results",
+    "explanation": "The WHERE clause filters individual rows prior to grouping. The HAVING clause applies condition filters to the groups formed by the GROUP BY clause, allowing aggregate functions like COUNT(), SUM(), and AVG().",
+    "tags": ["sql", "group-by", "having", "where"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DBMS",
+    "topic": "Recovery",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is the core rule of the Write-Ahead Logging (WAL) protocol before dirty database pages are written to disk?",
+    "options": [],
+    "answer": "All log records representing changes to data pages must be flushed to stable storage before the dirty data pages themselves are written to disk.",
+    "explanation": "Write-Ahead Logging guarantees durability and atomicity. If a crash occurs, the recovery manager can use the flushed log records on disk to REDO committed transactions and UNDO uncommitted operations.",
+    "tags": ["wal", "recovery", "durability", "logging"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Arrays",
+    "difficulty": "easy",
+    "type": "mcq",
+    "question": "What is the optimal time and auxiliary space complexity to find two numbers that sum to a target in an array that is already sorted in ascending order?",
+    "options": [
+      "O(n) time and O(1) space using two pointers",
+      "O(n log n) time and O(n) space using merge sort",
+      "O(n^2) time and O(1) space using nested loops",
+      "O(1) time and O(n) space using a hash set"
+    ],
+    "answer": "O(n) time and O(1) space using two pointers",
+    "explanation": "With a sorted array, placing one pointer at the start and one at the end allows shrinking the search space based on whether the current sum is less than or greater than the target in O(n) time and O(1) extra memory.",
+    "tags": ["arrays", "two-pointers", "complexity"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Linked Lists",
+    "difficulty": "easy",
+    "type": "mcq",
+    "question": "In Floyd's Cycle Detection Algorithm (the tortoise and the hare) for a singly linked list, at what relative speed do the slow and fast pointers advance?",
+    "options": [
+      "Slow moves 1 node per step; fast moves 2 nodes per step",
+      "Slow moves 1 node per step; fast moves 3 nodes per step",
+      "Both move at identical speeds but start from different nodes",
+      "Fast moves backwards from the tail while slow moves forward from the head"
+    ],
+    "answer": "Slow moves 1 node per step; fast moves 2 nodes per step",
+    "explanation": "Because the fast pointer moves 2 steps while the slow pointer moves 1 step, the distance between them in a cycle decreases by exactly 1 node on each iteration, guaranteeing they meet without infinite loops.",
+    "tags": ["linked-lists", "cycle-detection", "two-pointers"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Stacks",
+    "difficulty": "medium",
+    "type": "mcq",
+    "question": "What data structure technique computes the Next Greater Element for all elements in an array of size n in total O(n) time?",
+    "options": [
+      "Monotonic Stack",
+      "Binary Heap",
+      "Segment Tree",
+      "Disjoint Set Union (DSU)"
+    ],
+    "answer": "Monotonic Stack",
+    "explanation": "A monotonic decreasing stack keeps elements in order. Each element is pushed and popped at most once across the entire traversal, resulting in an amortized O(n) runtime.",
+    "tags": ["stacks", "monotonic-stack", "algorithms"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Searching",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "In binary search over integer indices, why is `mid = low + (high - low) / 2` preferred over `mid = (low + high) / 2`?",
+    "options": [],
+    "answer": "To prevent integer overflow when the sum of low and high exceeds the maximum allowable integer limit.",
+    "explanation": "In 32-bit signed integer arithmetic, if low and high are large (e.g. > 2^30), `low + high` overflows into a negative value, causing out-of-bounds indexing. `low + (high - low) / 2` computes the exact same midpoint without overflow.",
+    "tags": ["binary-search", "integer-overflow", "algorithms"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Trees",
+    "difficulty": "medium",
+    "type": "mcq",
+    "question": "Which tree traversal order on a valid Binary Search Tree (BST) produces the keys in strictly ascending sorted order?",
+    "options": [
+      "Inorder Traversal (Left, Root, Right)",
+      "Preorder Traversal (Root, Left, Right)",
+      "Postorder Traversal (Left, Right, Root)",
+      "Level-Order Traversal (Breadth-First)"
+    ],
+    "answer": "Inorder Traversal (Left, Root, Right)",
+    "explanation": "By definition of a BST, all keys in the left subtree are smaller than the root, and all keys in the right subtree are larger. Traversing Left, then Root, then Right naturally visits values in strictly non-decreasing order.",
+    "tags": ["bst", "tree-traversal", "inorder"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Dynamic Programming",
+    "difficulty": "medium",
+    "type": "mcq",
+    "question": "Which two core mathematical characteristics indicate that an optimization problem is suitable for Dynamic Programming rather than a greedy heuristic?",
+    "options": [
+      "Optimal Substructure and Overlapping Subproblems",
+      "Memory Alignment and Cache Locality",
+      "Divide and Conquer with Independent Subproblems",
+      "Linear Independence and Matrix Symmetry"
+    ],
+    "answer": "Optimal Substructure and Overlapping Subproblems",
+    "explanation": "Optimal substructure means an optimal solution to the problem contains optimal solutions to its subproblems. Overlapping subproblems means a recursive algorithm visits the exact same subproblems repeatedly, which DP solves efficiently via memoization or tabulation.",
+    "tags": ["dynamic-programming", "memoization", "algorithms"],
+    "sourceType": "own",
+    "sourceNote": "PrepPulse original question",
+    "reviewStatus": "approved"
+  }
+]
