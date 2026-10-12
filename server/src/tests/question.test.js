@@ -8,12 +8,17 @@ process.env.NODE_ENV = 'test';
 process.env.JWT_SECRET = 'test_jwt_secret_key_123';
 process.env.JWT_EXPIRES_IN = '1d';
 
+import jwt from 'jsonwebtoken';
 import app from '../app.js';
 import { User } from '../models/User.js';
 import { Question } from '../models/Question.js';
 import { UserQuestionState } from '../models/UserQuestionState.js';
 
 let mongoServer;
+let user1;
+let user2;
+let user1Token;
+let user2Token;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
@@ -22,6 +27,31 @@ beforeAll(async () => {
   // Ensure all schema indexes (especially text search index) are built
   await Question.init();
   await UserQuestionState.init();
+
+  // Create persistent test users once to avoid heavy repeated bcrypt hashing in beforeEach
+  user1 = await User.create({
+    name: 'Radhika Student',
+    email: 'radhika@example.com',
+    passwordHash: '$2b$12$dummyhashfordirecttestingpurposesonly1234567890',
+    role: 'student',
+  });
+  user2 = await User.create({
+    name: 'Second Student',
+    email: 'second@example.com',
+    passwordHash: '$2b$12$dummyhashfordirecttestingpurposesonly1234567890',
+    role: 'student',
+  });
+
+  user1Token = jwt.sign(
+    { userId: user1._id.toString(), role: user1.role },
+    process.env.JWT_SECRET,
+    { expiresIn: '1d' }
+  );
+  user2Token = jwt.sign(
+    { userId: user2._id.toString(), role: user2.role },
+    process.env.JWT_SECRET,
+    { expiresIn: '1d' }
+  );
 });
 
 afterAll(async () => {
@@ -32,31 +62,13 @@ afterAll(async () => {
 });
 
 describe('Questions & Bookmarks API (Phase 5)', () => {
-  let user1Token;
-  let user2Token;
   let sampleApprovedQuestion;
   let sampleDraftQuestion;
 
   beforeEach(async () => {
-    await User.deleteMany({});
     await Question.deleteMany({});
     await UserQuestionState.deleteMany({});
 
-    // Register User 1
-    const regUser1 = await request(app).post('/api/v1/auth/register').send({
-      name: 'Radhika Student',
-      email: 'radhika@example.com',
-      password: 'Password123',
-    });
-    user1Token = regUser1.body.token;
-
-    // Register User 2
-    const regUser2 = await request(app).post('/api/v1/auth/register').send({
-      name: 'Second Student',
-      email: 'second@example.com',
-      password: 'Password123',
-    });
-    user2Token = regUser2.body.token;
 
     // Seed approved test question
     sampleApprovedQuestion = await Question.create({
