@@ -155,6 +155,7 @@ Base path `/api/v1`. All routes except register and login require `Authorization
 | GET | `/users/me` | Current profile and streak |
 | PATCH | `/users/me` | Update name or time zone |
 | GET | `/questions` | List with filters: `category`, `topic`, `difficulty`, `q`, `page` |
+| GET | `/questions/meta` | Distinct categories and topics for filter dropdowns |
 | GET | `/questions/:id` | One question **without** the answer |
 | POST | `/questions/:id/reveal` | Return answer and explanation |
 | POST | `/questions/:id/attempt` | Submit an answer or self-rating |
