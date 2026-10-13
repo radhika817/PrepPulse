@@ -67,10 +67,33 @@ export const getBookmarks = async (params = {}) => {
   return response.data;
 };
 
+/**
+ * Reveal model answer and explanation for an approved question without saving an attempt.
+ * @param {string} id - Question ObjectId
+ * @returns {Promise<{ answer: string, explanation: string, link?: string }>}
+ */
+export const revealQuestion = async (id) => {
+  const response = await api.post(`/questions/${id}/reveal`);
+  return response.data;
+};
+
+/**
+ * Submit an attempt or self-rating for a question.
+ * @param {string} id - Question ObjectId
+ * @param {Object} attemptData - { mode, selectedOption, selfRating, revealedFirst, timeSpentSec }
+ * @returns {Promise<{ isCorrect?: boolean, answer: string, explanation: string, nextReviewAt: string | null }>}
+ */
+export const submitAttempt = async (id, attemptData) => {
+  const response = await api.post(`/questions/${id}/attempt`, attemptData);
+  return response.data;
+};
+
 export default {
   getQuestions,
   getQuestionsMeta,
   getQuestionById,
   toggleBookmark,
   getBookmarks,
+  revealQuestion,
+  submitAttempt,
 };
