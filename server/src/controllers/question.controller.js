@@ -345,6 +345,12 @@ export const revealQuestion = async (req, res, next) => {
       response.link = question.link;
     }
 
+    return res.json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
 /**
  * POST /api/v1/questions/:id/attempt
  * Records a user's attempt on a question (practice or study mode).
