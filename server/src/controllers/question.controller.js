@@ -299,12 +299,63 @@ export const getBookmarks = async (req, res, next) => {
   }
 };
 
+/**
+ * POST /api/v1/questions/:id/reveal
+ * Reveal the model answer and explanation for an approved question without saving any state.
+ * Returns { answer, explanation, link (if coding_link) }.
+ * 400 for an invalid ObjectId, 404 if not found or not approved.
+ */
+export const revealQuestion = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        error: {
+          code: 'INVALID_ID',
+          message: 'Invalid question ID format',
+        },
+      });
+    }
+
+    const question = await Question.findOne({
+      _id: id,
+      reviewStatus: 'approved',
+    })
+      .select('+answer')
+      .lean();
+
+    if (!question) {
+      return res.status(404).json({
+        error: {
+          code: 'NOT_FOUND',
+          message: 'Question not found or not approved',
+        },
+      });
+    }
+
+    const response = {
+      answer: question.answer,
+      explanation: question.explanation,
+    };
+
+    if (question.type === 'coding_link') {
+      response.link = question.link;
+    }
+
+    return res.json(response);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getQuestions,
   getQuestionsMeta,
   getQuestionById,
   toggleBookmark,
   getBookmarks,
+  revealQuestion,
 };
 
 
