@@ -60,24 +60,46 @@ export const Practice = () => {
   const [submissionResult, setSubmissionResult] = useState(null);
   const [attemptError, setAttemptError] = useState(null);
 
+  // Daily challenge context if opened with ?daily=<challengeId>
+  const searchParams = new URLSearchParams(location.search);
+  const dailyChallengeId = searchParams.get('daily');
+  const [dailyChallenge, setDailyChallenge] = useState(null);
+  const [isDailyCompleted, setIsDailyCompleted] = useState(false);
+
   // Next question navigation state
   const [nextQuestionId, setNextQuestionId] = useState(null);
 
-  // Look up next question from current filtered list
+  // Look up next question (either from daily challenge or filtered questions list)
   useEffect(() => {
     if (!id) return;
 
     let isMounted = true;
     const findNextQuestion = async () => {
       try {
-        const searchParams = Object.fromEntries(new URLSearchParams(location.search));
-        const res = await getQuestions({ ...searchParams, limit: 50 });
-        if (isMounted && res?.items && Array.isArray(res.items)) {
-          const currentIndex = res.items.findIndex((item) => item._id === id);
-          if (currentIndex !== -1 && currentIndex + 1 < res.items.length) {
-            setNextQuestionId(res.items[currentIndex + 1]._id);
-          } else {
-            setNextQuestionId(null);
+        if (dailyChallengeId) {
+          // In daily mode, fetch today's challenge to find the next unfinished question
+          const dailyData = await getDaily();
+          if (!isMounted) return;
+          setDailyChallenge(dailyData);
+          if (dailyData.completed) {
+            setIsDailyCompleted(true);
+          }
+
+          // Pick the first unfinished question of the day excluding the current question
+          const nextQ = dailyData.questions?.find(
+            (q) => !q.isDone && q._id !== id
+          );
+          setNextQuestionId(nextQ ? nextQ._id : null);
+        } else {
+          const searchParamsObj = Object.fromEntries(new URLSearchParams(location.search));
+          const res = await getQuestions({ ...searchParamsObj, limit: 50 });
+          if (isMounted && res?.items && Array.isArray(res.items)) {
+            const currentIndex = res.items.findIndex((item) => item._id === id);
+            if (currentIndex !== -1 && currentIndex + 1 < res.items.length) {
+              setNextQuestionId(res.items[currentIndex + 1]._id);
+            } else {
+              setNextQuestionId(null);
+            }
           }
         }
       } catch (err) {
@@ -92,7 +114,7 @@ export const Practice = () => {
     return () => {
       isMounted = false;
     };
-  }, [id, location.search]);
+  }, [id, location.search, dailyChallengeId]);
 
   // Load question details
   useEffect(() => {
