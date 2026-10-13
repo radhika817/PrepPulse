@@ -13,6 +13,7 @@ import app from '../app.js';
 import { User } from '../models/User.js';
 import { Question } from '../models/Question.js';
 import { UserQuestionState } from '../models/UserQuestionState.js';
+import { Attempt } from '../models/Attempt.js';
 
 let mongoServer;
 let user1;
@@ -27,6 +28,7 @@ beforeAll(async () => {
   // Ensure all schema indexes (especially text search index) are built
   await Question.init();
   await UserQuestionState.init();
+  await Attempt.init();
 
   // Create persistent test users once to avoid heavy repeated bcrypt hashing in beforeEach
   user1 = await User.create({
@@ -68,7 +70,7 @@ describe('Questions & Bookmarks API (Phase 5)', () => {
   beforeEach(async () => {
     await Question.deleteMany({});
     await UserQuestionState.deleteMany({});
-
+    await Attempt.deleteMany({});
 
     // Seed approved test question
     sampleApprovedQuestion = await Question.create({
