@@ -17,6 +17,7 @@ import {
   Layers,
   Calendar,
   Info,
+  Award,
 } from 'lucide-react';
 import {
   getQuestionById,
@@ -25,6 +26,7 @@ import {
   revealQuestion,
   submitAttempt,
 } from '../services/questions';
+import { getDaily } from '../services/daily';
 
 export const Practice = () => {
   const { id } = useParams();
