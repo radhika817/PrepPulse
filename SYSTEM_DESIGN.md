@@ -187,13 +187,15 @@ The answer is never sent with the question. It is returned only by the reveal or
 
 ```text
 GET  /questions/:id            -> question, options (no answer)
-POST /questions/:id/reveal     -> answer, explanation; marks revealedFirst if no attempt yet
-POST /questions/:id/attempt    -> { selectedOption | selfRating }
+POST /questions/:id/reveal     -> { answer, explanation, link? } (stateless)
+POST /questions/:id/attempt    -> { mode, selectedOption?, selfRating?, revealedFirst, timeSpentSec }
 ```
 
-- **MCQ:** server compares `selectedOption` with `answer` and sets `isCorrect`.
-- **Short, HR and coding-link:** user submits `selfRating` after reading the model answer.
-- If the user revealed before attempting, `revealedFirst = true`. These attempts count toward activity but are excluded from accuracy, so stats are not inflated.
+- **Stateless reveal:** `POST /questions/:id/reveal` returns the model answer and explanation (and link for `coding_link`) without writing to the database.
+- **Client sends `revealedFirst`:** The client tracks whether the user clicked "Show answer" before answering or typing, and sends `revealedFirst: true` in the attempt body.
+- **MCQ:** server compares `selectedOption` with `answer` and sets `isCorrect`. Any client-sent `isCorrect` is ignored. If `selfRating` is not provided, it is derived from `isCorrect` (`correct = knew`, `wrong = missed`).
+- **Short, HR and coding-link:** user submits `selfRating` (`knew` | `partly` | `missed`) after reading the model answer.
+- If `revealedFirst = true`, the attempt counts toward activity and revision queue, but is excluded from accuracy statistics so stats are not inflated.
 - A question counts as done in a daily challenge only after an attempt is saved.
 
 ### 5.2 Daily challenge generation
