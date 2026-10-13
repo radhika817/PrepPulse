@@ -3,6 +3,7 @@ import { useParams, useLocation, Link, useNavigate } from 'react-router-dom';
 import {
   Bookmark,
   ArrowLeft,
+  ArrowRight,
   AlertCircle,
   Loader2,
   ExternalLink,
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react';
 import {
   getQuestionById,
+  getQuestions,
   toggleBookmark,
   revealQuestion,
   submitAttempt,
@@ -55,6 +57,40 @@ export const Practice = () => {
   const [submitted, setSubmitted] = useState(false);
   const [submissionResult, setSubmissionResult] = useState(null);
   const [attemptError, setAttemptError] = useState(null);
+
+  // Next question navigation state
+  const [nextQuestionId, setNextQuestionId] = useState(null);
+
+  // Look up next question from current filtered list
+  useEffect(() => {
+    if (!id) return;
+
+    let isMounted = true;
+    const findNextQuestion = async () => {
+      try {
+        const searchParams = Object.fromEntries(new URLSearchParams(location.search));
+        const res = await getQuestions({ ...searchParams, limit: 50 });
+        if (isMounted && res?.items && Array.isArray(res.items)) {
+          const currentIndex = res.items.findIndex((item) => item._id === id);
+          if (currentIndex !== -1 && currentIndex + 1 < res.items.length) {
+            setNextQuestionId(res.items[currentIndex + 1]._id);
+          } else {
+            setNextQuestionId(null);
+          }
+        }
+      } catch (err) {
+        if (isMounted) {
+          console.warn('Could not determine next question:', err);
+          setNextQuestionId(null);
+        }
+      }
+    };
+
+    findNextQuestion();
+    return () => {
+      isMounted = false;
+    };
+  }, [id, location.search]);
 
   // Load question details
   useEffect(() => {
@@ -742,16 +778,31 @@ export const Practice = () => {
                     </div>
                   </div>
 
-                  {/* Navigation Buttons Placeholder (Will be completed in Commit 10) */}
-                  <div className="flex items-center justify-between gap-3 pt-1">
+                  {/* Navigation Buttons: Back to questions & Next question */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
                     <Link
                       to={`/questions${location.search || ''}`}
                       id="back-to-questions-btn"
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition-colors"
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition-all shadow-sm hover:border-slate-600 cursor-pointer"
                     >
                       <ArrowLeft className="w-3.5 h-3.5" />
                       <span>Back to questions</span>
                     </Link>
+
+                    {nextQuestionId ? (
+                      <Link
+                        to={`/practice/${nextQuestionId}${location.search || ''}`}
+                        id="next-question-btn"
+                        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition-all border border-indigo-500/40 cursor-pointer"
+                      >
+                        <span>Next question</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    ) : (
+                      <span className="text-[11px] text-slate-500 italic">
+                        Last question in this filtered list
+                      </span>
+                    )}
                   </div>
                 </div>
               )}

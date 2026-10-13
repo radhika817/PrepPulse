@@ -192,17 +192,6 @@ CLIENT_URL=http://localhost:5173
 - Streak and daily-challenge completion calculated on the server
 - API keys kept in environment variables, never in the frontend
 - Licence and source recorded for every reused question
-
----
-
-## Contributing
-
-Suggestions and feedback are welcome. Contribution guidelines will be added as development progresses.
-
-## Licence
-
-To be decided before public release. Third-party question content is used only under applicable permissions and licences.
-
 ---
 
 **PrepPulse — Practice Every Day. Prepare with Purpose.**
