@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Bookmark, ArrowRight, Code, HelpCircle, CheckCircle2 } from 'lucide-react';
 import { toggleBookmark } from '../services/questions';
 
@@ -8,10 +8,11 @@ import { toggleBookmark } from '../services/questions';
  * Used in both Question Bank (/questions) and Bookmarks (/bookmarks) pages.
  * Displays category, topic, difficulty badge, question type, question text, tags,
  * and an interactive bookmark toggle button.
- * Clicking anywhere on the card navigates to /practice/:id.
+ * Clicking anywhere on the card navigates to /practice/:id with filter query preserved.
  */
 export const QuestionCard = ({ question, onBookmarkToggle }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isBookmarked, setIsBookmarked] = useState(Boolean(question.isBookmarked));
   const [isToggling, setIsToggling] = useState(false);
 
@@ -70,7 +71,7 @@ export const QuestionCard = ({ question, onBookmarkToggle }) => {
   };
 
   const handleCardClick = () => {
-    navigate(`/practice/${question._id}`);
+    navigate(`/practice/${question._id}${location.search || ''}`);
   };
 
   return (
