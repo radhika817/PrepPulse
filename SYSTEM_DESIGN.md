@@ -161,7 +161,7 @@ Base path `/api/v1`. All routes except register and login require `Authorization
 | POST | `/questions/:id/attempt` | Submit an answer or self-rating |
 | POST | `/questions/:id/bookmark` | Toggle bookmark |
 | GET | `/bookmarks` | Saved questions |
-| GET | `/daily` | Today's five (creates if missing) |
+| GET | `/daily` | Today's five: `{ date, challengeId, completed, completedCount, questions }` (creates if missing) |
 | GET | `/revision` | Questions due for review |
 | GET | `/progress/summary` | Totals, accuracy, streak |
 | GET | `/progress/topics` | Per-topic accuracy and weak topics |
@@ -188,13 +188,14 @@ The answer is never sent with the question. It is returned only by the reveal or
 ```text
 GET  /questions/:id            -> question, options (no answer)
 POST /questions/:id/reveal     -> { answer, explanation, link? } (stateless)
-POST /questions/:id/attempt    -> { mode, selectedOption?, selfRating?, revealedFirst, timeSpentSec }
+POST /questions/:id/attempt    -> { mode, challengeId?, selectedOption?, selfRating?, revealedFirst, timeSpentSec }
 ```
 
 - **Stateless reveal:** `POST /questions/:id/reveal` returns the model answer and explanation (and link for `coding_link`) without writing to the database.
 - **Client sends `revealedFirst`:** The client tracks whether the user clicked "Show answer" before answering or typing, and sends `revealedFirst: true` in the attempt body.
 - **MCQ:** server compares `selectedOption` with `answer` and sets `isCorrect`. Any client-sent `isCorrect` is ignored. If `selfRating` is not provided, it is derived from `isCorrect` (`correct = knew`, `wrong = missed`).
 - **Short, HR and coding-link:** user submits `selfRating` (`knew` | `partly` | `missed`) after reading the model answer.
+- **Daily mode:** When `mode = "daily"`, `challengeId` is required. The server verifies the challenge belongs to the user, matches today's date in their time zone, contains the question, and that it is not already completed. Marks the question completed in `completedQuestionIds`, marks the challenge complete upon finishing all 5, and invokes `onChallengeCompleted(user, challenge)`. Returns `{ isCorrect (mcq only), answer, explanation, nextReviewAt, challengeCompleted, completedCount }`.
 - If `revealedFirst = true`, the attempt counts toward activity and revision queue, but is excluded from accuracy statistics so stats are not inflated.
 - A question counts as done in a daily challenge only after an attempt is saved.
 
@@ -202,14 +203,15 @@ POST /questions/:id/attempt    -> { mode, selectedOption?, selfRating?, revealed
 
 When `GET /daily` is called and no row exists for `(userId, today)`:
 
-1. Compute `today` in the user's time zone.
-2. Find the user's two weakest topics (section 5.4). New users with no data skip this step.
-3. Pick 2 unseen approved questions from those topics.
-4. Pick 3 more from the general pool: not already in the set, preferring questions the user has not seen, with a mix of categories and difficulty.
-5. If the pool runs short, fill with least recently seen questions.
-6. Save the five ids in `dailyChallenges` and return them.
+1. Compute `today` in the user's time zone using `Intl.DateTimeFormat` (falling back to `Asia/Kolkata` if missing or invalid).
+2. Check total approved questions: if fewer than 5 approved questions exist overall, return HTTP 409 `INSUFFICIENT_QUESTIONS`.
+3. Find the user's two weakest topics (section 5.4). New users with no data skip this step.
+4. Pick up to 2 unseen approved questions from those topics.
+5. Pick remaining questions from the general pool: not already in the set, preferring unseen questions, with a mix of categories and difficulty.
+6. If the pool runs short, fill with least recently seen questions.
+7. Save the five ids in `dailyChallenges` and return them. Handle the unique compound index race condition on `(userId, today)` by catching duplicate key errors (11000) and re-reading.
 
-Calling the endpoint again the same day returns the same five.
+Calling the endpoint again the same day returns the same five. Questions returned include list fields (no answer/explanation) plus `isDone` (true if completed).
 
 ### 5.3 Streak calculation
 
