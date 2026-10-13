@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useLocation, Link, useNavigate } from 'react-router-dom';
 import {
   Bookmark,
@@ -9,11 +9,20 @@ import {
   Clock,
   Eye,
   CheckCircle2,
+  XCircle,
   HelpCircle,
-  Send,
+  RotateCcw,
+  Sparkles,
   Layers,
+  Calendar,
+  Info,
 } from 'lucide-react';
-import { getQuestionById, toggleBookmark, revealQuestion, submitAttempt } from '../services/questions';
+import {
+  getQuestionById,
+  toggleBookmark,
+  revealQuestion,
+  submitAttempt,
+} from '../services/questions';
 
 export const Practice = () => {
   const { id } = useParams();
@@ -103,6 +112,15 @@ export const Practice = () => {
     return `${mins.toString().padStart(2, '0')}:${remSecs.toString().padStart(2, '0')}`;
   };
 
+  // Human-readable revision schedule text
+  const formatRevisionTime = (nextReviewAt) => {
+    if (!nextReviewAt) return 'Mastered (graduated from revision)';
+    const msDiff = new Date(nextReviewAt).getTime() - Date.now();
+    const daysDiff = Math.max(1, Math.round(msDiff / (24 * 60 * 60 * 1000)));
+    if (daysDiff === 1) return 'Tomorrow (+1 day)';
+    return `In ${daysDiff} days`;
+  };
+
   const handleBookmarkToggle = async () => {
     if (!question || isTogglingBookmark) return;
 
@@ -118,6 +136,108 @@ export const Practice = () => {
       setIsBookmarked(prev);
     } finally {
       setIsTogglingBookmark(false);
+    }
+  };
+
+  // MCQ Check Handler
+  const handleCheckAnswer = async () => {
+    if (!selectedOption || submitting || submitted) return;
+
+    try {
+      setSubmitting(true);
+      setAttemptError(null);
+      setTimerActive(false);
+
+      const res = await submitAttempt(question._id, {
+        mode: 'practice',
+        selectedOption,
+        revealedFirst: false,
+        timeSpentSec,
+      });
+
+      setAnswerData(res);
+      setSubmitted(true);
+      setRevealed(true);
+      setRevealedFirst(false);
+      setSubmissionResult({
+        isCorrect: res.isCorrect,
+        rating: res.isCorrect ? 'knew' : 'missed',
+        nextReviewAt: res.nextReviewAt,
+      });
+    } catch (err) {
+      console.error('Failed to submit MCQ check:', err);
+      setAttemptError(
+        err.response?.data?.error?.message || err.message || 'Failed to submit answer.'
+      );
+      setTimerActive(true);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Reveal Handler (Show Answer on any question)
+  const handleShowAnswer = async () => {
+    if (revealing || revealed || submitting) return;
+
+    try {
+      setRevealing(true);
+      setAttemptError(null);
+      setTimerActive(false);
+
+      // If user clicked Show answer before answering or typing
+      const wasRevealedFirst =
+        question.type === 'mcq' ? !selectedOption : !typedAnswer.trim();
+
+      setRevealedFirst(wasRevealedFirst);
+
+      const res = await revealQuestion(question._id);
+      setAnswerData(res);
+      setRevealed(true);
+    } catch (err) {
+      console.error('Failed to reveal answer:', err);
+      setAttemptError(
+        err.response?.data?.error?.message || err.message || 'Failed to reveal answer.'
+      );
+      setTimerActive(true);
+    } finally {
+      setRevealing(false);
+    }
+  };
+
+  // Self-Rating Handler (Non-MCQ or revealed MCQ)
+  const handleRate = async (rating) => {
+    if (submitting || submitted) return;
+
+    try {
+      setSubmitting(true);
+      setAttemptError(null);
+      setTimerActive(false);
+
+      const payload = {
+        mode: 'practice',
+        selfRating: rating,
+        revealedFirst,
+        timeSpentSec,
+      };
+
+      if (question.type === 'mcq') {
+        payload.selectedOption = selectedOption || answerData?.answer;
+      }
+
+      const res = await submitAttempt(question._id, payload);
+      setAnswerData((prev) => ({ ...prev, ...res }));
+      setSubmitted(true);
+      setSubmissionResult({
+        rating,
+        nextReviewAt: res.nextReviewAt,
+      });
+    } catch (err) {
+      console.error('Failed to submit rating:', err);
+      setAttemptError(
+        err.response?.data?.error?.message || err.message || 'Failed to submit rating.'
+      );
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -153,7 +273,7 @@ export const Practice = () => {
           className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-slate-300 font-mono text-xs shadow-sm"
           title="Time spent on this question"
         >
-          <Clock className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
+          <Clock className={`w-3.5 h-3.5 text-indigo-400 ${timerActive ? 'animate-pulse' : ''}`} />
           <span>{formatTime(timeSpentSec)}</span>
         </div>
       </div>
@@ -261,15 +381,46 @@ export const Practice = () => {
               </div>
             )}
 
-            {/* MCQ Option Cards */}
+            {/* MCQ Options Display */}
             {question.type === 'mcq' && Array.isArray(question.options) && question.options.length > 0 && (
               <div className="space-y-3 pt-2">
                 <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  Select your answer:
+                  {revealed || submitted ? 'Options:' : 'Select your answer:'}
                 </label>
                 <div className="grid grid-cols-1 gap-2.5" role="radiogroup" aria-label="MCQ Options">
                   {question.options.map((option, idx) => {
                     const isSelected = selectedOption === option;
+                    const isAnswer = answerData && answerData.answer === option;
+                    const isWrongSelection =
+                      (submitted || revealed) && isSelected && answerData && !isAnswer;
+
+                    let cardStyle =
+                      'bg-slate-950/60 border-slate-800/80 text-slate-300 hover:bg-slate-800/50 hover:border-slate-700';
+                    let badgeStyle =
+                      'bg-slate-800/80 text-slate-400 border-slate-700';
+
+                    if (revealed || submitted) {
+                      if (isAnswer) {
+                        cardStyle =
+                          'bg-emerald-500/15 border-emerald-500 text-emerald-200 ring-1 ring-emerald-500/50';
+                        badgeStyle =
+                          'bg-emerald-500 text-slate-950 font-bold border-emerald-400';
+                      } else if (isWrongSelection) {
+                        cardStyle =
+                          'bg-rose-500/15 border-rose-500 text-rose-200 ring-1 ring-rose-500/50';
+                        badgeStyle =
+                          'bg-rose-500 text-white font-bold border-rose-400';
+                      } else {
+                        cardStyle =
+                          'bg-slate-950/30 border-slate-800/40 text-slate-500 opacity-60';
+                      }
+                    } else if (isSelected) {
+                      cardStyle =
+                        'bg-indigo-600/15 border-indigo-500 text-white shadow-sm ring-1 ring-indigo-500/50';
+                      badgeStyle =
+                        'bg-indigo-500 text-white border-indigo-400 font-bold';
+                    }
+
                     return (
                       <button
                         key={idx}
@@ -277,27 +428,27 @@ export const Practice = () => {
                         id={`mcq-option-${idx}`}
                         disabled={submitted || revealed}
                         onClick={() => setSelectedOption(option)}
-                        className={`w-full text-left p-3.5 rounded-xl border transition-all duration-150 flex items-center justify-between gap-3 ${
-                          isSelected
-                            ? 'bg-indigo-600/15 border-indigo-500 text-white shadow-sm ring-1 ring-indigo-500/50'
-                            : 'bg-slate-950/60 border-slate-800/80 text-slate-300 hover:bg-slate-800/50 hover:border-slate-700'
-                        } ${submitted || revealed ? 'cursor-default' : 'cursor-pointer'}`}
+                        className={`w-full text-left p-3.5 rounded-xl border transition-all duration-150 flex items-center justify-between gap-3 ${cardStyle} ${
+                          submitted || revealed ? 'cursor-default' : 'cursor-pointer'
+                        }`}
                       >
                         <div className="flex items-center gap-3">
                           <span
-                            className={`w-6 h-6 rounded-md font-mono text-xs flex items-center justify-center shrink-0 border transition-colors ${
-                              isSelected
-                                ? 'bg-indigo-500 text-white border-indigo-400 font-bold'
-                                : 'bg-slate-800/80 text-slate-400 border-slate-700'
-                            }`}
+                            className={`w-6 h-6 rounded-md font-mono text-xs flex items-center justify-center shrink-0 border transition-colors ${badgeStyle}`}
                           >
                             {String.fromCharCode(65 + idx)}
                           </span>
-                          <span className="text-xs sm:text-sm">{option}</span>
+                          <span className="text-xs sm:text-sm font-medium">{option}</span>
                         </div>
 
-                        {isSelected && (
+                        {isSelected && !revealed && !submitted && (
                           <div className="w-2 h-2 rounded-full bg-indigo-400 ring-4 ring-indigo-500/20 shrink-0" />
+                        )}
+                        {(revealed || submitted) && isAnswer && (
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                        )}
+                        {(revealed || submitted) && isWrongSelection && (
+                          <XCircle className="w-4 h-4 text-rose-400 shrink-0" />
                         )}
                       </button>
                     );
@@ -306,7 +457,7 @@ export const Practice = () => {
               </div>
             )}
 
-            {/* Non-MCQ Optional User Notes / Answer Textarea */}
+            {/* Non-MCQ Optional User Notes / Answer Textarea (Question View) */}
             {question.type !== 'mcq' && !revealed && !submitted && (
               <div className="space-y-2 pt-2">
                 <label
@@ -329,21 +480,22 @@ export const Practice = () => {
               </div>
             )}
 
-            {/* Action Bar (Check button for MCQ / Show Answer for all) */}
+            {/* Action Bar: Question View (Check button for MCQ / Show Answer for all) */}
             {!revealed && !submitted && (
               <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-800/80">
                 <div className="text-[11px] text-slate-500">
                   {question.type === 'mcq'
-                    ? 'Pick an option and check, or reveal the answer directly.'
-                    : 'Reveal the answer to self-grade your recall.'}
+                    ? 'Pick an option and click Check, or Show answer directly.'
+                    : 'Think through your answer, then click Show answer to self-grade.'}
                 </div>
 
                 <div className="flex items-center gap-2.5">
                   <button
                     type="button"
                     id="show-answer-btn"
+                    onClick={handleShowAnswer}
                     disabled={revealing || submitting}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700/90 text-slate-200 border border-slate-700 text-xs font-semibold shadow-sm transition-all hover:border-slate-600 disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700/90 text-slate-200 border border-slate-700 text-xs font-semibold shadow-sm transition-all hover:border-slate-600 disabled:opacity-50 cursor-pointer"
                   >
                     {revealing ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-400" />
@@ -357,8 +509,9 @@ export const Practice = () => {
                     <button
                       type="button"
                       id="check-answer-btn"
+                      onClick={handleCheckAnswer}
                       disabled={!selectedOption || submitting || revealing}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 disabled:border-slate-800 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition-all border border-indigo-500/40"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-500 disabled:border-slate-800 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition-all border border-indigo-500/40 cursor-pointer disabled:cursor-not-allowed"
                     >
                       {submitting ? (
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -369,6 +522,17 @@ export const Practice = () => {
                     </button>
                   )}
                 </div>
+              </div>
+            )}
+
+            {/* Error Message Alert */}
+            {attemptError && (
+              <div
+                id="attempt-error-banner"
+                className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2"
+              >
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+                <span>{attemptError}</span>
               </div>
             )}
 
@@ -386,6 +550,213 @@ export const Practice = () => {
               </div>
             )}
           </div>
+
+          {/* ANSWER VIEW & RATING VIEW */}
+          {(revealed || submitted) && answerData && (
+            <div id="practice-answer-section" className="space-y-6 animate-in fade-in duration-200">
+              {/* Note when revealedFirst is true */}
+              {revealedFirst && (
+                <div
+                  id="revealed-first-note"
+                  className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs flex items-center gap-2.5"
+                >
+                  <Info className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span>
+                    Answer revealed before attempting. This will not count toward your accuracy stats.
+                  </span>
+                </div>
+              )}
+
+              {/* MCQ Result Banner */}
+              {question.type === 'mcq' && submissionResult && (
+                <div
+                  id="mcq-result-banner"
+                  className={`p-4 rounded-xl border flex items-center gap-3 ${
+                    submissionResult.isCorrect
+                      ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-200'
+                      : 'bg-rose-500/15 border-rose-500/30 text-rose-200'
+                  }`}
+                >
+                  {submissionResult.isCorrect ? (
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                  ) : (
+                    <XCircle className="w-5 h-5 text-rose-400 shrink-0" />
+                  )}
+                  <div>
+                    <h3 className="text-sm font-semibold">
+                      {submissionResult.isCorrect ? 'Correct! Well done.' : 'Incorrect answer'}
+                    </h3>
+                    <p className="text-xs opacity-90">
+                      {submissionResult.isCorrect
+                        ? 'Your selection matches the model answer.'
+                        : 'Review the model explanation below to reinforce your knowledge.'}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* User Typed Answer (Shown for non-MCQ if user had typed) */}
+              {typedAnswer.trim() && (
+                <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-2">
+                  <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                    Your formulation:
+                  </span>
+                  <p className="text-xs sm:text-sm text-slate-300 whitespace-pre-wrap leading-relaxed">
+                    {typedAnswer}
+                  </p>
+                </div>
+              )}
+
+              {/* Model Answer & Explanation Card */}
+              <div
+                id="model-answer-card"
+                className="p-6 sm:p-7 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-5 shadow-lg"
+              >
+                {/* Model Answer */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-indigo-400 uppercase tracking-wider">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Model Answer</span>
+                  </div>
+                  <div
+                    id="model-answer-text"
+                    className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs sm:text-sm text-white font-medium leading-relaxed"
+                  >
+                    {answerData.answer}
+                  </div>
+                </div>
+
+                {/* Explanation */}
+                {answerData.explanation && (
+                  <div className="space-y-2 pt-2 border-t border-slate-800/80">
+                    <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                      Explanation
+                    </span>
+                    <p
+                      id="model-explanation-text"
+                      className="text-xs sm:text-sm text-slate-300 leading-relaxed whitespace-pre-wrap"
+                    >
+                      {answerData.explanation}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* RATING VIEW (For Non-MCQ or if MCQ was revealed without submitting) */}
+              {!submitted && (
+                <div
+                  id="self-rating-card"
+                  className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4 shadow-xl text-center"
+                >
+                  <div className="space-y-1">
+                    <h3 className="text-sm sm:text-base font-bold text-white">
+                      How well did you know this answer?
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      Be honest with yourself — this drives your spaced revision schedule.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                    {/* Knew it */}
+                    <button
+                      type="button"
+                      id="rate-knew-btn"
+                      onClick={() => handleRate('knew')}
+                      disabled={submitting}
+                      className="p-3.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 hover:text-emerald-200 transition-all text-xs font-semibold flex flex-col items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    >
+                      <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                      <span>Knew it</span>
+                      <span className="text-[10px] text-emerald-400/70 font-normal">
+                        Advance stage (+1 to +7d)
+                      </span>
+                    </button>
+
+                    {/* Partly */}
+                    <button
+                      type="button"
+                      id="rate-partly-btn"
+                      onClick={() => handleRate('partly')}
+                      disabled={submitting}
+                      className="p-3.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 hover:text-amber-200 transition-all text-xs font-semibold flex flex-col items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    >
+                      <HelpCircle className="w-5 h-5 text-amber-400" />
+                      <span>Partly</span>
+                      <span className="text-[10px] text-amber-400/70 font-normal">
+                        Review in 3 days
+                      </span>
+                    </button>
+
+                    {/* Missed it */}
+                    <button
+                      type="button"
+                      id="rate-missed-btn"
+                      onClick={() => handleRate('missed')}
+                      disabled={submitting}
+                      className="p-3.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-300 hover:text-rose-200 transition-all text-xs font-semibold flex flex-col items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    >
+                      <RotateCcw className="w-5 h-5 text-rose-400" />
+                      <span>Missed it</span>
+                      <span className="text-[10px] text-rose-400/70 font-normal">
+                        Reset to Box 0 (review tomorrow)
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* POST-SUBMISSION CONFIRMATION & NAVIGATION */}
+              {submitted && (
+                <div
+                  id="submission-confirmation-card"
+                  className="p-6 rounded-2xl bg-slate-900/80 border border-indigo-500/30 space-y-5 shadow-xl"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      </div>
+                      <div>
+                        <h4 className="text-xs sm:text-sm font-bold text-white">
+                          Attempt recorded!
+                        </h4>
+                        <p className="text-[11px] text-slate-400">
+                          {submissionResult?.rating && (
+                            <span className="capitalize">
+                              Rated: <strong className="text-slate-200">{submissionResult.rating}</strong>
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 text-xs text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1.5 rounded-lg">
+                      <Calendar className="w-3.5 h-3.5 text-indigo-400" />
+                      <span>
+                        Revision:{' '}
+                        <strong>
+                          {formatRevisionTime(submissionResult?.nextReviewAt || answerData.nextReviewAt)}
+                        </strong>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Navigation Buttons Placeholder (Will be completed in Commit 10) */}
+                  <div className="flex items-center justify-between gap-3 pt-1">
+                    <Link
+                      to={`/questions${location.search || ''}`}
+                      id="back-to-questions-btn"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition-colors"
+                    >
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                      <span>Back to questions</span>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       ) : (
         /* Standalone Practice route placeholder */
