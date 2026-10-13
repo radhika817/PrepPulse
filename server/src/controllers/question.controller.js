@@ -436,11 +436,18 @@ export const attemptQuestion = async (req, res, next) => {
       timeSpentSec: Number(timeSpentSec) || 0,
     });
 
+    // Update revision state (Leitner box, nextReviewAt, timesSeen, lastRating)
+    const revisionState = await updateRevisionState(
+      req.user._id,
+      question._id,
+      finalSelfRating
+    );
+
     const response = {
       ...(question.type === 'mcq' ? { isCorrect: computedIsCorrect } : {}),
       answer: question.answer,
       explanation: question.explanation,
-      nextReviewAt: null,
+      nextReviewAt: revisionState.nextReviewAt,
     };
 
     return res.json(response);
