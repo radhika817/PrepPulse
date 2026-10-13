@@ -450,4 +450,349 @@ describe('Questions & Bookmarks API (Phase 5)', () => {
       expect(res.body.error.code).toBe('INVALID_ID');
     });
   });
+
+  describe('Practice Reveal & Attempt API (Phase 6)', () => {
+    let sampleCodingQuestion;
+    let sampleShortQuestion;
+
+    beforeEach(async () => {
+      sampleCodingQuestion = await Question.create({
+        category: 'DSA',
+        topic: 'Arrays',
+        difficulty: 'medium',
+        type: 'coding_link',
+        question: 'Two Sum problem',
+        answer: 'Use a hash map to look up complements in O(n) time.',
+        explanation: 'Store each number and index in a map and check for target - current.',
+        link: 'https://leetcode.com/problems/two-sum',
+        tags: ['dsa', 'arrays'],
+        reviewStatus: 'approved',
+      });
+
+      sampleShortQuestion = await Question.create({
+        category: 'DBMS',
+        topic: 'Indexing',
+        difficulty: 'easy',
+        type: 'short',
+        question: 'What is a B+ tree?',
+        answer: 'A self-balancing tree data structure used in database indexes.',
+        explanation: 'All leaves are at the same level and linked together.',
+        tags: ['dbms', 'indexing'],
+        reviewStatus: 'approved',
+      });
+    });
+
+    it('list and detail responses still never contain answer or explanation', async () => {
+      const listRes = await request(app)
+        .get('/api/v1/questions')
+        .set('Authorization', `Bearer ${user1Token}`);
+      expect(listRes.status).toBe(200);
+      expect(listRes.body.items.length).toBeGreaterThan(0);
+      listRes.body.items.forEach((item) => {
+        expect(item.answer).toBeUndefined();
+        expect(item.explanation).toBeUndefined();
+      });
+
+      const detailRes = await request(app)
+        .get(`/api/v1/questions/${sampleApprovedQuestion._id}`)
+        .set('Authorization', `Bearer ${user1Token}`);
+      expect(detailRes.status).toBe(200);
+      expect(detailRes.body.answer).toBeUndefined();
+      expect(detailRes.body.explanation).toBeUndefined();
+    });
+
+    it('reveal returns the answer for an approved question; 404 otherwise', async () => {
+      // Approved MCQ question reveal
+      const revealRes = await request(app)
+        .post(`/api/v1/questions/${sampleApprovedQuestion._id}/reveal`)
+        .set('Authorization', `Bearer ${user1Token}`);
+
+      expect(revealRes.status).toBe(200);
+      expect(revealRes.body.answer).toBe('Preemption');
+      expect(revealRes.body.explanation).toBe(
+        'Preemption breaks one of the four necessary Coffman conditions.'
+      );
+      expect(revealRes.body.link).toBeUndefined();
+
+      // Coding link question reveal returns link
+      const codingRevealRes = await request(app)
+        .post(`/api/v1/questions/${sampleCodingQuestion._id}/reveal`)
+        .set('Authorization', `Bearer ${user1Token}`);
+      expect(codingRevealRes.status).toBe(200);
+      expect(codingRevealRes.body.link).toBe('https://leetcode.com/problems/two-sum');
+
+      // Draft question returns 404
+      const draftRes = await request(app)
+        .post(`/api/v1/questions/${sampleDraftQuestion._id}/reveal`)
+        .set('Authorization', `Bearer ${user1Token}`);
+      expect(draftRes.status).toBe(404);
+
+      // Non-existent question returns 404
+      const fakeId = new mongoose.Types.ObjectId();
+      const notFoundRes = await request(app)
+        .post(`/api/v1/questions/${fakeId}/reveal`)
+        .set('Authorization', `Bearer ${user1Token}`);
+      expect(notFoundRes.status).toBe(404);
+
+      // Invalid ID returns 400
+      const invalidRes = await request(app)
+        .post('/api/v1/questions/invalid-id/reveal')
+        .set('Authorization', `Bearer ${user1Token}`);
+      expect(invalidRes.status).toBe(400);
+      expect(invalidRes.body.error.code).toBe('INVALID_ID');
+
+      // Verify reveal is stateless (did not save any attempt or question state)
+      const attemptsCount = await Attempt.countDocuments();
+      expect(attemptsCount).toBe(0);
+      const stateCount = await UserQuestionState.countDocuments();
+      expect(stateCount).toBe(0);
+    });
+
+    it('mcq attempt: correct and wrong answers set isCorrect on the server; a client-sent isCorrect is ignored', async () => {
+      // 1. Correct answer with client attempting to spoof isCorrect: false
+      const correctRes = await request(app)
+        .post(`/api/v1/questions/${sampleApprovedQuestion._id}/attempt`)
+        .set('Authorization', `Bearer ${user1Token}`)
+        .send({
+          mode: 'practice',
+          selectedOption: 'Preemption',
+          isCorrect: false, // client spoof must be ignored
+          revealedFirst: false,
+          timeSpentSec: 15,
+        });
+
+      expect(correctRes.status).toBe(200);
+      expect(correctRes.body.isCorrect).toBe(true);
+      expect(correctRes.body.answer).toBe('Preemption');
+      expect(correctRes.body.explanation).toBeDefined();
+
+      const savedAttempt1 = await Attempt.findOne({
+        userId: user1._id,
+        questionId: sampleApprovedQuestion._id,
+      });
+      expect(savedAttempt1).not.toBeNull();
+      expect(savedAttempt1.isCorrect).toBe(true);
+      expect(savedAttempt1.selfRating).toBe('knew');
+
+      // 2. Wrong answer with client attempting to spoof isCorrect: true
+      const wrongRes = await request(app)
+        .post(`/api/v1/questions/${sampleApprovedQuestion._id}/attempt`)
+        .set('Authorization', `Bearer ${user2Token}`)
+        .send({
+          mode: 'practice',
+          selectedOption: 'Mutual exclusion',
+          isCorrect: true, // client spoof must be ignored
+          revealedFirst: true,
+          timeSpentSec: 30,
+        });
+
+      expect(wrongRes.status).toBe(200);
+      expect(wrongRes.body.isCorrect).toBe(false);
+
+      const savedAttempt2 = await Attempt.findOne({
+        userId: user2._id,
+        questionId: sampleApprovedQuestion._id,
+      });
+      expect(savedAttempt2).not.toBeNull();
+      expect(savedAttempt2.isCorrect).toBe(false);
+      expect(savedAttempt2.selfRating).toBe('missed');
+      expect(savedAttempt2.revealedFirst).toBe(true);
+      expect(savedAttempt2.timeSpentSec).toBe(30);
+
+      // 3. MCQ attempt without selectedOption returns 400
+      const missingOptionRes = await request(app)
+        .post(`/api/v1/questions/${sampleApprovedQuestion._id}/attempt`)
+        .set('Authorization', `Bearer ${user1Token}`)
+        .send({
+          mode: 'practice',
+          timeSpentSec: 5,
+        });
+      expect(missingOptionRes.status).toBe(400);
+      expect(missingOptionRes.body.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('non-mcq attempt without selfRating returns 400', async () => {
+      const res = await request(app)
+        .post(`/api/v1/questions/${sampleShortQuestion._id}/attempt`)
+        .set('Authorization', `Bearer ${user1Token}`)
+        .send({
+          mode: 'practice',
+          timeSpentSec: 20,
+        });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('rejects unknown fields in attempt body with 400', async () => {
+      const res = await request(app)
+        .post(`/api/v1/questions/${sampleShortQuestion._id}/attempt`)
+        .set('Authorization', `Bearer ${user1Token}`)
+        .send({
+          mode: 'practice',
+          selfRating: 'knew',
+          unknownField: 'malicious_or_unexpected',
+        });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('attempt creates an Attempt and updates UserQuestionState correctly for missed, partly and knew', async () => {
+      const now = Date.now();
+
+      // Test 1: missed rating sets box = 0, nextReviewAt = ~now + 1 day
+      const missedRes = await request(app)
+        .post(`/api/v1/questions/${sampleShortQuestion._id}/attempt`)
+        .set('Authorization', `Bearer ${user1Token}`)
+        .send({
+          mode: 'practice',
+          selfRating: 'missed',
+          timeSpentSec: 10,
+        });
+      expect(missedRes.status).toBe(200);
+      expect(missedRes.body.nextReviewAt).toBeDefined();
+
+      const stateMissed = await UserQuestionState.findOne({
+        userId: user1._id,
+        questionId: sampleShortQuestion._id,
+      });
+      expect(stateMissed.lastRating).toBe('missed');
+      expect(stateMissed.timesSeen).toBe(1);
+      expect(stateMissed.box).toBe(0);
+      const missedReviewDiff = new Date(stateMissed.nextReviewAt).getTime() - now;
+      expect(missedReviewDiff).toBeGreaterThanOrEqual(23 * 60 * 60 * 1000);
+      expect(missedReviewDiff).toBeLessThanOrEqual(25 * 60 * 60 * 1000);
+
+      // Test 2: partly rating sets box = max(box, 1) = 1, nextReviewAt = ~now + 3 days
+      const partlyRes = await request(app)
+        .post(`/api/v1/questions/${sampleShortQuestion._id}/attempt`)
+        .set('Authorization', `Bearer ${user1Token}`)
+        .send({
+          mode: 'practice',
+          selfRating: 'partly',
+          timeSpentSec: 12,
+        });
+      expect(partlyRes.status).toBe(200);
+
+      const statePartly = await UserQuestionState.findOne({
+        userId: user1._id,
+        questionId: sampleShortQuestion._id,
+      });
+      expect(statePartly.lastRating).toBe('partly');
+      expect(statePartly.timesSeen).toBe(2);
+      expect(statePartly.box).toBe(1);
+      const partlyReviewDiff = new Date(statePartly.nextReviewAt).getTime() - now;
+      expect(partlyReviewDiff).toBeGreaterThanOrEqual(71 * 60 * 60 * 1000);
+      expect(partlyReviewDiff).toBeLessThanOrEqual(73 * 60 * 60 * 1000);
+
+      // Test 3: knew progression: box 1 -> box 2 (+3 days) -> box 3 (+7 days) -> mastered (null)
+      // Attempt with 'knew' from box 1 -> becomes box 2 (+3 days)
+      await request(app)
+        .post(`/api/v1/questions/${sampleShortQuestion._id}/attempt`)
+        .set('Authorization', `Bearer ${user1Token}`)
+        .send({
+          mode: 'practice',
+          selfRating: 'knew',
+          timeSpentSec: 8,
+        });
+      const stateKnew2 = await UserQuestionState.findOne({
+        userId: user1._id,
+        questionId: sampleShortQuestion._id,
+      });
+      expect(stateKnew2.box).toBe(2);
+      expect(stateKnew2.timesSeen).toBe(3);
+      expect(stateKnew2.lastRating).toBe('knew');
+
+      // Attempt with 'knew' from box 2 -> becomes box 3 (+7 days)
+      await request(app)
+        .post(`/api/v1/questions/${sampleShortQuestion._id}/attempt`)
+        .set('Authorization', `Bearer ${user1Token}`)
+        .send({
+          mode: 'practice',
+          selfRating: 'knew',
+          timeSpentSec: 8,
+        });
+      const stateKnew3 = await UserQuestionState.findOne({
+        userId: user1._id,
+        questionId: sampleShortQuestion._id,
+      });
+      expect(stateKnew3.box).toBe(3);
+      expect(stateKnew3.timesSeen).toBe(4);
+      const knew3ReviewDiff = new Date(stateKnew3.nextReviewAt).getTime() - now;
+      expect(knew3ReviewDiff).toBeGreaterThanOrEqual(167 * 60 * 60 * 1000);
+      expect(knew3ReviewDiff).toBeLessThanOrEqual(169 * 60 * 60 * 1000);
+
+      // Attempt with 'knew' from box 3 -> graduated past box 3, nextReviewAt is null
+      const graduatedRes = await request(app)
+        .post(`/api/v1/questions/${sampleShortQuestion._id}/attempt`)
+        .set('Authorization', `Bearer ${user1Token}`)
+        .send({
+          mode: 'practice',
+          selfRating: 'knew',
+          timeSpentSec: 5,
+        });
+      expect(graduatedRes.status).toBe(200);
+      expect(graduatedRes.body.nextReviewAt).toBeNull();
+
+      const stateGraduated = await UserQuestionState.findOne({
+        userId: user1._id,
+        questionId: sampleShortQuestion._id,
+      });
+      expect(stateGraduated.box).toBe(3);
+      expect(stateGraduated.nextReviewAt).toBeNull();
+      expect(stateGraduated.timesSeen).toBe(5);
+    });
+
+    it('attempt keeps the bookmark intact', async () => {
+      // First bookmark the question
+      await request(app)
+        .post(`/api/v1/questions/${sampleShortQuestion._id}/bookmark`)
+        .set('Authorization', `Bearer ${user1Token}`);
+
+      const stateBefore = await UserQuestionState.findOne({
+        userId: user1._id,
+        questionId: sampleShortQuestion._id,
+      });
+      expect(stateBefore.bookmarked).toBe(true);
+
+      // Now submit an attempt
+      const attemptRes = await request(app)
+        .post(`/api/v1/questions/${sampleShortQuestion._id}/attempt`)
+        .set('Authorization', `Bearer ${user1Token}`)
+        .send({
+          mode: 'practice',
+          selfRating: 'knew',
+          timeSpentSec: 25,
+        });
+
+      expect(attemptRes.status).toBe(200);
+
+      const stateAfter = await UserQuestionState.findOne({
+        userId: user1._id,
+        questionId: sampleShortQuestion._id,
+      });
+      expect(stateAfter.bookmarked).toBe(true); // Must remain true!
+      expect(stateAfter.lastRating).toBe('knew');
+      expect(stateAfter.timesSeen).toBe(1);
+    });
+
+    it('401 without a token', async () => {
+      // reveal without token
+      const revealRes = await request(app)
+        .post(`/api/v1/questions/${sampleApprovedQuestion._id}/reveal`);
+      expect(revealRes.status).toBe(401);
+
+      // attempt without token
+      const attemptRes = await request(app)
+        .post(`/api/v1/questions/${sampleApprovedQuestion._id}/attempt`)
+        .send({
+          mode: 'practice',
+          selectedOption: 'Preemption',
+          timeSpentSec: 10,
+        });
+      expect(attemptRes.status).toBe(401);
+    });
+  });
 });
+
