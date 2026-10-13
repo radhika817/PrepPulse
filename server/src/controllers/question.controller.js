@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { Question } from '../models/Question.js';
 import { UserQuestionState } from '../models/UserQuestionState.js';
+import { Attempt } from '../models/Attempt.js';
 
 /**
  * GET /api/v1/questions
@@ -343,6 +344,104 @@ export const revealQuestion = async (req, res, next) => {
       response.link = question.link;
     }
 
+/**
+ * POST /api/v1/questions/:id/attempt
+ * Records a user's attempt on a question (practice or study mode).
+ * - For MCQ: selectedOption is required, isCorrect is computed on server,
+ *   selfRating is derived from isCorrect (knew/missed) if not provided.
+ * - For non-MCQ: selfRating is required.
+ * - Saves Attempt document.
+ * - Returns { isCorrect (mcq only), answer, explanation, nextReviewAt }
+ */
+export const attemptQuestion = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        error: {
+          code: 'INVALID_ID',
+          message: 'Invalid question ID format',
+        },
+      });
+    }
+
+    const question = await Question.findOne({
+      _id: id,
+      reviewStatus: 'approved',
+    })
+      .select('+answer')
+      .lean();
+
+    if (!question) {
+      return res.status(404).json({
+        error: {
+          code: 'NOT_FOUND',
+          message: 'Question not found or not approved',
+        },
+      });
+    }
+
+    const {
+      mode = 'practice',
+      selectedOption,
+      selfRating,
+      revealedFirst = false,
+      timeSpentSec = 0,
+    } = req.body;
+
+    let computedIsCorrect = null;
+    let finalSelfRating = selfRating;
+
+    if (question.type === 'mcq') {
+      if (!selectedOption || typeof selectedOption !== 'string' || selectedOption.trim() === '') {
+        return res.status(400).json({
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'selectedOption is required for MCQ questions',
+          },
+        });
+      }
+
+      // Compute correctness on the SERVER by comparing against model answer; ignore any client-sent isCorrect
+      computedIsCorrect =
+        question.answer.trim().toLowerCase() === selectedOption.trim().toLowerCase();
+
+      // If selfRating not explicitly provided for MCQ, derive from isCorrect
+      if (!finalSelfRating) {
+        finalSelfRating = computedIsCorrect ? 'knew' : 'missed';
+      }
+    } else {
+      // For all non-MCQ types (short, hr, coding_link), selfRating is strictly required
+      if (!finalSelfRating) {
+        return res.status(400).json({
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'selfRating is required for non-MCQ questions',
+          },
+        });
+      }
+    }
+
+    // Save Attempt document
+    await Attempt.create({
+      userId: req.user._id,
+      questionId: question._id,
+      mode,
+      selectedOption: question.type === 'mcq' ? selectedOption : null,
+      isCorrect: question.type === 'mcq' ? computedIsCorrect : null,
+      selfRating: finalSelfRating,
+      revealedFirst: Boolean(revealedFirst),
+      timeSpentSec: Number(timeSpentSec) || 0,
+    });
+
+    const response = {
+      ...(question.type === 'mcq' ? { isCorrect: computedIsCorrect } : {}),
+      answer: question.answer,
+      explanation: question.explanation,
+      nextReviewAt: null,
+    };
+
     return res.json(response);
   } catch (error) {
     next(error);
@@ -356,6 +455,7 @@ export default {
   toggleBookmark,
   getBookmarks,
   revealQuestion,
+  attemptQuestion,
 };
 
 
