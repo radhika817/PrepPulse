@@ -208,12 +208,18 @@ export const Practice = () => {
       setAttemptError(null);
       setTimerActive(false);
 
-      const res = await submitAttempt(question._id, {
-        mode: 'practice',
+      const payload = {
+        mode: dailyChallengeId ? 'daily' : 'practice',
         selectedOption,
         revealedFirst: false,
         timeSpentSec,
-      });
+      };
+
+      if (dailyChallengeId) {
+        payload.challengeId = dailyChallengeId;
+      }
+
+      const res = await submitAttempt(question._id, payload);
 
       setAnswerData(res);
       setSubmitted(true);
@@ -223,7 +229,13 @@ export const Practice = () => {
         isCorrect: res.isCorrect,
         rating: res.isCorrect ? 'knew' : 'missed',
         nextReviewAt: res.nextReviewAt,
+        challengeCompleted: res.challengeCompleted,
+        completedCount: res.completedCount,
       });
+
+      if (res.challengeCompleted) {
+        setIsDailyCompleted(true);
+      }
     } catch (err) {
       console.error('Failed to submit MCQ check:', err);
       setAttemptError(
@@ -274,11 +286,15 @@ export const Practice = () => {
       setTimerActive(false);
 
       const payload = {
-        mode: 'practice',
+        mode: dailyChallengeId ? 'daily' : 'practice',
         selfRating: rating,
         revealedFirst,
         timeSpentSec,
       };
+
+      if (dailyChallengeId) {
+        payload.challengeId = dailyChallengeId;
+      }
 
       if (question.type === 'mcq') {
         payload.selectedOption = selectedOption || answerData?.answer;
@@ -290,7 +306,13 @@ export const Practice = () => {
       setSubmissionResult({
         rating,
         nextReviewAt: res.nextReviewAt,
+        challengeCompleted: res.challengeCompleted,
+        completedCount: res.completedCount,
       });
+
+      if (res.challengeCompleted) {
+        setIsDailyCompleted(true);
+      }
     } catch (err) {
       console.error('Failed to submit rating:', err);
       setAttemptError(
@@ -318,14 +340,31 @@ export const Practice = () => {
     <div className="max-w-3xl mx-auto space-y-6">
       {/* Top Header / Back Navigation */}
       <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-        <Link
-          to={`/questions${location.search || ''}`}
-          id="back-to-bank-top-link"
-          className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Question Bank</span>
-        </Link>
+        {dailyChallengeId ? (
+          <div className="flex items-center gap-2.5">
+            <Link
+              to="/daily"
+              id="back-to-daily-top-link"
+              className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Daily Challenge</span>
+            </Link>
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[11px] font-semibold">
+              <Calendar className="w-3 h-3" />
+              <span>Daily Challenge</span>
+            </span>
+          </div>
+        ) : (
+          <Link
+            to={`/questions${location.search || ''}`}
+            id="back-to-bank-top-link"
+            className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Question Bank</span>
+          </Link>
+        )}
 
         {/* Live Timer Running in Background */}
         <div
@@ -384,6 +423,17 @@ export const Practice = () => {
               </div>
 
               <div className="flex items-center gap-2">
+                {dailyChallengeId &&
+                  dailyChallenge?.questions?.some((q) => q._id === question._id && q.isDone) && (
+                    <span
+                      id="daily-completed-today-badge"
+                      className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1"
+                    >
+                      <CheckCircle2 className="w-3 h-3" />
+                      <span>Completed Today</span>
+                    </span>
+                  )}
+
                 <span
                   id="question-difficulty-badge"
                   className={`px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize border ${getDifficultyColor(
@@ -802,24 +852,72 @@ export const Practice = () => {
                     </div>
                   </div>
 
-                  {/* Navigation Buttons: Back to questions & Next question */}
+                  {/* Daily Challenge Completed Banner */}
+                  {dailyChallengeId &&
+                    (isDailyCompleted ||
+                      submissionResult?.challengeCompleted ||
+                      (!nextQuestionId && submitted)) && (
+                      <div
+                        id="daily-challenge-complete-banner"
+                        className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-3.5 text-emerald-200"
+                      >
+                        <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                          <Award className="w-5 h-5 text-emerald-400" />
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
+                            <span>Daily Challenge Complete!</span>
+                            <Sparkles className="w-4 h-4 text-emerald-400" />
+                          </h4>
+                          <p className="text-xs text-emerald-300/90 mt-0.5">
+                            You have finished all 5 questions for today. Great work!
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                  {/* Navigation Buttons: Back to questions / daily & Next question */}
                   <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                    <Link
-                      to={`/questions${location.search || ''}`}
-                      id="back-to-questions-btn"
-                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition-all shadow-sm hover:border-slate-600 cursor-pointer"
-                    >
-                      <ArrowLeft className="w-3.5 h-3.5" />
-                      <span>Back to questions</span>
-                    </Link>
+                    {dailyChallengeId ? (
+                      <Link
+                        to="/daily"
+                        id="back-to-daily-btn"
+                        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition-all shadow-sm hover:border-slate-600 cursor-pointer"
+                      >
+                        <ArrowLeft className="w-3.5 h-3.5" />
+                        <span>Back to Daily Challenge</span>
+                      </Link>
+                    ) : (
+                      <Link
+                        to={`/questions${location.search || ''}`}
+                        id="back-to-questions-btn"
+                        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition-all shadow-sm hover:border-slate-600 cursor-pointer"
+                      >
+                        <ArrowLeft className="w-3.5 h-3.5" />
+                        <span>Back to questions</span>
+                      </Link>
+                    )}
 
                     {nextQuestionId ? (
                       <Link
-                        to={`/practice/${nextQuestionId}${location.search || ''}`}
+                        to={
+                          dailyChallengeId
+                            ? `/practice/${nextQuestionId}?daily=${dailyChallengeId}`
+                            : `/practice/${nextQuestionId}${location.search || ''}`
+                        }
                         id="next-question-btn"
                         className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition-all border border-indigo-500/40 cursor-pointer"
                       >
                         <span>Next question</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    ) : dailyChallengeId ? (
+                      <Link
+                        to="/daily"
+                        id="finish-daily-btn"
+                        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md shadow-emerald-600/20 transition-all border border-emerald-500/40 cursor-pointer"
+                      >
+                        <span>View Daily Summary</span>
                         <ArrowRight className="w-3.5 h-3.5" />
                       </Link>
                     ) : (
