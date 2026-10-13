@@ -2,7 +2,9 @@ import mongoose from 'mongoose';
 import { Question } from '../models/Question.js';
 import { UserQuestionState } from '../models/UserQuestionState.js';
 import { Attempt } from '../models/Attempt.js';
+import { DailyChallenge } from '../models/DailyChallenge.js';
 import { updateRevisionState } from '../services/revision.service.js';
+import { getTodayKey } from '../utils/date.util.js';
 
 /**
  * GET /api/v1/questions
@@ -352,13 +354,27 @@ export const revealQuestion = async (req, res, next) => {
 };
 
 /**
+ * Hook triggered when a daily challenge is completed (all 5 questions attempted).
+ * In Phase 9, streak tracking logic will be wired here (SYSTEM_DESIGN.md section 5.3).
+ *
+ * @param {Object} user - The authenticated user document
+ * @param {Object} challenge - The completed DailyChallenge document
+ */
+export const onChallengeCompleted = async (user, challenge) => {
+  // Streak logic will be added here in Phase 9
+};
+
+/**
  * POST /api/v1/questions/:id/attempt
- * Records a user's attempt on a question (practice or study mode).
+ * Records a user's attempt on a question (practice, study, or daily mode).
  * - For MCQ: selectedOption is required, isCorrect is computed on server,
  *   selfRating is derived from isCorrect (knew/missed) if not provided.
  * - For non-MCQ: selfRating is required.
+ * - For mode "daily": validates challengeId, user ownership, today date, membership,
+ *   and ensures question was not already completed.
  * - Saves Attempt document.
- * - Returns { isCorrect (mcq only), answer, explanation, nextReviewAt }
+ * - Updates UserQuestionState revision rules.
+ * - Returns { isCorrect (mcq only), answer, explanation, nextReviewAt, challengeCompleted, completedCount }
  */
 export const attemptQuestion = async (req, res, next) => {
   try {
@@ -391,11 +407,81 @@ export const attemptQuestion = async (req, res, next) => {
 
     const {
       mode = 'practice',
+      challengeId,
       selectedOption,
       selfRating,
       revealedFirst = false,
       timeSpentSec = 0,
     } = req.body;
+
+    let dailyChallengeDoc = null;
+    if (mode === 'daily') {
+      if (!challengeId || !mongoose.Types.ObjectId.isValid(challengeId)) {
+        return res.status(400).json({
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Valid challengeId is required for daily mode',
+          },
+        });
+      }
+
+      dailyChallengeDoc = await DailyChallenge.findById(challengeId);
+      if (!dailyChallengeDoc) {
+        return res.status(400).json({
+          error: {
+            code: 'INVALID_CHALLENGE',
+            message: 'Daily challenge not found',
+          },
+        });
+      }
+
+      // Verify ownership
+      if (dailyChallengeDoc.userId.toString() !== req.user._id.toString()) {
+        return res.status(400).json({
+          error: {
+            code: 'INVALID_CHALLENGE',
+            message: 'Challenge does not belong to current user',
+          },
+        });
+      }
+
+      // Verify challenge is for today in the user's timezone
+      const todayKey = getTodayKey(req.user.timezone);
+      if (dailyChallengeDoc.date !== todayKey) {
+        return res.status(400).json({
+          error: {
+            code: 'INVALID_CHALLENGE',
+            message: 'Daily challenge is not for today',
+          },
+        });
+      }
+
+      // Verify question is part of this challenge
+      const containsQuestion = dailyChallengeDoc.questionIds.some(
+        (qId) => qId.toString() === question._id.toString()
+      );
+      if (!containsQuestion) {
+        return res.status(400).json({
+          error: {
+            code: 'INVALID_CHALLENGE',
+            message: 'Question is not part of this daily challenge',
+          },
+        });
+      }
+
+      // Verify question is not already completed
+      const isAlreadyCompleted = dailyChallengeDoc.completedQuestionIds.some(
+        (qId) => qId.toString() === question._id.toString()
+      );
+      if (isAlreadyCompleted) {
+        return res.status(400).json({
+          error: {
+            code: 'ALREADY_COMPLETED',
+            message: 'Question already completed in this challenge',
+          },
+        });
+      }
+    }
 
     let computedIsCorrect = null;
     let finalSelfRating = selfRating;
@@ -435,6 +521,7 @@ export const attemptQuestion = async (req, res, next) => {
       userId: req.user._id,
       questionId: question._id,
       mode,
+      challengeId: mode === 'daily' && dailyChallengeDoc ? dailyChallengeDoc._id : null,
       selectedOption: question.type === 'mcq' ? selectedOption : null,
       isCorrect: question.type === 'mcq' ? computedIsCorrect : null,
       selfRating: finalSelfRating,
@@ -449,11 +536,38 @@ export const attemptQuestion = async (req, res, next) => {
       finalSelfRating
     );
 
+    let challengeCompleted = false;
+    let completedCount = 0;
+
+    if (mode === 'daily' && dailyChallengeDoc) {
+      const updatedChallenge = await DailyChallenge.findByIdAndUpdate(
+        dailyChallengeDoc._id,
+        { $addToSet: { completedQuestionIds: question._id } },
+        { new: true }
+      );
+
+      completedCount = updatedChallenge.completedQuestionIds.length;
+      let newlyCompleted = false;
+      if (completedCount === 5 && !updatedChallenge.completed) {
+        updatedChallenge.completed = true;
+        await updatedChallenge.save();
+        newlyCompleted = true;
+      }
+
+      challengeCompleted = updatedChallenge.completed;
+
+      if (newlyCompleted) {
+        await onChallengeCompleted(req.user, updatedChallenge);
+      }
+    }
+
     const response = {
       ...(question.type === 'mcq' ? { isCorrect: computedIsCorrect } : {}),
       answer: question.answer,
       explanation: question.explanation,
       nextReviewAt: revisionState.nextReviewAt,
+      challengeCompleted,
+      completedCount,
     };
 
     return res.json(response);
@@ -470,6 +584,7 @@ export default {
   getBookmarks,
   revealQuestion,
   attemptQuestion,
+  onChallengeCompleted,
 };
 
 

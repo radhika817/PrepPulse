@@ -14,10 +14,11 @@ import { z } from 'zod';
 export const attemptSchema = z
   .object({
     mode: z
-      .enum(['practice', 'study'], {
-        errorMap: () => ({ message: 'Mode must be either "practice" or "study"' }),
+      .enum(['practice', 'study', 'daily'], {
+        errorMap: () => ({ message: 'Mode must be "practice", "study", or "daily"' }),
       })
       .default('practice'),
+    challengeId: z.string().trim().nullable().optional(),
     selectedOption: z.string().trim().nullable().optional(),
     selfRating: z
       .enum(['knew', 'partly', 'missed'], {
