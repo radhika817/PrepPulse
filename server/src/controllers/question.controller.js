@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { Question } from '../models/Question.js';
 import { UserQuestionState } from '../models/UserQuestionState.js';
 import { Attempt } from '../models/Attempt.js';
+import { updateRevisionState } from '../services/revision.service.js';
 
 /**
  * GET /api/v1/questions
