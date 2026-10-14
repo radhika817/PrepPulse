@@ -75,14 +75,15 @@ Five collections. Source and review info are embedded in `questions`; separate c
 
 | Field | Type | Notes |
 |---|---|---|
-| `category` | enum | DSA, DBMS, OS, CN, OOP, SQL, WEB, APTITUDE, HR |
+| `category` | enum | OS, DSA, OOP, CPP, DBMS, SQL, CN, COA, WEB, SYSDESIGN, APTITUDE, HR |
 | `topic` | String | e.g. Deadlock, Normalisation |
 | `difficulty` | `easy` \| `medium` \| `hard` | |
 | `type` | `mcq` \| `short` \| `coding_link` \| `hr` | |
 | `question` | String | |
 | `options` | String[] | only for `mcq` |
-| `answer` | String | model answer; for MCQ the correct option |
-| `explanation` | String | |
+| `answer` | String | model answer; for MCQ the correct option; `select: false` (returned only by reveal and attempt) |
+| `followUp` | String | optional; `select: false` (returned only by reveal and attempt) |
+| `explanation` | String | required for `mcq`; optional for `short` and `hr` |
 | `link` | String | only for `coding_link` |
 | `tags` | String[] | |
 | `sourceType` | `own` \| `ai_draft` \| `licensed` | |
