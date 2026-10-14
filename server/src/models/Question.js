@@ -6,13 +6,16 @@ const questionSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Category is required'],
       enum: [
-        'DSA',
-        'DBMS',
         'OS',
-        'CN',
+        'DSA',
         'OOP',
+        'CPP',
+        'DBMS',
         'SQL',
+        'CN',
+        'COA',
         'WEB',
+        'SYSDESIGN',
         'APTITUDE',
         'HR',
       ],
@@ -58,10 +61,24 @@ const questionSchema = new mongoose.Schema(
       trim: true,
       select: false,
     },
+    // Optional follow-up question.
+    // 'select: false' ensures followUp is only returned by reveal and attempt endpoints.
+    followUp: {
+      type: String,
+      trim: true,
+      default: null,
+      select: false,
+    },
     explanation: {
       type: String,
-      required: [true, 'Explanation is required'],
       trim: true,
+      default: '',
+      required: [
+        function () {
+          return this.type === 'mcq';
+        },
+        'Explanation is required for MCQ questions',
+      ],
     },
     link: {
       type: String,

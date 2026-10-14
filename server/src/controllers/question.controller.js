@@ -53,9 +53,9 @@ export const getQuestions = async (req, res, next) => {
       mongoQuery = mongoQuery.sort({ createdAt: -1 });
     }
 
-    // Exclude answer (also select: false on schema) and explanation explicitly
+    // Exclude answer and followUp (also select: false on schema) and explanation explicitly
     mongoQuery = mongoQuery
-      .select('-explanation -answer -normalizedQuestion -__v')
+      .select('-explanation -answer -followUp -normalizedQuestion -__v')
       .skip(skip)
       .limit(limit)
       .lean();
@@ -74,9 +74,9 @@ export const getQuestions = async (req, res, next) => {
 
     const bookmarkedSet = new Set(bookmarks.map((b) => b.questionId.toString()));
 
-    // Shape items ensuring no explanation or answer can ever leak
+    // Shape items ensuring no explanation, answer or followUp can ever leak
     const items = questions.map((item) => {
-      const { answer: _ans, explanation: _exp, score: _score, ...cleanItem } = item;
+      const { answer: _ans, explanation: _exp, followUp: _fu, score: _score, ...cleanItem } = item;
       return {
         ...cleanItem,
         isBookmarked: bookmarkedSet.has(item._id.toString()),
@@ -120,15 +120,18 @@ export const getQuestionsMeta = async (req, res, next) => {
 
     // Sort categories in logical curriculum order
     const categoryOrder = {
-      DSA: 1,
-      DBMS: 2,
-      OS: 3,
-      CN: 4,
-      OOP: 5,
+      OS: 1,
+      DSA: 2,
+      OOP: 3,
+      CPP: 4,
+      DBMS: 5,
       SQL: 6,
-      WEB: 7,
-      APTITUDE: 8,
-      HR: 9,
+      CN: 7,
+      COA: 8,
+      WEB: 9,
+      SYSDESIGN: 10,
+      APTITUDE: 11,
+      HR: 12,
     };
     meta.sort((a, b) => (categoryOrder[a.category] || 99) - (categoryOrder[b.category] || 99));
 
@@ -163,7 +166,7 @@ export const getQuestionById = async (req, res, next) => {
       _id: id,
       reviewStatus: 'approved',
     })
-      .select('-explanation -answer -normalizedQuestion -__v')
+      .select('-explanation -answer -followUp -normalizedQuestion -__v')
       .lean();
 
     if (!question) {
@@ -184,7 +187,7 @@ export const getQuestionById = async (req, res, next) => {
       .select('_id')
       .lean();
 
-    const { answer: _ans, explanation: _exp, ...cleanQuestion } = question;
+    const { answer: _ans, explanation: _exp, followUp: _fu, ...cleanQuestion } = question;
 
     return res.json({
       ...cleanQuestion,
@@ -274,7 +277,7 @@ export const getBookmarks = async (req, res, next) => {
       .limit(limit)
       .populate({
         path: 'questionId',
-        select: '-explanation -answer -normalizedQuestion -__v',
+        select: '-explanation -answer -followUp -normalizedQuestion -__v',
       })
       .lean();
 
@@ -282,7 +285,7 @@ export const getBookmarks = async (req, res, next) => {
       .filter((s) => s.questionId)
       .map((s) => {
         const q = s.questionId;
-        const { answer: _ans, explanation: _exp, ...cleanQ } = q;
+        const { answer: _ans, explanation: _exp, followUp: _fu, ...cleanQ } = q;
         return {
           ...cleanQ,
           isBookmarked: true,
@@ -326,7 +329,7 @@ export const revealQuestion = async (req, res, next) => {
       _id: id,
       reviewStatus: 'approved',
     })
-      .select('+answer')
+      .select('+answer +followUp')
       .lean();
 
     if (!question) {
@@ -342,6 +345,10 @@ export const revealQuestion = async (req, res, next) => {
       answer: question.answer,
       explanation: question.explanation,
     };
+
+    if (question.followUp) {
+      response.followUp = question.followUp;
+    }
 
     if (question.type === 'coding_link') {
       response.link = question.link;
@@ -393,7 +400,7 @@ export const attemptQuestion = async (req, res, next) => {
       _id: id,
       reviewStatus: 'approved',
     })
-      .select('+answer')
+      .select('+answer +followUp')
       .lean();
 
     if (!question) {
@@ -569,6 +576,10 @@ export const attemptQuestion = async (req, res, next) => {
       challengeCompleted,
       completedCount,
     };
+
+    if (question.followUp) {
+      response.followUp = question.followUp;
+    }
 
     return res.json(response);
   } catch (error) {

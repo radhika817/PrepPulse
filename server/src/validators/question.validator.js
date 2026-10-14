@@ -10,13 +10,16 @@ import { z } from 'zod';
 export const questionSchema = z
   .object({
     category: z.enum([
-      'DSA',
-      'DBMS',
       'OS',
-      'CN',
+      'DSA',
       'OOP',
+      'CPP',
+      'DBMS',
       'SQL',
+      'CN',
+      'COA',
       'WEB',
+      'SYSDESIGN',
       'APTITUDE',
       'HR',
     ]),
@@ -35,10 +38,8 @@ export const questionSchema = z
       .string({ required_error: 'Answer is required' })
       .trim()
       .min(1, 'Answer cannot be empty'),
-    explanation: z
-      .string({ required_error: 'Explanation is required' })
-      .trim()
-      .min(1, 'Explanation cannot be empty'),
+    explanation: z.string().trim().optional().default(''),
+    followUp: z.string().trim().optional().nullable(),
     link: z.string().url('Link must be a valid URL').nullable().optional().default(null),
     tags: z.array(z.string().trim()).default([]),
     sourceType: z.enum(['own', 'ai_draft', 'licensed']).default('own'),
@@ -82,6 +83,18 @@ export const questionSchema = z
     {
       message: 'A valid link is required for coding_link question type',
       path: ['link'],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.type === 'mcq') {
+        return typeof data.explanation === 'string' && data.explanation.trim().length > 0;
+      }
+      return true;
+    },
+    {
+      message: 'Explanation is required for MCQ questions',
+      path: ['explanation'],
     }
   );
 
