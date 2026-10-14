@@ -278,7 +278,7 @@ describe('Questions & Bookmarks API (Phase 5)', () => {
   });
 
   describe('Security: Answer and Explanation Leakage Prevention', () => {
-    it('list and detail responses never contain answer or explanation', async () => {
+    it('list and detail responses never contain answer, explanation or followUp', async () => {
       // 1. Check list endpoint
       const listRes = await request(app)
         .get('/api/v1/questions')
@@ -288,6 +288,7 @@ describe('Questions & Bookmarks API (Phase 5)', () => {
       for (const item of listRes.body.items) {
         expect(item.answer).toBeUndefined();
         expect(item.explanation).toBeUndefined();
+        expect(item.followUp).toBeUndefined();
       }
 
       // 2. Check detail endpoint
@@ -298,6 +299,7 @@ describe('Questions & Bookmarks API (Phase 5)', () => {
       expect(detailRes.status).toBe(200);
       expect(detailRes.body.answer).toBeUndefined();
       expect(detailRes.body.explanation).toBeUndefined();
+      expect(detailRes.body.followUp).toBeUndefined();
       expect(detailRes.body.question).toBe(sampleApprovedQuestion.question);
     });
   });
@@ -387,9 +389,10 @@ describe('Questions & Bookmarks API (Phase 5)', () => {
       expect(bookmarksRes.body.total).toBe(1);
       expect(bookmarksRes.body.items[0]._id).toBe(sampleApprovedQuestion._id.toString());
       expect(bookmarksRes.body.items[0].isBookmarked).toBe(true);
-      // Answer and explanation must never be exposed in bookmarks either
+      // Answer, explanation and followUp must never be exposed in bookmarks either
       expect(bookmarksRes.body.items[0].answer).toBeUndefined();
       expect(bookmarksRes.body.items[0].explanation).toBeUndefined();
+      expect(bookmarksRes.body.items[0].followUp).toBeUndefined();
 
       // 5. Toggle off
       const toggleOffRes = await request(app)
@@ -792,6 +795,69 @@ describe('Questions & Bookmarks API (Phase 5)', () => {
           timeSpentSec: 10,
         });
       expect(attemptRes.status).toBe(401);
+    });
+  });
+
+  describe('Question Schema Extensions (Categories, followUp, optional explanation)', () => {
+    it('supports question with followUp and returns it in reveal and attempt, but never in list/detail', async () => {
+      const qWithFollowUp = await Question.create({
+        category: 'CPP',
+        topic: 'Pointers',
+        difficulty: 'medium',
+        type: 'short',
+        question: 'What is a smart pointer in modern C++?',
+        answer: 'A wrapper class around a raw pointer that manages its lifetime automatically.',
+        followUp: 'What is the difference between std::unique_ptr and std::shared_ptr?',
+        tags: ['cpp', 'memory'],
+        reviewStatus: 'approved',
+      });
+
+      // 1. Detail endpoint does NOT expose followUp
+      const detailRes = await request(app)
+        .get(`/api/v1/questions/${qWithFollowUp._id}`)
+        .set('Authorization', `Bearer ${user1Token}`);
+      expect(detailRes.status).toBe(200);
+      expect(detailRes.body.followUp).toBeUndefined();
+
+      // 2. Reveal endpoint DOES expose followUp
+      const revealRes = await request(app)
+        .post(`/api/v1/questions/${qWithFollowUp._id}/reveal`)
+        .set('Authorization', `Bearer ${user1Token}`);
+      expect(revealRes.status).toBe(200);
+      expect(revealRes.body.followUp).toBe(
+        'What is the difference between std::unique_ptr and std::shared_ptr?'
+      );
+
+      // 3. Attempt endpoint DOES expose followUp
+      const attemptRes = await request(app)
+        .post(`/api/v1/questions/${qWithFollowUp._id}/attempt`)
+        .set('Authorization', `Bearer ${user1Token}`)
+        .send({
+          mode: 'practice',
+          selfRating: 'knew',
+          timeSpentSec: 10,
+        });
+      expect(attemptRes.status).toBe(200);
+      expect(attemptRes.body.followUp).toBe(
+        'What is the difference between std::unique_ptr and std::shared_ptr?'
+      );
+    });
+
+    it('allows short and hr questions without explanation', async () => {
+      const hrQuestion = await Question.create({
+        category: 'HR',
+        topic: 'Behavioral',
+        difficulty: 'easy',
+        type: 'hr',
+        question: 'Tell me about a time you handled a conflict in a team.',
+        answer: 'Use the STAR method: Situation, Task, Action, Result.',
+        followUp: 'How do you handle disagreements with management?',
+        tags: ['hr', 'behavioral'],
+        reviewStatus: 'approved',
+      });
+
+      expect(hrQuestion).toBeDefined();
+      expect(hrQuestion.explanation).toBe('');
     });
   });
 });

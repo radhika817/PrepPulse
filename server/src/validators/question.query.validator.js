@@ -4,13 +4,16 @@ import { z } from 'zod';
  * Allowed question categories matching Question Mongoose model and SYSTEM_DESIGN.md
  */
 export const VALID_CATEGORIES = [
-  'DSA',
-  'DBMS',
   'OS',
-  'CN',
+  'DSA',
   'OOP',
+  'CPP',
+  'DBMS',
   'SQL',
+  'CN',
+  'COA',
   'WEB',
+  'SYSDESIGN',
   'APTITUDE',
   'HR',
 ];
