@@ -1,0 +1,602 @@
+[
+  {
+    "category": "OS",
+    "topic": "Basics",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is an operating system?",
+    "answer": "An operating system manages hardware and provides services to applications. It handles processes, memory, files, devices, and security. It acts as an intermediary between programs and the hardware.",
+    "followUp": "What is the difference between kernel and shell?",
+    "tags": [
+      "basics"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Processes and Threads",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is the difference between a process and a thread?",
+    "answer": "A process has its own virtual address space and resources; threads within a process share code, data, and open resources but have separate stacks and CPU state. Threads are cheaper to create and communicate through shared memory, but need synchronization.",
+    "followUp": "Why can a multithreaded process still have race conditions?",
+    "tags": [
+      "processes and threads"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Processes and Threads",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What are the main process states?",
+    "answer": "Common states are new, ready, running, waiting/blocked, and terminated. A scheduler dispatches a ready process to the CPU; I/O completion can move a blocked process back to ready.",
+    "followUp": "What event moves a process from running to waiting?",
+    "tags": [
+      "processes and threads"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Processes and Threads",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a PCB?",
+    "answer": "A Process Control Block stores information the OS needs to manage a process: process ID, state, registers, program counter, scheduling data, memory mappings, and open resources. It is saved and restored during context switches.",
+    "followUp": "Which PCB fields are needed to resume execution?",
+    "tags": [
+      "processes and threads"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "CPU Scheduling",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is preemptive scheduling?",
+    "answer": "In preemptive scheduling, the OS can interrupt a running process and give the CPU to another, often using a timer. It improves responsiveness but adds context-switch overhead and synchronization complexity.",
+    "followUp": "Is Round Robin preemptive or non-preemptive?",
+    "tags": [
+      "cpu scheduling"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "CPU Scheduling",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Compare FCFS, SJF, and Round Robin.",
+    "answer": "FCFS runs in arrival order and is simple but can cause convoy effects. SJF minimizes average waiting time when burst lengths are known or estimated. Round Robin gives each ready process a time quantum and suits interactive systems.",
+    "followUp": "What happens if the Round Robin quantum is too small?",
+    "tags": [
+      "cpu scheduling"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Deadlock",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a deadlock?",
+    "answer": "Deadlock is a state where a set of processes wait forever for resources held by one another. The four Coffman conditions are mutual exclusion, hold-and-wait, no preemption, and circular wait.",
+    "followUp": "How can a system prevent circular wait?",
+    "tags": [
+      "deadlock"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Deadlock",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Deadlock prevention vs avoidance?",
+    "answer": "Prevention structurally breaks at least one necessary deadlock condition. Avoidance checks each allocation request and grants it only if the system remains in a safe state, as in the Banker's algorithm.",
+    "followUp": "What is a safe state?",
+    "tags": [
+      "deadlock"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Synchronization",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Mutex vs semaphore?",
+    "answer": "A mutex is an ownership-based lock: the thread that locks it should unlock it. A semaphore is a counter used to control access to a number of resources or signal events; binary semaphores can resemble locks but have different semantics.",
+    "followUp": "When would you use a counting semaphore?",
+    "tags": [
+      "synchronization"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Synchronization",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a race condition?",
+    "answer": "A race condition occurs when concurrent operations on shared data produce results that depend on timing. Use locks, atomics, or other synchronization with a clearly defined ownership strategy.",
+    "followUp": "Why is incrementing a shared counter not necessarily atomic?",
+    "tags": [
+      "synchronization"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Memory Management",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is paging?",
+    "answer": "Paging divides virtual memory into fixed-size pages and physical memory into frames. A page table maps pages to frames, avoiding external fragmentation but potentially causing internal fragmentation and page-table overhead.",
+    "followUp": "What is a TLB?",
+    "tags": [
+      "memory management"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Memory Management",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Paging vs segmentation?",
+    "answer": "Paging uses fixed-size blocks and is mostly transparent to a program. Segmentation divides memory into logical variable-sized regions such as code, stack, and data. Segmentation reflects program structure but can suffer external fragmentation.",
+    "followUp": "Can a system combine paging and segmentation?",
+    "tags": [
+      "memory management"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Virtual Memory",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is virtual memory?",
+    "answer": "Virtual memory gives each process a logical address space and lets the OS map only needed pages into RAM. It supports isolation and programs larger than physical memory, but page faults can be expensive.",
+    "followUp": "What happens on a page fault?",
+    "tags": [
+      "virtual memory"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Virtual Memory",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is a page replacement algorithm?",
+    "answer": "When RAM has no free frame, the OS selects a page to evict. FIFO evicts the oldest loaded page; LRU approximates recent use; Optimal evicts the page whose next use is farthest in the future and is mainly a benchmark.",
+    "followUp": "Why can FIFO show Belady's anomaly?",
+    "tags": [
+      "virtual memory"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Memory Management",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is internal vs external fragmentation?",
+    "answer": "Internal fragmentation is wasted space inside an allocated block. External fragmentation is free memory split into small noncontiguous holes, preventing a large contiguous allocation even when total free memory is sufficient.",
+    "followUp": "Which problem is paging designed to reduce?",
+    "tags": [
+      "memory management"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "File Systems",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a file system?",
+    "answer": "A file system organizes persistent data into files and directories and tracks metadata, names, permissions, and storage blocks. It provides operations such as create, read, write, rename, and delete.",
+    "followUp": "What is an inode in Unix-like systems?",
+    "tags": [
+      "file systems"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "System Calls",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a system call?",
+    "answer": "A system call is the interface for requesting privileged OS services, such as read, write, fork, or exec. The CPU transitions to kernel mode so the kernel can validate and perform the operation.",
+    "followUp": "Why can't ordinary user code directly access hardware freely?",
+    "tags": [
+      "system calls"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Processes and Threads",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is a zombie process?",
+    "answer": "A zombie is a process that has finished execution but still has an entry in the process table because its parent has not collected its exit status. The parent typically reaps it using wait or waitpid.",
+    "followUp": "How is a zombie different from an orphan?",
+    "tags": [
+      "processes and threads"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Synchronization",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is a semaphore solution to producer-consumer?",
+    "answer": "A bounded buffer commonly uses a mutex for exclusive buffer access, an empty semaphore initialized to buffer capacity, and a full semaphore initialized to zero. Producers wait for empty slots; consumers wait for full slots.",
+    "followUp": "Why must the order of waits and signals be correct?",
+    "tags": [
+      "synchronization"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Virtual Memory",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is thrashing?",
+    "answer": "Thrashing occurs when excessive page faults cause the OS to spend more time swapping pages than executing processes. Reducing multiprogramming or adding memory can help; the working-set model estimates each process's active pages.",
+    "followUp": "How does locality affect thrashing?",
+    "tags": [
+      "virtual memory"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Processes and Threads",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Why is a context switch expensive?",
+    "answer": "The OS saves and restores CPU state and changes the running task. Cache and TLB locality may be disrupted too, so frequent switches add overhead beyond the register-save operations.",
+    "followUp": "Can a thread switch be cheaper than a process switch?",
+    "tags": [
+      "processes and threads"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "CPU Scheduling",
+    "difficulty": "hard",
+    "type": "short",
+    "question": "What is priority inversion?",
+    "answer": "A high-priority task waits for a resource held by a low-priority task while medium-priority tasks prevent the low-priority task from running. Priority inheritance temporarily raises the holder's priority to reduce the inversion.",
+    "followUp": "Where is priority inversion especially dangerous?",
+    "tags": [
+      "cpu scheduling"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Synchronization",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is a monitor?",
+    "answer": "A monitor is a synchronization construct that combines shared state, operations, and mutual exclusion. Condition variables let threads wait until a predicate becomes true, usually in a loop to handle spurious wakeups.",
+    "followUp": "Why should condition-variable waits use a while loop?",
+    "tags": [
+      "synchronization"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Memory Management",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Explain copy-on-write.",
+    "answer": "Copy-on-write lets processes initially share pages after operations such as fork. A page is copied only when one process attempts to modify it, reducing unnecessary copying of memory.",
+    "followUp": "Why does write access trigger a page fault?",
+    "tags": [
+      "memory management"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Virtual Memory",
+    "difficulty": "hard",
+    "type": "short",
+    "question": "What is a TLB and why does it matter?",
+    "answer": "A Translation Lookaside Buffer caches recent virtual-to-physical address translations. A TLB hit avoids a page-table walk, reducing address-translation latency; context switches may require address-space tagging or flushing.",
+    "followUp": "What is an ASID?",
+    "tags": [
+      "virtual memory"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "System Calls",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is the difference between user mode and kernel mode?",
+    "answer": "User mode restricts privileged instructions and direct hardware access. Kernel mode allows the OS to manage devices, memory, and CPU state; system calls provide a controlled transition between them.",
+    "followUp": "What causes a mode switch?",
+    "tags": [
+      "system calls"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Deadlock",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "How does deadlock detection differ from prevention?",
+    "answer": "Detection allows resource allocation and periodically checks whether a deadlock exists; recovery may abort processes or preempt resources. Prevention avoids states or structures that can lead to deadlock but may reduce concurrency.",
+    "followUp": "What information does a resource-allocation graph show?",
+    "tags": [
+      "deadlock"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "CPU Scheduling",
+    "difficulty": "hard",
+    "type": "short",
+    "question": "Why can SJF be optimal for average waiting time?",
+    "answer": "For a known set of independent CPU bursts, running shorter jobs first minimizes average waiting time because long jobs otherwise delay many short jobs. In practice, exact burst lengths are unknown and long jobs can starve.",
+    "followUp": "How can aging help SJF-like policies?",
+    "tags": [
+      "cpu scheduling"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "File Systems",
+    "difficulty": "hard",
+    "type": "short",
+    "question": "What is memory-mapped I/O or file access?",
+    "answer": "Memory mapping exposes file or device regions through a process's virtual address space. Programs access the mapped region using loads and stores, while the OS handles page faults and synchronization with backing storage.",
+    "followUp": "When might memory mapping outperform read/write calls?",
+    "tags": [
+      "file systems"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Performance",
+    "difficulty": "hard",
+    "type": "short",
+    "question": "How would you diagnose a system with high CPU utilization but low throughput?",
+    "answer": "Check context-switch rates, run-queue length, lock contention, interrupt activity, and profiling data. High CPU usage can be wasted on spin loops or scheduling overhead rather than productive work; correlate per-process metrics before changing scheduling policy.",
+    "followUp": "How would you distinguish lock contention from CPU-bound work?",
+    "tags": [
+      "performance"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Real-Time Systems",
+    "difficulty": "hard",
+    "type": "short",
+    "question": "How would you analyze priority inversion in a real-time system?",
+    "answer": "Identify the high-priority task blocked by a lock holder, then inspect which medium-priority work delays that holder. Priority inheritance or priority-ceiling protocols can bound the delay, but lock scope and resource dependencies still matter.",
+    "followUp": "What are the trade-offs of priority inheritance?",
+    "tags": [
+      "real-time systems"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Virtual Memory",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Explain the working-set model.",
+    "answer": "The working set is the set of pages a process has referenced during a recent window. If the system cannot keep active working sets resident, page faults rise and thrashing can occur; the OS may reduce multiprogramming.",
+    "followUp": "How does the model differ from page-fault frequency control?",
+    "tags": [
+      "virtual memory"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Virtual Memory",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Why can a page fault be a major latency event?",
+    "answer": "The OS traps into the kernel, validates the access, may allocate a frame and read backing storage, updates page tables/TLB state, and restarts the instruction. A disk-backed fault can be orders of magnitude slower than a memory access.",
+    "followUp": "Which page faults can be handled without disk I/O?",
+    "tags": [
+      "virtual memory"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Concurrency",
+    "difficulty": "hard",
+    "type": "short",
+    "question": "How do lock-free algorithms differ from wait-free algorithms?",
+    "answer": "Lock-free progress guarantees that some operation completes system-wide in a finite number of steps, while wait-free guarantees every operation completes in a bounded number of its own steps. Both require careful atomic-memory-order reasoning.",
+    "followUp": "What is compare-and-swap?",
+    "tags": [
+      "concurrency"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Concurrency",
+    "difficulty": "hard",
+    "type": "short",
+    "question": "How can false sharing hurt performance?",
+    "answer": "Independent variables on the same cache line can cause cores to invalidate each other's cache line during writes. Padding or separating frequently written per-thread data can reduce coherence traffic.",
+    "followUp": "How would you verify false sharing with profiling?",
+    "tags": [
+      "concurrency"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Concurrency",
+    "difficulty": "hard",
+    "type": "short",
+    "question": "What is the ABA problem in lock-free code?",
+    "answer": "A thread reads value A, pauses, and later sees A again even though another thread changed A to B and back to A. A simple equality check misses the intermediate change; tagged pointers or version counters can help.",
+    "followUp": "Why can memory reclamation make ABA harder?",
+    "tags": [
+      "concurrency"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Debugging",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "How would you distinguish a memory leak from a memory spike?",
+    "answer": "A leak shows retained allocations growing across repeated workloads without being released; a spike may be temporary buffering, cache growth, or a workload peak. Use heap profiles, allocation stacks, and repeated steady-state tests.",
+    "followUp": "What is a use-after-free?",
+    "tags": [
+      "debugging"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Deadlock",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is the difference between deadlock and livelock?",
+    "answer": "Deadlocked threads are blocked and make no progress; livelocked threads remain active but repeatedly react without completing useful work. Randomized backoff or better coordination can reduce livelock.",
+    "followUp": "Can starvation occur without deadlock?",
+    "tags": [
+      "deadlock"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Concurrency",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Why can adding CPU cores make a program slower?",
+    "answer": "More cores can increase lock contention, cache-coherence traffic, memory-bandwidth pressure, and scheduling overhead. Parallel speedup is limited by serial work and coordination costs.",
+    "followUp": "How does Amdahl's law explain this?",
+    "tags": [
+      "concurrency"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OS",
+    "topic": "Virtual Memory",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "How would you investigate high major page faults?",
+    "answer": "Correlate major faults with process memory maps, resident set size, I/O latency, and workload phases. Check memory pressure and access locality before changing swappiness or adding RAM.",
+    "followUp": "How do major and minor faults differ?",
+    "tags": [
+      "virtual memory"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  }
+]

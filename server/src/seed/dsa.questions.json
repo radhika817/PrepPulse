@@ -1,0 +1,863 @@
+[
+  {
+    "category": "DSA",
+    "topic": "Arrays",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is an array?",
+    "answer": "An array stores elements contiguously and supports O(1) indexing. Inserting or deleting in the middle is O(n) because elements may need shifting.",
+    "followUp": "Why is array traversal cache-friendly?",
+    "tags": [
+      "arrays"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Arrays",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is the difference between an array and a linked list?",
+    "answer": "Arrays provide constant-time indexing and strong cache locality. Linked lists support O(1) insertion or deletion when the target node is already known, but traversal and indexing take O(n).",
+    "followUp": "Which structure is better for binary search?",
+    "tags": [
+      "arrays"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Strings",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "How do you reverse a string in place?",
+    "answer": "Use two pointers, one at each end, and swap characters while left is smaller than right. This takes O(n) time and O(1) extra space for a mutable character array.",
+    "followUp": "How would you handle Unicode grapheme clusters?",
+    "tags": [
+      "strings"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Strings",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "How do you check if a string is a palindrome?",
+    "answer": "Compare characters from both ends and move inward until a mismatch or the pointers cross. If the problem ignores case and punctuation, normalize or skip those characters first.",
+    "followUp": "What is the time and space complexity?",
+    "tags": [
+      "strings"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Linked List",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a singly linked list?",
+    "answer": "Each node stores a value and a pointer to the next node. It supports sequential traversal but no direct indexing; a missing next pointer marks the end.",
+    "followUp": "How do you detect a cycle?",
+    "tags": [
+      "linked list"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Linked List",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Explain Floyd's cycle detection.",
+    "answer": "Use slow and fast pointers; slow moves one step and fast moves two. If they meet, a cycle exists. If fast reaches null, the list is acyclic; time is O(n) and extra space O(1).",
+    "followUp": "How can you find the cycle's entry point?",
+    "tags": [
+      "linked list"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Stack",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a stack?",
+    "answer": "A stack is LIFO: push and pop operate at the top, typically in O(1). It is useful for function calls, undo, expression evaluation, and depth-first traversal.",
+    "followUp": "How can a stack detect balanced parentheses?",
+    "tags": [
+      "stack"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Queue",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a queue?",
+    "answer": "A queue is FIFO: insert at the rear and remove from the front. Circular arrays or linked lists can implement it in O(1) per operation.",
+    "followUp": "Why is a circular queue useful?",
+    "tags": [
+      "queue"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Trees",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a binary tree?",
+    "answer": "A binary tree is a tree in which each node has at most two children. Traversals include preorder, inorder, postorder, and level order, each serving different tasks.",
+    "followUp": "What does inorder traversal produce for a BST?",
+    "tags": [
+      "trees"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Trees",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a BST?",
+    "answer": "A binary search tree orders keys so left-subtree keys are smaller and right-subtree keys are larger, subject to the duplicate policy. Search, insert, and delete are O(h), where h is tree height.",
+    "followUp": "What is the worst-case height of an unbalanced BST?",
+    "tags": [
+      "trees"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Heap",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a heap?",
+    "answer": "A binary heap is a complete binary tree satisfying heap order. A min-heap keeps the minimum at the root and supports peek O(1), insertion O(log n), and extract-min O(log n).",
+    "followUp": "How can a heap implement a priority queue?",
+    "tags": [
+      "heap"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Hashing",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is hashing?",
+    "answer": "Hashing maps keys to table positions using a hash function. Average lookup, insertion, and deletion can be O(1), but collisions and poor distributions can degrade performance.",
+    "followUp": "What are chaining and open addressing?",
+    "tags": [
+      "hashing"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Graphs",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a graph?",
+    "answer": "A graph consists of vertices and edges, which may be directed, undirected, weighted, or unweighted. Adjacency lists are space-efficient for sparse graphs; matrices offer O(1) edge checks.",
+    "followUp": "When would you choose an adjacency matrix?",
+    "tags": [
+      "graphs"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Graphs",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "BFS vs DFS?",
+    "answer": "BFS explores by distance layers using a queue and finds shortest paths in unweighted graphs. DFS explores deeply using recursion or a stack and is useful for cycle detection and components.",
+    "followUp": "What is the complexity with adjacency lists?",
+    "tags": [
+      "graphs"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Trie",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is a trie?",
+    "answer": "A trie stores strings by character prefixes. Prefix lookup takes O(L) for a query of length L and is useful for autocomplete, though it can use more memory than hashing.",
+    "followUp": "How can a trie be compressed?",
+    "tags": [
+      "trie"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Linked List",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "How do you find the middle of a linked list?",
+    "answer": "Use slow and fast pointers; slow moves one step and fast two. When fast reaches the end, slow is at the middle. This uses O(n) time and O(1) extra space.",
+    "followUp": "Which middle is returned for an even-length list?",
+    "tags": [
+      "linked list"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Linked List",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "How do you merge two sorted linked lists?",
+    "answer": "Compare the current nodes and append the smaller node to a result list, advancing that pointer. Continue until one list ends, then attach the remainder; time is O(n+m).",
+    "followUp": "Can this be done without allocating new nodes?",
+    "tags": [
+      "linked list"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Stack",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is a monotonic stack?",
+    "answer": "It maintains elements in increasing or decreasing order by popping elements that violate the invariant. It solves next-greater-element, stock span, and histogram problems in amortized O(n).",
+    "followUp": "Why is each element pushed and popped at most once?",
+    "tags": [
+      "stack"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Heap",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "How do you find the top K largest elements?",
+    "answer": "Maintain a min-heap of size K; insert each value and remove the minimum when size exceeds K. Complexity is O(n log K), often better than sorting all n values when K is small.",
+    "followUp": "When is quickselect preferable?",
+    "tags": [
+      "heap"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Disjoint Set",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is union-find?",
+    "answer": "Disjoint Set Union maintains connected components using find and union. Path compression and union by rank/size make operations nearly constant amortized time, useful in Kruskal's algorithm.",
+    "followUp": "Why does path compression improve performance?",
+    "tags": [
+      "disjoint set"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Complexity",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is Big-O notation?",
+    "answer": "Big-O describes an asymptotic upper bound on growth, ignoring constant factors and lower-order terms. It helps compare how algorithms scale as input size grows.",
+    "followUp": "What is the difference between O, Omega, and Theta?",
+    "tags": [
+      "complexity"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Searching",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is the complexity of binary search?",
+    "answer": "Binary search is O(log n) time because it halves the remaining search interval after each comparison. Iterative binary search uses O(1) auxiliary space; recursive versions use O(log n) call-stack space.",
+    "followUp": "What precondition must hold?",
+    "tags": [
+      "searching"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Sorting",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Compare merge sort and quicksort.",
+    "answer": "Merge sort guarantees O(n log n) time and usually needs O(n) extra array space. Quicksort is often fast in practice and in-place in common implementations, but naive pivot choices can lead to O(n^2) worst-case time.",
+    "followUp": "Why is merge sort useful for linked lists?",
+    "tags": [
+      "sorting"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Sorting",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a stable sort?",
+    "answer": "A stable sort preserves the relative order of equal-key elements. Stability matters when multiple sorting passes are performed on records with several fields.",
+    "followUp": "Is std::sort stable in C++?",
+    "tags": [
+      "sorting"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Recursion",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is recursion?",
+    "answer": "Recursion solves a problem by calling the same function on smaller inputs. It needs a base case and progress toward that case; calls consume stack space.",
+    "followUp": "When can recursion cause stack overflow?",
+    "tags": [
+      "recursion"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Backtracking",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is backtracking?",
+    "answer": "Backtracking builds a candidate incrementally and abandons it as soon as it violates constraints. It is used for permutations, N-Queens, Sudoku, and subset search.",
+    "followUp": "How can pruning reduce explored states?",
+    "tags": [
+      "backtracking"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Greedy",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is a greedy algorithm?",
+    "answer": "A greedy algorithm commits to a locally best choice at each step. It is efficient when the problem has a greedy-choice property and optimal substructure, as in interval scheduling.",
+    "followUp": "Why does greedy fail for some coin systems?",
+    "tags": [
+      "greedy"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Dynamic Programming",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is dynamic programming?",
+    "answer": "Dynamic programming stores answers to overlapping subproblems and combines them to solve larger states. Define a state, transition, base cases, and evaluation order; memoization is top-down and tabulation bottom-up.",
+    "followUp": "How do you reduce DP memory?",
+    "tags": [
+      "dynamic programming"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Two Pointers",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is the two-pointer technique?",
+    "answer": "Two pointers scan a sequence from different positions, often exploiting sorted order or a maintained invariant. It can reduce nested-loop O(n^2) solutions to O(n).",
+    "followUp": "Why does it work for two-sum on a sorted array?",
+    "tags": [
+      "two pointers"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Sliding Window",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is sliding window?",
+    "answer": "A sliding window maintains a contiguous range and updates its state as boundaries move. It is effective for substring and subarray problems when the condition can be updated efficiently.",
+    "followUp": "When does a variable-size window fail with negative numbers?",
+    "tags": [
+      "sliding window"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Graph Algorithms",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is Dijkstra's algorithm?",
+    "answer": "Dijkstra finds shortest paths from a source when edge weights are nonnegative. With an adjacency list and priority queue it runs in O((V+E) log V) in common implementations.",
+    "followUp": "Why does negative edge weight break its greedy guarantee?",
+    "tags": [
+      "graph algorithms"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Graph Algorithms",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "How does BFS find shortest paths?",
+    "answer": "In an unweighted graph, BFS visits vertices in nondecreasing number of edges from the source. Mark vertices when enqueued to avoid duplicate work; parent pointers reconstruct a shortest path.",
+    "followUp": "What changes for weighted edges?",
+    "tags": [
+      "graph algorithms"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Graph Algorithms",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is topological sorting?",
+    "answer": "A topological ordering places every vertex before its outgoing neighbors in a directed acyclic graph. Kahn's algorithm uses indegrees and a queue; DFS can also produce an ordering.",
+    "followUp": "How can you detect a cycle using Kahn's algorithm?",
+    "tags": [
+      "graph algorithms"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Complexity",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is amortized analysis?",
+    "answer": "Amortized analysis bounds the average cost per operation over a sequence, without relying on probabilistic inputs. Dynamic-array append is amortized O(1), though an individual resize costs O(n).",
+    "followUp": "How does the accounting method explain dynamic arrays?",
+    "tags": [
+      "complexity"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Arrays",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a prefix sum?",
+    "answer": "A prefix-sum array stores cumulative totals so a range sum can be answered with two prefix values in O(1). Building the array costs O(n), and range sums require careful index handling.",
+    "followUp": "How can prefix sums help count subarrays with a target sum?",
+    "tags": [
+      "arrays"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Hashing",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Two Sum: Given an array and target, return indices of two values that sum to target. Example: [2,7,11,15], target=9 -> [0,1].",
+    "answer": "Approach: Use an unordered_map to find the complement before storing the current value.\nTime: O(n), Space: O(n)\n\nC++ solution:\nvector<int> twoSum(vector<int>& a, int target) {\n    unordered_map<int,int> seen;\n    for (int i = 0; i < (int)a.size(); ++i) {\n        int need = target - a[i];\n        if (seen.count(need)) return {seen[need], i};\n        seen[a[i]] = i;\n    }\n    return {};\n}",
+    "followUp": "What if the array is sorted?",
+    "tags": [
+      "coding",
+      "hashing"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Two Pointers",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Reverse a String: Reverse a mutable string in place. Example: 'hello' -> 'olleh'.",
+    "answer": "Approach: Swap characters from both ends and move inward.\nTime: O(n), Space: O(1)\n\nC++ solution:\nvoid reverseString(string& s) {\n    int l = 0, r = (int)s.size() - 1;\n    while (l < r) swap(s[l++], s[r--]);\n}",
+    "followUp": "How would you handle Unicode?",
+    "tags": [
+      "coding",
+      "two pointers"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Two Pointers",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Valid Palindrome: Check whether a string is a palindrome ignoring non-alphanumeric characters and case. Example: 'A man, a plan, a canal: Panama' -> true.",
+    "answer": "Approach: Use two pointers and skip characters that are not alphanumeric.\nTime: O(n), Space: O(1)\n\nC++ solution:\nbool isPalindrome(string s) {\n    int l = 0, r = (int)s.size() - 1;\n    while (l < r) {\n        while (l < r && !isalnum((unsigned char)s[l])) ++l;\n        while (l < r && !isalnum((unsigned char)s[r])) --r;\n        if (tolower((unsigned char)s[l]) != tolower((unsigned char)s[r])) return false;\n        ++l; --r;\n    }\n    return true;\n}",
+    "followUp": "How would you handle Unicode?",
+    "tags": [
+      "coding",
+      "two pointers"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Arrays",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Best Time to Buy and Sell Stock: Find the maximum profit from one buy followed by one sell. Example: [7,1,5,3,6,4] -> 5.",
+    "answer": "Approach: Track the minimum price so far and the best profit.\nTime: O(n), Space: O(1)\n\nC++ solution:\nint maxProfit(vector<int>& prices) {\n    int mn = INT_MAX, best = 0;\n    for (int p : prices) {\n        mn = min(mn, p);\n        best = max(best, p - mn);\n    }\n    return best;\n}",
+    "followUp": "How does unlimited trading change the solution?",
+    "tags": [
+      "coding",
+      "arrays"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Two Pointers",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Move Zeroes: Move all zeros to the end while preserving nonzero order. Example: [0,1,0,3,12] -> [1,3,12,0,0].",
+    "answer": "Approach: Write nonzero values forward with a write pointer, then fill the remainder with zeros.\nTime: O(n), Space: O(1)\n\nC++ solution:\nvoid moveZeroes(vector<int>& a) {\n    int write = 0;\n    for (int x : a) if (x != 0) a[write++] = x;\n    while (write < (int)a.size()) a[write++] = 0;\n}",
+    "followUp": "Can you minimize writes?",
+    "tags": [
+      "coding",
+      "two pointers"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Binary Search",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Binary Search: Return the index of target in a sorted array, or -1. Example: [1,3,5,7], target=5 -> 2.",
+    "answer": "Approach: Compare the middle element and discard half the search interval.\nTime: O(log n), Space: O(1)\n\nC++ solution:\nint binarySearch(vector<int>& a, int target) {\n    int l = 0, r = (int)a.size() - 1;\n    while (l <= r) {\n        int m = l + (r - l) / 2;\n        if (a[m] == target) return m;\n        if (a[m] < target) l = m + 1;\n        else r = m - 1;\n    }\n    return -1;\n}",
+    "followUp": "Why write mid as l + (r - l) / 2?",
+    "tags": [
+      "coding",
+      "binary search"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Two Pointers",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Merge Two Sorted Arrays: Merge sorted arrays into one sorted sequence. Example: [1,3,5] and [2,4] -> [1,2,3,4,5].",
+    "answer": "Approach: Use two pointers, append the smaller value, then append the remaining suffix.\nTime: O(n+m), Space: O(n+m)\n\nC++ solution:\nvector<int> mergeSorted(vector<int>& a, vector<int>& b) {\n    vector<int> out;\n    int i = 0, j = 0;\n    while (i < (int)a.size() && j < (int)b.size())\n        out.push_back(a[i] < b[j] ? a[i++] : b[j++]);\n    while (i < (int)a.size()) out.push_back(a[i++]);\n    while (j < (int)b.size()) out.push_back(b[j++]);\n    return out;\n}",
+    "followUp": "Can you merge in place if the first array has spare space at the end?",
+    "tags": [
+      "coding",
+      "two pointers"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Hashing",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "First Non-Repeating Character: Return the first character that occurs once, or '#'. Example: 'aabbcdde' -> 'c'.",
+    "answer": "Approach: Count frequencies, then scan the string in original order.\nTime: O(n), Space: O(1) for a fixed alphabet\n\nC++ solution:\nchar firstUnique(string s) {\n    vector<int> freq(256, 0);\n    for (unsigned char c : s) ++freq[c];\n    for (unsigned char c : s) if (freq[c] == 1) return c;\n    return '#';\n}",
+    "followUp": "How would you do it in a single pass over a stream?",
+    "tags": [
+      "coding",
+      "hashing"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Sliding Window",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Longest Substring Without Repeating Characters: Find the length of the longest substring with unique characters. Example: 'abcabcbb' -> 3.",
+    "answer": "Approach: Sliding window plus last-seen positions moves the left boundary past duplicates.\nTime: O(n), Space: O(1) for a fixed byte alphabet\n\nC++ solution:\nint lengthOfLongestSubstring(string s) {\n    vector<int> last(256, -1);\n    int left = 0, best = 0;\n    for (int r = 0; r < (int)s.size(); ++r) {\n        unsigned char c = s[r];\n        left = max(left, last[c] + 1);\n        last[c] = r;\n        best = max(best, r - left + 1);\n    }\n    return best;\n}",
+    "followUp": "Why must the left pointer never move backward?",
+    "tags": [
+      "coding",
+      "sliding window"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Hashing",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Group Anagrams: Group words that contain the same letters. Example: [eat,tea,tan,ate,nat,bat] -> {eat,tea,ate}, {tan,nat}, {bat}.",
+    "answer": "Approach: Sort each word to form a canonical key, then group by key. A 26-count signature also works.\nTime: O(n * k log k), Space: O(n * k)\n\nC++ solution:\nvector<vector<string>> groupAnagrams(vector<string>& words) {\n    unordered_map<string, vector<string>> groups;\n    for (auto word : words) {\n        string key = word;\n        sort(key.begin(), key.end());\n        groups[key].push_back(word);\n    }\n    vector<vector<string>> ans;\n    for (auto& [key, group] : groups) ans.push_back(group);\n    return ans;\n}",
+    "followUp": "How would you avoid sorting each word?",
+    "tags": [
+      "coding",
+      "hashing"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Prefix Products",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Product of Array Except Self: Return products excluding each index without division. Example: [1,2,3,4] -> [24,12,8,6].",
+    "answer": "Approach: Write prefix products into the output, then multiply by a running suffix product.\nTime: O(n), Space: O(1) extra, excluding output\n\nC++ solution:\nvector<int> productExceptSelf(vector<int>& a) {\n    int n = a.size();\n    vector<int> out(n, 1);\n    for (int i = 1; i < n; ++i) out[i] = out[i-1] * a[i-1];\n    int suffix = 1;\n    for (int i = n-1; i >= 0; --i) {\n        out[i] *= suffix;\n        suffix *= a[i];\n    }\n    return out;\n}",
+    "followUp": "How do zeros affect a division-based solution?",
+    "tags": [
+      "coding",
+      "prefix products"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Intervals",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Merge Intervals: Merge overlapping intervals. Example: [[1,3],[2,6],[8,10]] -> [[1,6],[8,10]].",
+    "answer": "Approach: Sort by start; merge with the last output interval when ranges overlap.\nTime: O(n log n), Space: O(n)\n\nC++ solution:\nvector<vector<int>> mergeIntervals(vector<vector<int>>& a) {\n    sort(a.begin(), a.end());\n    vector<vector<int>> out;\n    for (auto& x : a) {\n        if (out.empty() || out.back()[1] < x[0]) out.push_back(x);\n        else out.back()[1] = max(out.back()[1], x[1]);\n    }\n    return out;\n}",
+    "followUp": "What if the input is already sorted?",
+    "tags": [
+      "coding",
+      "intervals"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Two Pointers",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Container With Most Water: Find the maximum area between two lines. Example: [1,8,6,2,5,4,8,3,7] -> 49.",
+    "answer": "Approach: Start at both ends; move the shorter line because width shrinks and the taller line cannot improve the current limiting height.\nTime: O(n), Space: O(1)\n\nC++ solution:\nint maxArea(vector<int>& h) {\n    int l = 0, r = (int)h.size() - 1, best = 0;\n    while (l < r) {\n        best = max(best, min(h[l], h[r]) * (r - l));\n        if (h[l] < h[r]) ++l;\n        else --r;\n    }\n    return best;\n}",
+    "followUp": "Why move the shorter side?",
+    "tags": [
+      "coding",
+      "two pointers"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Two Pointers",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Sort Colors: Sort an array containing only 0, 1, and 2. Example: [2,0,2,1,1,0] -> [0,0,1,1,2,2].",
+    "answer": "Approach: Dutch National Flag: low marks next zero, mid scans, high marks next two.\nTime: O(n), Space: O(1)\n\nC++ solution:\nvoid sortColors(vector<int>& a) {\n    int low = 0, mid = 0, high = (int)a.size() - 1;\n    while (mid <= high) {\n        if (a[mid] == 0) swap(a[low++], a[mid++]);\n        else if (a[mid] == 1) ++mid;\n        else swap(a[mid], a[high--]);\n    }\n}",
+    "followUp": "Why does mid not advance after swapping with high?",
+    "tags": [
+      "coding",
+      "two pointers"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Dynamic Programming",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Maximum Subarray: Find the maximum sum of a non-empty contiguous subarray. Example: [-2,1,-3,4,-1,2,1,-5,4] -> 6.",
+    "answer": "Approach: Kadane's algorithm decides whether to extend the current subarray or start at the current value.\nTime: O(n), Space: O(1)\n\nC++ solution:\nint maxSubArray(vector<int>& a) {\n    int cur = a[0], best = a[0];\n    for (int i = 1; i < (int)a.size(); ++i) {\n        cur = max(a[i], cur + a[i]);\n        best = max(best, cur);\n    }\n    return best;\n}",
+    "followUp": "How would you also return the subarray itself?",
+    "tags": [
+      "coding",
+      "dynamic programming"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Arrays",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Majority Element: Find a value appearing more than n/2 times; assume it exists. Example: [2,2,1,1,1,2,2] -> 2.",
+    "answer": "Approach: Boyer-Moore voting cancels different pairs; the majority survives as the candidate.\nTime: O(n), Space: O(1)\n\nC++ solution:\nint majorityElement(vector<int>& a) {\n    int candidate = 0, count = 0;\n    for (int x : a) {\n        if (count == 0) candidate = x;\n        count += (x == candidate) ? 1 : -1;\n    }\n    return candidate; // verify count if a majority is not guaranteed\n}",
+    "followUp": "How would you verify the candidate if a majority is not guaranteed?",
+    "tags": [
+      "coding",
+      "arrays"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Arrays",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Rotate Array Right by K: Rotate [1,2,3,4,5,6,7] right by 3 -> [5,6,7,1,2,3,4].",
+    "answer": "Approach: Normalize k modulo n, reverse the whole array, then reverse the first k and the remaining n-k elements.\nTime: O(n), Space: O(1)\n\nC++ solution:\nvoid rotate(vector<int>& a, int k) {\n    int n = a.size();\n    if (n == 0) return;\n    k %= n;\n    reverse(a.begin(), a.end());\n    reverse(a.begin(), a.begin() + k);\n    reverse(a.begin() + k, a.end());\n}",
+    "followUp": "What if k is larger than n?",
+    "tags": [
+      "coding",
+      "arrays"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Strings",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Longest Common Prefix: Find the common prefix of strings. Example: [flower,flow,flight] -> 'fl'.",
+    "answer": "Approach: Start with the first string and shorten the prefix until every string begins with it.\nTime: O(total characters compared), Space: O(1) extra\n\nC++ solution:\nstring longestCommonPrefix(vector<string>& s) {\n    if (s.empty()) return \"\";\n    string p = s[0];\n    for (int i = 1; i < (int)s.size(); ++i) {\n        while (s[i].compare(0, p.size(), p) != 0) p.pop_back();\n        if (p.empty()) break;\n    }\n    return p;\n}",
+    "followUp": "Could you solve it with vertical scanning instead?",
+    "tags": [
+      "coding",
+      "strings"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Stack",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Valid Parentheses: Check whether brackets are balanced. Example: '([]){}' -> true; '([)]' -> false.",
+    "answer": "Approach: Push opening brackets; each closing bracket must match the most recent opening bracket.\nTime: O(n), Space: O(n)\n\nC++ solution:\nbool isValid(string s) {\n    stack<char> st;\n    for (char c : s) {\n        if (c == '(' || c == '[' || c == '{') st.push(c);\n        else {\n            if (st.empty()) return false;\n            char t = st.top(); st.pop();\n            if ((c == ')' && t != '(') ||\n                (c == ']' && t != '[') ||\n                (c == '}' && t != '{')) return false;\n        }\n    }\n    return st.empty();\n}",
+    "followUp": "What edge cases would you test?",
+    "tags": [
+      "coding",
+      "stack"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Math",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Find Missing Number: Array contains distinct values from 0 through n with one missing. Example: [3,0,1] -> 2.",
+    "answer": "Approach: Use the expected sum n(n+1)/2 minus the actual sum, or XOR to avoid sum overflow.\nTime: O(n), Space: O(1)\n\nC++ solution:\nint missingNumber(vector<int>& a) {\n    int n = a.size();\n    long long expected = 1LL * n * (n + 1) / 2;\n    for (int x : a) expected -= x;\n    return (int)expected;\n}",
+    "followUp": "How would the XOR approach work?",
+    "tags": [
+      "coding",
+      "math"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DSA",
+    "topic": "Coding: Two Pointers",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Remove Duplicates from Sorted Array: Remove duplicates in place and return the new logical length. Example: [1,1,2,2,3] -> length 3, prefix [1,2,3].",
+    "answer": "Approach: A write pointer records where the next new value belongs.\nTime: O(n), Space: O(1)\n\nC++ solution:\nint removeDuplicates(vector<int>& a) {\n    if (a.empty()) return 0;\n    int write = 1;\n    for (int read = 1; read < (int)a.size(); ++read)\n        if (a[read] != a[write-1]) a[write++] = a[read];\n    return write;\n}",
+    "followUp": "How would you allow each value at most twice?",
+    "tags": [
+      "coding",
+      "two pointers"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  }
+]

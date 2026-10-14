@@ -1,0 +1,182 @@
+[
+  {
+    "category": "WEB",
+    "topic": "HTTP",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is the difference between GET and POST?",
+    "answer": "GET requests a representation and should be safe; POST submits data for processing and may create a resource or trigger an action. GET parameters often appear in the URL, while POST commonly sends a request body.",
+    "followUp": "Is POST automatically idempotent?",
+    "tags": [
+      "http"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "WEB",
+    "topic": "HTTP",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "PUT vs PATCH?",
+    "answer": "PUT generally replaces the target resource representation and is intended to be idempotent. PATCH applies a partial modification; its idempotency depends on the patch operation.",
+    "followUp": "What does idempotent mean?",
+    "tags": [
+      "http"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "WEB",
+    "topic": "Web Security",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is CORS?",
+    "answer": "Cross-Origin Resource Sharing is a browser security mechanism that lets a server declare which origins may access its responses. Some cross-origin requests trigger a preflight OPTIONS request.",
+    "followUp": "Does CORS replace authentication?",
+    "tags": [
+      "web security"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "WEB",
+    "topic": "REST APIs",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a REST API?",
+    "answer": "A REST-style API models resources, uses HTTP semantics, and commonly exchanges JSON. Good design uses predictable URLs, appropriate methods and status codes, validation, and versioning where needed.",
+    "followUp": "What status code indicates successful creation?",
+    "tags": [
+      "rest apis"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "WEB",
+    "topic": "Git",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is Git rebase?",
+    "answer": "Rebase replays commits on a new base, producing a linear history but potentially changing commit IDs. Avoid rebasing shared public commits unless the team explicitly agrees.",
+    "followUp": "How does rebase differ from merge?",
+    "tags": [
+      "git"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "WEB",
+    "topic": "Git",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What does git status show?",
+    "answer": "It reports the current branch and differences between the working tree, staging area, and last commit. It helps identify modified, staged, untracked, or conflicting files before committing.",
+    "followUp": "What is the staging area for?",
+    "tags": [
+      "git"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "WEB",
+    "topic": "Linux",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a Linux pipe?",
+    "answer": "A pipe sends one command's standard output to another command's standard input. For example, `ps aux | grep python` filters process output; pipelines compose small tools.",
+    "followUp": "How does `>` differ from `|`?",
+    "tags": [
+      "linux"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "WEB",
+    "topic": "DevOps",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is an environment variable?",
+    "answer": "An environment variable is a key-value setting passed to a process, often used for configuration such as ports or credentials. Secrets should not be committed to source control or baked into public images.",
+    "followUp": "How would you load environment variables locally?",
+    "tags": [
+      "devops"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "WEB",
+    "topic": "Docker",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a Docker image vs container?",
+    "answer": "An image is an immutable template of filesystem layers and metadata. A container is a running or stopped instance of an image with its own process and writable layer.",
+    "followUp": "Why use multi-stage builds?",
+    "tags": [
+      "docker"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "WEB",
+    "topic": "DevOps",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is CI/CD?",
+    "answer": "Continuous Integration automatically builds and tests changes frequently. Continuous Delivery keeps changes releasable; Continuous Deployment automatically releases passing changes to production.",
+    "followUp": "What should a basic CI pipeline check?",
+    "tags": [
+      "devops"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "WEB",
+    "topic": "Cloud",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is AWS EC2?",
+    "answer": "EC2 provides resizable virtual server instances in AWS. You choose instance type, networking, storage, and security rules, and manage the operating system and installed software.",
+    "followUp": "When would you choose a managed service instead?",
+    "tags": [
+      "cloud"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "WEB",
+    "topic": "Cloud",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is object storage?",
+    "answer": "Object storage stores data as objects with metadata under keys, rather than as a mounted block device or traditional filesystem. Amazon S3 is commonly used for static assets, backups, logs, and data lakes.",
+    "followUp": "How do you restrict access to a private S3 bucket?",
+    "tags": [
+      "cloud"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  }
+]

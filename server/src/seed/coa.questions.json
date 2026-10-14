@@ -1,0 +1,92 @@
+[
+  {
+    "category": "COA",
+    "topic": "CPU Basics",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is the CPU instruction cycle?",
+    "answer": "The CPU fetches an instruction, decodes it, executes the required operation, and writes back results as needed. Modern CPUs overlap and reorder work while preserving the required architectural behavior.",
+    "followUp": "What role does the program counter play?",
+    "tags": [
+      "cpu basics"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "COA",
+    "topic": "Cache Memory",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a cache hit?",
+    "answer": "A cache hit occurs when requested data is found in the cache; a miss requires fetching it from a lower level. Hit rate and miss penalty strongly influence average memory access time.",
+    "followUp": "What is AMAT?",
+    "tags": [
+      "cache memory"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "COA",
+    "topic": "Cache Memory",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What are temporal and spatial locality?",
+    "answer": "Temporal locality means recently used data is likely to be used again. Spatial locality means nearby addresses are likely to be accessed soon; caches and prefetchers exploit both.",
+    "followUp": "Which locality does a sequential array scan exploit?",
+    "tags": [
+      "cache memory"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "COA",
+    "topic": "Pipelining",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is a pipeline hazard?",
+    "answer": "Structural hazards arise from resource conflicts, data hazards from dependencies, and control hazards from branches. Forwarding, stalls, scheduling, and branch prediction reduce their impact.",
+    "followUp": "What is a RAW dependency?",
+    "tags": [
+      "pipelining"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "COA",
+    "topic": "Number Systems",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Convert decimal 13 to binary.",
+    "answer": "13 = 8 + 4 + 1, so its binary representation is 1101. Repeated division by two or powers-of-two decomposition can be used to convert decimal integers.",
+    "followUp": "How do you convert a binary fraction to decimal?",
+    "tags": [
+      "number systems"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "COA",
+    "topic": "Memory",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is the difference between SRAM and DRAM?",
+    "answer": "SRAM is faster and does not need periodic refresh, but uses more transistors per bit and is more expensive; it is commonly used for cache. DRAM is denser and cheaper, so it is commonly used for main memory.",
+    "followUp": "Why does DRAM require refresh?",
+    "tags": [
+      "memory"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  }
+]

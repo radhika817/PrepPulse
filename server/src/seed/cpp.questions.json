@@ -1,0 +1,227 @@
+[
+  {
+    "category": "CPP",
+    "topic": "Classes",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What are the main C++ access specifiers?",
+    "answer": "public members are accessible through the public interface; private members are accessible to the class and friends; protected members are also accessible to derived classes. A class defaults to private access, while a struct defaults to public.",
+    "followUp": "Does access control change object memory layout?",
+    "tags": [
+      "classes"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CPP",
+    "topic": "Classes",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is the difference between struct and class in C++?",
+    "answer": "Their main language difference is the default access: struct members and base inheritance default to public, while class defaults to private. Both can have constructors, methods, inheritance, and templates.",
+    "followUp": "Can a struct have private members?",
+    "tags": [
+      "classes"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CPP",
+    "topic": "References and Pointers",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a reference?",
+    "answer": "A reference is an alias for an existing object and must be initialized when declared. It is useful for pass-by-reference and avoiding copies; const references can bind to temporaries.",
+    "followUp": "When would you pass by const reference?",
+    "tags": [
+      "references and pointers"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CPP",
+    "topic": "Memory Management",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a smart pointer?",
+    "answer": "A smart pointer manages dynamic object lifetime using RAII. unique_ptr expresses exclusive ownership, shared_ptr uses reference-counted shared ownership, and weak_ptr observes shared ownership without keeping the object alive.",
+    "followUp": "Why should unique_ptr be preferred when possible?",
+    "tags": [
+      "memory management"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CPP",
+    "topic": "STL",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is the STL?",
+    "answer": "The Standard Template Library provides generic containers, iterators, algorithms, and function objects. Examples include vector, map, unordered_map, sort, find, and lower_bound.",
+    "followUp": "Why do STL algorithms use iterators?",
+    "tags": [
+      "stl"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CPP",
+    "topic": "STL",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "vector vs list?",
+    "answer": "vector stores elements contiguously and offers fast random access and cache locality; insertions in the middle can shift elements. list is a doubly linked list with stable iterators in many operations but no random access and higher per-node overhead.",
+    "followUp": "Which container is usually better for a stack-like sequence?",
+    "tags": [
+      "stl"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CPP",
+    "topic": "STL",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "map vs unordered_map?",
+    "answer": "map stores keys in sorted order and typically offers O(log n) operations using a balanced tree. unordered_map uses hashing and offers average O(1) lookup but has no sorted iteration and can degrade with collisions.",
+    "followUp": "When is map preferable?",
+    "tags": [
+      "stl"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CPP",
+    "topic": "Exceptions",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is exception safety?",
+    "answer": "Exception safety describes how program state behaves when an operation throws. Basic guarantee preserves invariants, strong guarantee leaves state unchanged on failure, and no-throw guarantee promises no exception.",
+    "followUp": "How can copy-and-swap provide the strong guarantee?",
+    "tags": [
+      "exceptions"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CPP",
+    "topic": "Templates",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a template?",
+    "answer": "Templates let functions and classes operate on types or compile-time values without duplicating source code. The compiler instantiates the required versions; templates enable generic containers and algorithms.",
+    "followUp": "What is template specialization?",
+    "tags": [
+      "templates"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CPP",
+    "topic": "Classes",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is const correctness?",
+    "answer": "const correctness marks values or methods that should not modify an object through that access path. It documents intent and lets the compiler catch accidental mutation.",
+    "followUp": "What does a const member function promise?",
+    "tags": [
+      "classes"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CPP",
+    "topic": "Output Prediction",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Predict output: int x=5; cout << x++ << ' ' << ++x;",
+    "answer": "In C++17 and later the operands of << are evaluated left to right, so the output is `5 7`: post-increment yields the old value 5 and makes x 6, then pre-increment makes x 7 and yields 7. Before C++17 this kind of expression modifies x twice without sequencing, which is a classic undefined-behavior trap. Never modify the same variable twice in one expression.",
+    "followUp": "What is the difference between i++ and ++i?",
+    "tags": [
+      "output prediction"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CPP",
+    "topic": "Output Prediction",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Predict output: string s=\"hi\"; string t=s; t += \"!\"; cout<<s<<\" \"<<t;",
+    "answer": "Output: `hi hi!`. std::string assignment makes a separate string value, so modifying t does not modify s.",
+    "followUp": "How does this differ from copying a raw pointer?",
+    "tags": [
+      "output prediction"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CPP",
+    "topic": "Move Semantics",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is move semantics?",
+    "answer": "Move semantics allow a type to transfer ownership of resources from an object that is about to be discarded instead of making an expensive deep copy. Move constructors and move assignment commonly accept rvalue references.",
+    "followUp": "What does std::move actually do?",
+    "tags": [
+      "move semantics"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CPP",
+    "topic": "Lambdas",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a lambda?",
+    "answer": "A lambda is an inline callable object that can capture variables from its surrounding scope. Captures can be by value or by reference; reference captures must not outlive the referenced objects.",
+    "followUp": "What is the difference between [=] and [&]?",
+    "tags": [
+      "lambdas"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CPP",
+    "topic": "Undefined Behavior",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is undefined behavior in C++?",
+    "answer": "Undefined behavior means the standard does not specify what the program must do. Examples include out-of-bounds access, signed overflow, and dereferencing a dangling pointer; do not rely on observed output.",
+    "followUp": "Why might optimization expose a bug?",
+    "tags": [
+      "undefined behavior"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  }
+]

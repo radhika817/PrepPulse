@@ -1,0 +1,182 @@
+[
+  {
+    "category": "CN",
+    "topic": "OSI Model",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Explain the OSI model.",
+    "answer": "The seven layers are Physical, Data Link, Network, Transport, Session, Presentation, and Application. Each layer provides services to the layer above and communicates with its peer using protocols.",
+    "followUp": "Which layer is responsible for routing?",
+    "tags": [
+      "osi model"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CN",
+    "topic": "OSI Model",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "OSI vs TCP/IP?",
+    "answer": "OSI is a seven-layer reference model. The common TCP/IP model groups networking into Link, Internet, Transport, and Application layers; real protocols do not always map perfectly to textbook boundaries.",
+    "followUp": "Where does TLS fit in common diagrams?",
+    "tags": [
+      "osi model"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CN",
+    "topic": "Transport Layer",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is the TCP three-way handshake?",
+    "answer": "The client sends SYN, the server replies SYN-ACK, and the client sends ACK. This synchronizes sequence numbers and establishes the TCP connection before application data is exchanged.",
+    "followUp": "What is the purpose of sequence numbers?",
+    "tags": [
+      "transport layer"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CN",
+    "topic": "Application Layer",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is HTTP vs HTTPS?",
+    "answer": "HTTP is an application protocol for requests and responses. HTTPS is HTTP protected by TLS, providing encryption, integrity, and server authentication when certificate validation succeeds.",
+    "followUp": "Does HTTPS guarantee a website is trustworthy?",
+    "tags": [
+      "application layer"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CN",
+    "topic": "Application Layer",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is DHCP?",
+    "answer": "DHCP automatically provides network configuration such as an IP address, subnet mask, default gateway, and DNS servers. The common IPv4 exchange is Discover, Offer, Request, Acknowledge.",
+    "followUp": "What is a DHCP lease?",
+    "tags": [
+      "application layer"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CN",
+    "topic": "Link and Network Layer",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is ARP?",
+    "answer": "ARP resolves an IPv4 address on a local network to a link-layer MAC address. Hosts broadcast a request on the local network and cache the response; IPv6 uses Neighbor Discovery instead.",
+    "followUp": "Does ARP route packets across the internet?",
+    "tags": [
+      "link and network layer"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CN",
+    "topic": "IP Addressing",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is NAT?",
+    "answer": "Network Address Translation rewrites IP address and sometimes port information as traffic crosses a router. It conserves IPv4 addresses and is common in home networks, but can complicate inbound connections.",
+    "followUp": "What is PAT?",
+    "tags": [
+      "ip addressing"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CN",
+    "topic": "IP Addressing",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is CIDR?",
+    "answer": "Classless Inter-Domain Routing expresses a network with a prefix length, such as /24. The prefix identifies network bits, allowing flexible allocation and route aggregation.",
+    "followUp": "How many total addresses are in a /27?",
+    "tags": [
+      "ip addressing"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CN",
+    "topic": "Network Devices",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is the difference between a router and a switch?",
+    "answer": "A Layer 2 switch forwards frames within a LAN using MAC addresses. A router forwards packets between IP networks using routing information.",
+    "followUp": "What is a default gateway?",
+    "tags": [
+      "network devices"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CN",
+    "topic": "Network Security",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is TLS?",
+    "answer": "TLS secures a connection using authentication, key establishment, and symmetric encryption for application data. Certificates help the client verify the server's identity.",
+    "followUp": "Why use symmetric encryption after the handshake?",
+    "tags": [
+      "network security"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CN",
+    "topic": "Transport Layer",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is congestion control?",
+    "answer": "TCP congestion control adjusts sending behavior based on network feedback to avoid overwhelming the path. It is distinct from flow control, which protects the receiver's capacity.",
+    "followUp": "What does a retransmission timeout suggest?",
+    "tags": [
+      "transport layer"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "CN",
+    "topic": "Transport Layer",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a socket?",
+    "answer": "A socket is a software endpoint for network communication, commonly identified by protocol, IP address, and port. Servers bind and listen; clients connect and exchange data.",
+    "followUp": "What is the difference between a port and an IP address?",
+    "tags": [
+      "transport layer"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  }
+]

@@ -1,0 +1,152 @@
+[
+  {
+    "category": "HR",
+    "topic": "Introduction",
+    "difficulty": "easy",
+    "type": "hr",
+    "question": "Tell me about yourself.",
+    "answer": "Sample: 'I'm a Computer Engineering student interested in software development and problem solving. I've built projects including [your best project], and I enjoy learning by building, collaborating in teams, and improving my fundamentals through DSA and core CS subjects.' Replace the placeholders with your real experience.",
+    "followUp": "Which project best demonstrates your technical strengths?",
+    "tags": [
+      "introduction"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "HR",
+    "topic": "Strengths",
+    "difficulty": "easy",
+    "type": "hr",
+    "question": "What are your strengths?",
+    "answer": "Sample: 'I learn quickly when I can apply concepts practically, and I like breaking a large problem into smaller tasks. In team projects, I focus on understanding the requirement and delivering a working increment.' Support each strength with a real example.",
+    "followUp": "Tell me about a time you demonstrated that strength.",
+    "tags": [
+      "strengths"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "HR",
+    "topic": "Weaknesses",
+    "difficulty": "easy",
+    "type": "hr",
+    "question": "What is your weakness?",
+    "answer": "Sample: 'I can spend too long polishing a solution before asking for feedback. I'm improving by setting time limits, sharing early versions, and validating assumptions sooner.' Choose a genuine, manageable weakness and explain concrete improvement.",
+    "followUp": "How do you measure your progress?",
+    "tags": [
+      "weaknesses"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "HR",
+    "topic": "Motivation",
+    "difficulty": "easy",
+    "type": "hr",
+    "question": "Why should we hire you as a fresher?",
+    "answer": "Sample: 'I bring solid fundamentals, practical project experience, and a willingness to learn the team's tools and standards. I'm comfortable receiving feedback and can contribute by taking ownership of well-scoped tasks while steadily increasing complexity.'",
+    "followUp": "What could you contribute in your first month?",
+    "tags": [
+      "motivation"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "HR",
+    "topic": "Teamwork",
+    "difficulty": "medium",
+    "type": "hr",
+    "question": "Describe a team conflict.",
+    "answer": "Use a specific example: explain the disagreement without blaming anyone, how you listened and compared options against requirements, the decision made, and the outcome. Emphasize respectful communication and delivery.",
+    "followUp": "What would you do if the conflict remained unresolved?",
+    "tags": [
+      "teamwork"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "HR",
+    "topic": "Failure",
+    "difficulty": "medium",
+    "type": "hr",
+    "question": "Tell me about a failure.",
+    "answer": "Pick a real setback, own your part, explain the root cause, and show the change you made afterward. Avoid presenting a disguised strength or blaming teammates.",
+    "followUp": "What would you do differently today?",
+    "tags": [
+      "failure"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "HR",
+    "topic": "Pressure",
+    "difficulty": "medium",
+    "type": "hr",
+    "question": "How do you handle a tight deadline?",
+    "answer": "I clarify the must-have outcome, break it into small tasks, identify dependencies, and communicate risks early. I prioritize a tested core flow over optional polish and avoid hiding delays.",
+    "followUp": "How would you respond if the deadline became impossible?",
+    "tags": [
+      "pressure"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "HR",
+    "topic": "Motivation",
+    "difficulty": "easy",
+    "type": "hr",
+    "question": "Why this company?",
+    "answer": "Connect a specific product, engineering challenge, or team value to your interests. Then explain how your skills and learning goals fit the role; avoid generic praise that could apply to any company.",
+    "followUp": "What do you know about our product?",
+    "tags": [
+      "motivation"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "HR",
+    "topic": "Career Goals",
+    "difficulty": "easy",
+    "type": "hr",
+    "question": "Where do you see yourself in five years?",
+    "answer": "Sample: 'I want to become a dependable software engineer who can design, build, test, and operate production features. I plan to deepen my fundamentals and gradually take ownership of larger technical problems.'",
+    "followUp": "What are you doing now toward that goal?",
+    "tags": [
+      "career goals"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "HR",
+    "topic": "Closing",
+    "difficulty": "easy",
+    "type": "hr",
+    "question": "Do you have questions for us?",
+    "answer": "Ask about onboarding, code reviews, success criteria for interns, team engineering practices, or a technical challenge the team is currently solving. Avoid asking only about perks before understanding the role.",
+    "followUp": "What would you like to learn from your manager?",
+    "tags": [
+      "closing"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  }
+]

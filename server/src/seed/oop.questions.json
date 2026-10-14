@@ -1,0 +1,227 @@
+[
+  {
+    "category": "OOP",
+    "topic": "OOP Basics",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Explain the four pillars of OOP.",
+    "answer": "Encapsulation protects internal state; abstraction exposes essential behavior; inheritance reuses or specializes a base type; polymorphism lets a common interface have different implementations.",
+    "followUp": "Which pillar does a virtual function enable?",
+    "tags": [
+      "oop basics"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OOP",
+    "topic": "OOP Basics",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Abstract class vs interface?",
+    "answer": "An abstract class can share state and implementation while preventing direct instantiation. An interface defines a contract; in C++, this is commonly modeled as a class with pure virtual functions and a virtual destructor.",
+    "followUp": "Can a C++ class implement multiple interfaces?",
+    "tags": [
+      "oop basics"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OOP",
+    "topic": "Polymorphism",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Overloading vs overriding?",
+    "answer": "Overloading uses the same function name with different parameter lists and is resolved at compile time. Overriding replaces a virtual base-class method in a derived class and enables runtime polymorphism.",
+    "followUp": "Can return type alone distinguish overloads?",
+    "tags": [
+      "polymorphism"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OOP",
+    "topic": "Constructors",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a constructor?",
+    "answer": "A constructor initializes an object when it is created. C++ supports default, parameterized, copy, and move constructors; member initializer lists are preferred for initializing members.",
+    "followUp": "Why must const members be initialized in the initializer list?",
+    "tags": [
+      "constructors"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OOP",
+    "topic": "Constructors",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is a virtual destructor?",
+    "answer": "A base class intended for polymorphic deletion should usually have a virtual destructor. Then deleting a derived object through a base pointer runs the derived destructor before the base destructor.",
+    "followUp": "What can happen without a virtual destructor?",
+    "tags": [
+      "constructors"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OOP",
+    "topic": "SOLID",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is the Single Responsibility Principle?",
+    "answer": "A class should have one reason to change, meaning one cohesive responsibility. Separating unrelated responsibilities reduces coupling and makes testing and maintenance easier.",
+    "followUp": "How would you split a class that both saves and formats reports?",
+    "tags": [
+      "solid"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OOP",
+    "topic": "SOLID",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Explain the Open/Closed Principle.",
+    "answer": "Software entities should be open for extension but closed for modification. Add new behavior through abstractions or new implementations rather than repeatedly editing stable, tested logic.",
+    "followUp": "How can polymorphism support this principle?",
+    "tags": [
+      "solid"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OOP",
+    "topic": "SOLID",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Explain the Liskov Substitution Principle.",
+    "answer": "A subtype should be usable wherever its base type is expected without breaking correctness. Derived types must preserve the base contract, including valid inputs, outputs, and invariants.",
+    "followUp": "Why can a Square subclass of Rectangle be problematic?",
+    "tags": [
+      "solid"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OOP",
+    "topic": "SOLID",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Explain the Interface Segregation Principle.",
+    "answer": "Clients should not be forced to depend on methods they do not use. Prefer focused interfaces over one large interface that every implementation must satisfy.",
+    "followUp": "Give an example of splitting a fat interface.",
+    "tags": [
+      "solid"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OOP",
+    "topic": "SOLID",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Explain the Dependency Inversion Principle.",
+    "answer": "High-level modules should depend on abstractions, not concrete low-level implementations. Constructor injection can supply an interface, making implementations replaceable and testable.",
+    "followUp": "What is dependency injection?",
+    "tags": [
+      "solid"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OOP",
+    "topic": "Design Patterns",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is the Singleton pattern?",
+    "answer": "Singleton restricts a type to one shared instance and provides access to it. It can complicate testing and introduce global state; in C++11, a function-local static is initialized thread-safely.",
+    "followUp": "Why can Singleton be an anti-pattern?",
+    "tags": [
+      "design patterns"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OOP",
+    "topic": "Design Patterns",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is the Factory pattern?",
+    "answer": "A Factory centralizes object creation and returns an appropriate abstraction based on input or configuration. It keeps client code from depending on concrete constructors.",
+    "followUp": "When would a simple factory become difficult to maintain?",
+    "tags": [
+      "design patterns"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OOP",
+    "topic": "Design Patterns",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is the Observer pattern?",
+    "answer": "Observer defines a one-to-many relationship: when a subject changes, registered observers are notified. It supports event-driven systems but needs clear subscription lifetime and ordering rules.",
+    "followUp": "How can observers avoid dangling callbacks?",
+    "tags": [
+      "design patterns"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OOP",
+    "topic": "OOP Basics",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Composition vs inheritance?",
+    "answer": "Composition builds behavior by holding other objects; inheritance creates an is-a relationship. Composition often gives more flexibility and less coupling, while inheritance is appropriate for genuine substitutability.",
+    "followUp": "Give a real example of composition.",
+    "tags": [
+      "oop basics"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "OOP",
+    "topic": "Polymorphism",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is dynamic binding?",
+    "answer": "Dynamic binding chooses the overridden implementation at runtime based on the dynamic type of an object. In C++, virtual functions provide this behavior when called through a base pointer or reference.",
+    "followUp": "What is object slicing?",
+    "tags": [
+      "polymorphism"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  }
+]

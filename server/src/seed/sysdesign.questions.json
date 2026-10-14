@@ -1,0 +1,122 @@
+[
+  {
+    "category": "SYSDESIGN",
+    "topic": "Fundamentals",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is scalability?",
+    "answer": "Scalability is a system's ability to handle increased load by adding resources. Vertical scaling upgrades one machine; horizontal scaling adds instances and usually requires load distribution and shared-state design.",
+    "followUp": "What is the difference between scalability and availability?",
+    "tags": [
+      "fundamentals"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "SYSDESIGN",
+    "topic": "Fundamentals",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What does a load balancer do?",
+    "answer": "A load balancer distributes requests across healthy backend instances and can perform health checks, TLS termination, and routing. It improves utilization and availability but can itself become a dependency.",
+    "followUp": "What is a health check?",
+    "tags": [
+      "fundamentals"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "SYSDESIGN",
+    "topic": "Caching",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is cache-aside?",
+    "answer": "The application checks the cache first; on a miss it loads from the database and populates the cache. It is simple and popular, but stale data and cache stampedes must be considered.",
+    "followUp": "How can TTL help?",
+    "tags": [
+      "caching"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "SYSDESIGN",
+    "topic": "Databases",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "SQL vs NoSQL?",
+    "answer": "Relational SQL databases offer structured schemas, joins, and strong transactional capabilities. NoSQL covers several models (document, key-value, wide-column, graph), often chosen for access patterns and horizontal scale rather than as a universal replacement.",
+    "followUp": "When would a relational database be best?",
+    "tags": [
+      "databases"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "SYSDESIGN",
+    "topic": "Design Problems",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "How would you design a URL shortener?",
+    "answer": "Create a unique short key, store the key-to-long-URL mapping, and redirect requests by lookup. Consider collisions, expiry, abuse prevention, caching, analytics, and database partitioning at scale.",
+    "followUp": "How would you avoid key collisions?",
+    "tags": [
+      "design problems"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "SYSDESIGN",
+    "topic": "Design Problems",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "How would you design a chat app?",
+    "answer": "Use WebSockets for real-time connections, a message service, persistent storage, and a delivery pipeline for offline users. Include authentication, conversation membership, message IDs, ordering rules, and retries.",
+    "followUp": "How do you prevent duplicate messages after retries?",
+    "tags": [
+      "design problems"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "SYSDESIGN",
+    "topic": "Databases",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is a database read replica?",
+    "answer": "A read replica copies data from a primary and serves some read traffic, reducing primary load. Replication may lag, so applications must decide whether stale reads are acceptable.",
+    "followUp": "Which reads must go to the primary?",
+    "tags": [
+      "databases"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "SYSDESIGN",
+    "topic": "Messaging",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is a message queue?",
+    "answer": "A queue decouples producers from consumers and buffers work for asynchronous processing. It improves resilience and smoothing of bursts, but requires retry, ordering, idempotency, and dead-letter policies.",
+    "followUp": "Why should consumers be idempotent?",
+    "tags": [
+      "messaging"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  }
+]

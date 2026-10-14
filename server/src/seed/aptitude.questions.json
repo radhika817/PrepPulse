@@ -1,0 +1,152 @@
+[
+  {
+    "category": "APTITUDE",
+    "topic": "Percentages",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "A product costs ₹800 after a 20% discount. What was its marked price?",
+    "answer": "Selling price = 80% of marked price. Marked price = 800 / 0.8 = ₹1,000.",
+    "followUp": "Shortcut: divide by the remaining percentage.",
+    "tags": [
+      "percentages"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "APTITUDE",
+    "topic": "Time, Speed and Distance",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "A train travels 180 km in 3 hours. Find its average speed.",
+    "answer": "Average speed = distance / time = 180 / 3 = 60 km/h.",
+    "followUp": "If the return trip takes 4 hours, what is the round-trip average speed?",
+    "tags": [
+      "time, speed and distance"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "APTITUDE",
+    "topic": "Time and Work",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "A can finish work in 10 days and B in 15 days. How long together?",
+    "answer": "Rates add: 1/10 + 1/15 = 1/6 of the work per day, so together they finish in 6 days.",
+    "followUp": "What if A leaves after 2 days?",
+    "tags": [
+      "time and work"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "APTITUDE",
+    "topic": "Interest",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Find the simple interest on ₹5,000 at 8% per year for 2 years.",
+    "answer": "SI = P x R x T / 100 = 5000 x 8 x 2 / 100 = ₹800.",
+    "followUp": "How does compound interest differ?",
+    "tags": [
+      "interest"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "APTITUDE",
+    "topic": "Averages",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "The average of 5 numbers is 18. Four sum to 68. Find the fifth.",
+    "answer": "Total sum = 5 x 18 = 90. Fifth number = 90 - 68 = 22.",
+    "followUp": "What is the fastest way to update an average when one value changes?",
+    "tags": [
+      "averages"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "APTITUDE",
+    "topic": "Probability",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "A bag has 3 red and 2 blue balls. What is the probability of red on one draw?",
+    "answer": "There are 5 equally likely balls and 3 are red, so probability = 3/5.",
+    "followUp": "What is the probability of two reds without replacement?",
+    "tags": [
+      "probability"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "APTITUDE",
+    "topic": "Series",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Complete the series: 2, 6, 12, 20, 30, __.",
+    "answer": "Differences are 4, 6, 8, 10; the next difference is 12, so the next term is 42.",
+    "followUp": "Can you express the sequence as a formula?",
+    "tags": [
+      "series"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "APTITUDE",
+    "topic": "Logical Reasoning",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "If all roses are flowers and some flowers fade quickly, must some roses fade quickly?",
+    "answer": "No. The flowers that fade quickly may not include any roses. The conclusion does not necessarily follow from the premises.",
+    "followUp": "What is the difference between possibility and necessity in syllogisms?",
+    "tags": [
+      "logical reasoning"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "APTITUDE",
+    "topic": "Verbal Ability",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Choose the correct word: 'Neither of the answers ___ correct.'",
+    "answer": "In formal standard usage, 'Neither of the answers is correct' is preferred because 'neither' is treated as singular.",
+    "followUp": "Why is subject-verb agreement tricky with 'neither'?",
+    "tags": [
+      "verbal ability"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "APTITUDE",
+    "topic": "Logical Reasoning",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "A is taller than B; B is taller than C. Who is shortest?",
+    "answer": "C is shortest because A > B > C in height.",
+    "followUp": "What if one comparison is only 'not shorter than'?",
+    "tags": [
+      "logical reasoning"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  }
+]

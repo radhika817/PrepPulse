@@ -1,0 +1,212 @@
+[
+  {
+    "category": "DBMS",
+    "topic": "Keys",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a primary key?",
+    "answer": "A primary key uniquely identifies each row and cannot contain NULL. A table has one primary-key constraint, which may consist of multiple columns.",
+    "followUp": "Can a table have multiple candidate keys?",
+    "tags": [
+      "keys"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DBMS",
+    "topic": "Keys",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "Primary key vs foreign key?",
+    "answer": "A primary key identifies rows in its own table. A foreign key references a candidate key in another or the same table and enforces referential integrity.",
+    "followUp": "What happens on delete if a foreign key uses RESTRICT?",
+    "tags": [
+      "keys"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DBMS",
+    "topic": "Keys",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a candidate key?",
+    "answer": "A candidate key is a minimal set of attributes that uniquely identifies a row. One candidate key is selected as the primary key; other candidate keys remain alternate keys.",
+    "followUp": "What does minimal mean here?",
+    "tags": [
+      "keys"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DBMS",
+    "topic": "Normalization",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "Explain 1NF, 2NF, 3NF, and BCNF.",
+    "answer": "1NF requires atomic values; 2NF removes partial dependencies on a proper subset of a candidate key; 3NF removes inappropriate transitive dependencies; BCNF requires every nontrivial determinant to be a superkey.",
+    "followUp": "Can a relation be in 3NF but not BCNF?",
+    "tags": [
+      "normalization"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DBMS",
+    "topic": "Transactions",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a transaction?",
+    "answer": "A transaction is a logical unit of work that commits completely or rolls back. Transactions group related statements so intermediate partial updates are not exposed as completed work.",
+    "followUp": "What is a savepoint?",
+    "tags": [
+      "transactions"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DBMS",
+    "topic": "Transactions",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What are isolation levels?",
+    "answer": "Isolation levels control anomalies among concurrent transactions. Common levels are Read Uncommitted, Read Committed, Repeatable Read, and Serializable; exact behavior depends on the database implementation.",
+    "followUp": "What is a phantom read?",
+    "tags": [
+      "transactions"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DBMS",
+    "topic": "Indexing",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is a clustered index?",
+    "answer": "A clustered organization determines how table rows are stored or organized by an index key, depending on the database. A table generally has one such physical ordering; secondary indexes provide additional access paths.",
+    "followUp": "Why do secondary indexes add storage overhead?",
+    "tags": [
+      "indexing"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DBMS",
+    "topic": "Views",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "What is a view?",
+    "answer": "A view is a named query presented like a virtual table. It can simplify repeated queries and restrict exposed columns, but ordinary views do not necessarily store results; materialized views do.",
+    "followUp": "When must a view be refreshed?",
+    "tags": [
+      "views"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "DBMS",
+    "topic": "Concurrency Control",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is optimistic concurrency control?",
+    "answer": "It lets transactions proceed with limited locking and checks for conflicts at validation or commit time. It works well when conflicts are uncommon but may require retries under contention.",
+    "followUp": "How does pessimistic locking differ?",
+    "tags": [
+      "concurrency control"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "SQL",
+    "topic": "Joins",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "INNER JOIN vs LEFT JOIN?",
+    "answer": "INNER JOIN returns rows with matches on both sides. LEFT JOIN returns every left-side row plus matching right-side data, using NULL when no right-side match exists.",
+    "followUp": "Why can a WHERE filter accidentally turn a LEFT JOIN into an INNER JOIN?",
+    "tags": [
+      "joins"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "SQL",
+    "topic": "Queries",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "SQL: find duplicate emails.",
+    "answer": "Example: `SELECT email, COUNT(*) FROM Users GROUP BY email HAVING COUNT(*) > 1;`. GROUP BY forms one group per email and HAVING filters groups by aggregate count.",
+    "followUp": "How would you return the full rows for duplicates?",
+    "tags": [
+      "queries"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "SQL",
+    "topic": "Queries",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "SQL: second-highest distinct salary.",
+    "answer": "One portable approach is `SELECT MAX(salary) FROM Employee WHERE salary < (SELECT MAX(salary) FROM Employee);`. It returns NULL if there is no second distinct salary.",
+    "followUp": "How would you return the top three distinct salaries?",
+    "tags": [
+      "queries"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "SQL",
+    "topic": "Joins",
+    "difficulty": "easy",
+    "type": "short",
+    "question": "SQL: employees with no department match.",
+    "answer": "Use a LEFT JOIN and filter unmatched rows: `SELECT e.* FROM Employee e LEFT JOIN Department d ON e.dept_id=d.id WHERE d.id IS NULL;`. This identifies orphaned department references.",
+    "followUp": "How could NOT EXISTS express the same query?",
+    "tags": [
+      "joins"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  },
+  {
+    "category": "SQL",
+    "topic": "Window Functions",
+    "difficulty": "medium",
+    "type": "short",
+    "question": "What is a window function?",
+    "answer": "A window function computes across related rows without collapsing them into one row per group. `ROW_NUMBER() OVER (PARTITION BY dept_id ORDER BY salary DESC)` ranks employees within each department.",
+    "followUp": "How does RANK differ from DENSE_RANK?",
+    "tags": [
+      "window functions"
+    ],
+    "sourceType": "ai_draft",
+    "sourceNote": "Imported from personal interview handbook; review before public release",
+    "reviewStatus": "approved"
+  }
+]
