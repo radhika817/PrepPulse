@@ -4,6 +4,7 @@ import authRoutes from './auth.routes.js';
 import userRoutes from './user.routes.js';
 import questionRoutes from './question.routes.js';
 import dailyRoutes from './daily.routes.js';
+import streakRoutes from './streak.routes.js';
 import { getBookmarks } from '../controllers/question.controller.js';
 import { authenticate } from '../middleware/auth.js';
 import { validateQuery } from '../middleware/validate.js';
@@ -17,6 +18,7 @@ router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
 router.use('/questions', questionRoutes);
 router.use('/daily', dailyRoutes);
+router.use('/streak', streakRoutes);
 
 // GET /api/v1/bookmarks - paginated list of bookmarked questions for current user
 router.get('/bookmarks', authenticate, validateQuery(paginationQuerySchema), getBookmarks);

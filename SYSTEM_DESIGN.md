@@ -163,6 +163,7 @@ Base path `/api/v1`. All routes except register and login require `Authorization
 | POST | `/questions/:id/bookmark` | Toggle bookmark |
 | GET | `/bookmarks` | Saved questions |
 | GET | `/daily` | Today's five: `{ date, challengeId, completed, completedCount, questions }` (creates if missing) |
+| GET | `/streak` | Current effective streak, longest, `completedToday`, and `recentActivity` (`?days=28`, 7–90) |
 | GET | `/revision` | Questions due for review |
 | GET | `/progress/summary` | Totals, accuracy, streak |
 | GET | `/progress/topics` | Per-topic accuracy and weak topics |
@@ -234,8 +235,10 @@ last    = today
 Rules:
 - A day counts only when all 5 questions are completed.
 - The client never sends a streak value; it only submits attempts.
+- An atomic update (`findOneAndUpdate` requiring `lastCompletedDate != todayKey`) ensures simultaneous requests never double-count a day.
 - A streak freeze is a possible later addition.
-- A missed day is detected lazily: when the user opens the app and `last` is older than yesterday, `current` is displayed as 0 and reset on the next completion.
+- A missed day is detected lazily: when the user opens the app or calls `GET /streak` or `GET /users/me`, and `last` is older than yesterday, `current` is displayed as 0 via `getEffectiveStreak` without modifying the database. The real reset to 1 happens on the next completion.
+- When an attempt completes the challenge, the attempt response includes `streak: { current, longest, increased }`.
 
 ### 5.4 Weak topics
 
