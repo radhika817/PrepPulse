@@ -4,7 +4,8 @@ import { UserQuestionState } from '../models/UserQuestionState.js';
 import { Attempt } from '../models/Attempt.js';
 import { DailyChallenge } from '../models/DailyChallenge.js';
 import { updateRevisionState } from '../services/revision.service.js';
-import { getTodayKey } from '../utils/date.util.js';
+import { getTodayKey, getYesterdayKey } from '../utils/date.util.js';
+import { updateStreakOnCompletion, getEffectiveStreak } from '../services/streak.service.js';
 
 /**
  * GET /api/v1/questions
@@ -362,13 +363,16 @@ export const revealQuestion = async (req, res, next) => {
 
 /**
  * Hook triggered when a daily challenge is completed (all 5 questions attempted).
- * In Phase 9, streak tracking logic will be wired here (SYSTEM_DESIGN.md section 5.3).
+ * Invokes updateStreakOnCompletion with today's and yesterday's dates in user's timezone.
  *
  * @param {Object} user - The authenticated user document
  * @param {Object} challenge - The completed DailyChallenge document
+ * @returns {Promise<{ current: number, longest: number, lastCompletedDate: string, increased: boolean }>}
  */
-export const onChallengeCompleted = async (user, challenge) => {
-  // Streak logic will be added here in Phase 9
+export const onChallengeCompleted = async (user, _challenge) => {
+  const todayKey = getTodayKey(user.timezone);
+  const yesterdayKey = getYesterdayKey(user.timezone);
+  return await updateStreakOnCompletion(user._id, todayKey, yesterdayKey);
 };
 
 /**
@@ -545,6 +549,7 @@ export const attemptQuestion = async (req, res, next) => {
 
     let challengeCompleted = false;
     let completedCount = 0;
+    let streakResult = null;
 
     if (mode === 'daily' && dailyChallengeDoc) {
       const updatedChallenge = await DailyChallenge.findByIdAndUpdate(
@@ -564,7 +569,7 @@ export const attemptQuestion = async (req, res, next) => {
       challengeCompleted = updatedChallenge.completed;
 
       if (newlyCompleted) {
-        await onChallengeCompleted(req.user, updatedChallenge);
+        streakResult = await onChallengeCompleted(req.user, updatedChallenge);
       }
     }
 
@@ -579,6 +584,25 @@ export const attemptQuestion = async (req, res, next) => {
 
     if (question.followUp) {
       response.followUp = question.followUp;
+    }
+
+    if (challengeCompleted) {
+      if (streakResult) {
+        response.streak = {
+          current: streakResult.current,
+          longest: streakResult.longest,
+          increased: streakResult.increased,
+        };
+      } else {
+        const todayKey = getTodayKey(req.user.timezone);
+        const yesterdayKey = getYesterdayKey(req.user.timezone);
+        const effectiveStreak = getEffectiveStreak(req.user, todayKey, yesterdayKey);
+        response.streak = {
+          current: effectiveStreak.current,
+          longest: effectiveStreak.longest,
+          increased: false,
+        };
+      }
     }
 
     return res.json(response);
