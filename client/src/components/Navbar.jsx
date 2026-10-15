@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import useHealth from '../hooks/useHealth';
 import { useAuth } from '../context/AuthContext';
+import StreakBadge from './StreakBadge';
 
 export const Navbar = () => {
   const location = useLocation();
@@ -102,7 +103,8 @@ export const Navbar = () => {
 
             {/* Auth Condition: Logged in vs Logged out */}
             {isAuthenticated && user ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
+                <StreakBadge />
                 <Link
                   to="/profile"
                   className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/70 hover:bg-slate-800 text-slate-200 text-xs font-semibold border border-slate-700/60 transition-colors"
