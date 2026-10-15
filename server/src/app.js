@@ -8,20 +8,38 @@ import apiRoutes from './routes/index.js';
 // Create Express application
 const app = express();
 
+// Trust reverse proxy hops (e.g. Render, Vercel) for accurate client IP in express-rate-limit
+app.set('trust proxy', 1);
+
 // 1. Security HTTP headers
 app.use(helmet());
 
-// 2. Cross-Origin Resource Sharing (CORS) restricted to client URL
-const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+// 2. Cross-Origin Resource Sharing (CORS) restricted strictly to CLIENT_URL list
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
+  .split(',')
+  .map((url) => url.trim().replace(/\/$/, ''))
+  .filter(Boolean);
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server) or matching CLIENT_URL
-      if (!origin || origin === clientUrl || process.env.NODE_ENV !== 'production') {
-        callback(null, true);
-      } else {
-        callback(new Error(`Origin ${origin} not allowed by CORS policy`));
+      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server, health checks)
+      if (!origin) {
+        return callback(null, true);
       }
+      const normalizedOrigin = origin.replace(/\/$/, '');
+      if (allowedOrigins.includes(normalizedOrigin)) {
+        return callback(null, true);
+      }
+      // In development / test, allow localhost origins if not explicitly listed
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        (normalizedOrigin.startsWith('http://localhost:') ||
+          normalizedOrigin.startsWith('http://127.0.0.1:'))
+      ) {
+        return callback(null, true);
+      }
+      return callback(new Error(`Origin ${origin} not allowed by CORS policy`));
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
