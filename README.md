@@ -1,9 +1,11 @@
 # PrepPulse 🎯
 ### Practice every day. Prepare with purpose.
 
+[![CI](https://github.com/radhika817/PrepPulse/actions/workflows/ci.yml/badge.svg)](https://github.com/radhika817/PrepPulse/actions/workflows/ci.yml)
+
 PrepPulse is a full-stack interview preparation platform for engineering students preparing for internships, campus placements and off-campus jobs. It combines a daily five-question challenge, a searchable question bank, self-graded "Show answer" practice, streaks, and a progress dashboard that points you at your weak topics.
 
-> **Status:** Planning and early development. Built as a learning and portfolio project, and used by its author for their own placement preparation.
+> **Status:** MVP Complete (Phases 1–11). Built as a learning and portfolio project for campus placement and engineering interview preparation.
 
 ---
 
@@ -130,53 +132,51 @@ preppulse/
 
 ## Getting started
 
-> Setup steps will be finalised once the first version of the app runs.
-
-Planned flow:
+Follow these steps to run PrepPulse locally:
 
 ```bash
-# 1. Clone
-git clone <your-repo-url>
-cd preppulse
+# 1. Clone the repository
+git clone https://github.com/radhika817/PrepPulse.git
+cd PrepPulse
 
-# 2. Backend
+# 2. Setup and run Backend
 cd server
 npm install
-cp .env.example .env      # add MONGO_URI and JWT_SECRET
-npm run seed              # load questions from seed/*.json
+cp .env.example .env
+
+# Note: If MONGO_URI is left empty in .env for development, PrepPulse automatically
+# boots an in-memory MongoDB database and auto-loads sample questions.
+# To persist questions locally, set MONGO_URI and run: npm run seed
 npm run dev
 
-# 3. Frontend (new terminal)
-cd client
+# 3. Setup and run Frontend (in a separate terminal)
+cd ../client
 npm install
+cp .env.example .env
 npm run dev
 ```
 
-Environment variables (`server/.env`):
+- **Frontend:** `http://localhost:5173`
+- **Backend API:** `http://localhost:5000`
+- **Health Check:** `http://localhost:5000/api/v1/health`
 
-```text
-PORT=5000
-MONGO_URI=
-JWT_SECRET=
-JWT_EXPIRES_IN=7d
-CLIENT_URL=http://localhost:5173
-```
+For deploying to production (MongoDB Atlas, Render, Vercel), see the complete [DEPLOYMENT.md](./DEPLOYMENT.md) guide.
 
 ---
 
 ## Roadmap
 
-- [ ] **Phase 1:** Finalise requirements, schema and question format
-- [ ] **Phase 2:** Set up React frontend and Express backend
-- [ ] **Phase 3:** Mongoose models, database connection, 15–20 test questions
-- [ ] **Phase 4:** Authentication and user profiles
-- [ ] **Phase 5:** Question list, search, filters, bookmarks
-- [ ] **Phase 6:** Question practice screen with Show answer and self-rating
-- [ ] **Phase 7:** Seed the first ~300 curated questions
-- [ ] **Phase 8:** Daily five-question challenge
-- [ ] **Phase 9:** Streak tracking
-- [ ] **Phase 10:** Progress dashboard, weak topics, revision queue
-- [ ] **Phase 11:** Tests, CI, deployment (**MVP complete**)
+- [x] **Phase 1:** Finalise requirements, schema and question format
+- [x] **Phase 2:** Set up React frontend and Express backend
+- [x] **Phase 3:** Mongoose models, database connection, 15–20 test questions
+- [x] **Phase 4:** Authentication and user profiles
+- [x] **Phase 5:** Question list, search, filters, bookmarks
+- [x] **Phase 6:** Question practice screen with Show answer and self-rating
+- [x] **Phase 7:** Seed the first curated questions (~200 questions across 11 topics)
+- [x] **Phase 8:** Daily five-question challenge
+- [x] **Phase 9:** Streak tracking
+- [x] **Phase 10:** Progress dashboard, weak topics, revision queue
+- [x] **Phase 11:** Tests, CI, deployment (**MVP complete**)
 - [ ] **Phase 12:** Admin panel and achievements
 - [ ] **Phase 13:** Company pages and AI-drafted questions
 - [ ] **Phase 14:** AI answer feedback and mock interviews
