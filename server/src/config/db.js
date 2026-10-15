@@ -37,7 +37,7 @@ export const connectDB = async () => {
   // If in production and MONGO_URI is missing, refuse to start
   if (nodeEnv === 'production') {
     const errorMsg =
-      '❌ [DB] FATAL: MONGO_URI environment variable is missing in production mode. Refusing to start.';
+      '❌ [DB] FATAL: MONGO_URI environment variable is missing in production mode. In-memory database is strictly prohibited in production.';
     console.error(errorMsg);
     throw new Error(errorMsg);
   }

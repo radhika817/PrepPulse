@@ -12,12 +12,32 @@ import { Question } from './models/Question.js';
 const PORT = process.env.PORT || 5000;
 const nodeEnv = process.env.NODE_ENV || 'development';
 
-// Check JWT_SECRET requirement
-if (nodeEnv === 'production' && !process.env.JWT_SECRET) {
-  console.error(
-    '❌ FATAL: JWT_SECRET environment variable is missing in production mode. Refusing to start.'
-  );
-  process.exit(1);
+// In production, validate critical environment variables and enforce security policies
+if (nodeEnv === 'production') {
+  const missingVars = [];
+  if (!process.env.MONGO_URI || !process.env.MONGO_URI.trim()) {
+    missingVars.push('MONGO_URI');
+  }
+  if (!process.env.JWT_SECRET || !process.env.JWT_SECRET.trim()) {
+    missingVars.push('JWT_SECRET');
+  }
+  if (!process.env.CLIENT_URL || !process.env.CLIENT_URL.trim()) {
+    missingVars.push('CLIENT_URL');
+  }
+
+  if (missingVars.length > 0) {
+    console.error(
+      `❌ FATAL: Missing required environment variable(s) in production mode: ${missingVars.join(', ')}. Refusing to start.`
+    );
+    process.exit(1);
+  }
+
+  if (process.env.JWT_SECRET.trim().length < 32) {
+    console.error(
+      '❌ FATAL: JWT_SECRET must be at least 32 characters in production mode. Refusing to start.'
+    );
+    process.exit(1);
+  }
 }
 
 if (!process.env.JWT_SECRET) {
