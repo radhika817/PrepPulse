@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  server:
+    name: Server CI
+    runs-on: ubuntu-latest
+    env:
+      NODE_ENV: test
+      JWT_SECRET: ci_test_dummy_jwt_secret_key_32_chars_minimum_value
+      PORT: 5000
+      CLIENT_URL: http://localhost:5173
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install server dependencies
+        working-directory: server
+        run: npm ci
+
+      - name: Lint server code
+        working-directory: server
+        run: npm run lint
+
+      - name: Run server test suite
+        working-directory: server
+        run: npm test
+
+  client:
+    name: Client CI
+    runs-on: ubuntu-latest
+    env:
+      VITE_API_URL: http://localhost:5000/api/v1
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install client dependencies
+        working-directory: client
+        run: npm ci
+
+      - name: Lint client code
+        working-directory: client
+        run: npm run lint
+
+      - name: Build client production bundle
+        working-directory: client
+        run: npm run build
