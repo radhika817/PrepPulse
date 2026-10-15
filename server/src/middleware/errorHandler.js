@@ -42,17 +42,52 @@ export const errorHandler = (err, req, res, _next) => {
     });
   }
 
-  // Handle standard HTTP status errors
-  const statusCode = err.statusCode || (res.statusCode >= 400 ? res.statusCode : 500);
-  const errorCode = err.code || (statusCode === 404 ? 'NOT_FOUND' : 'INTERNAL_SERVER_ERROR');
-  const message = err.message || 'An unexpected error occurred on the server';
+  const isProduction = process.env.NODE_ENV === 'production';
 
-  return res.status(statusCode).json({
+  // Handle standard HTTP status errors
+  const statusCode =
+    typeof err.statusCode === 'number' && err.statusCode >= 400 && err.statusCode < 600
+      ? err.statusCode
+      : res.statusCode >= 400
+      ? res.statusCode
+      : 500;
+
+  const errorCode =
+    typeof err.code === 'string'
+      ? err.code
+      : statusCode === 404
+      ? 'NOT_FOUND'
+      : statusCode === 400
+      ? 'BAD_REQUEST'
+      : statusCode === 401
+      ? 'UNAUTHORIZED'
+      : statusCode === 403
+      ? 'FORBIDDEN'
+      : 'INTERNAL_SERVER_ERROR';
+
+  // In production, never leak internal error messages or database details for 5xx errors
+  let message;
+  if (statusCode >= 500) {
+    message = isProduction
+      ? 'An unexpected error occurred on the server'
+      : err.message || 'An unexpected error occurred on the server';
+  } else {
+    message = err.message || 'Request failed';
+  }
+
+  const responsePayload = {
     error: {
       code: errorCode,
       message,
     },
-  });
+  };
+
+  // Stack traces are strictly excluded in production and tests
+  if (!isProduction && process.env.NODE_ENV !== 'test' && err.stack) {
+    responsePayload.error.stack = err.stack;
+  }
+
+  return res.status(statusCode).json(responsePayload);
 };
 
 export default errorHandler;
