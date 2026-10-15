@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import {
   Calendar,
   CheckCircle2,
@@ -12,8 +12,11 @@ import {
   Layers,
   Award,
   RefreshCw,
+  Flame,
 } from 'lucide-react';
 import { getDaily } from '../services/daily';
+import { getStreak } from '../services/streak';
+import WeekCalendar from '../components/WeekCalendar';
 
 /**
  * Daily Challenge Page
@@ -25,12 +28,17 @@ import { getDaily } from '../services/daily';
  * - "Start" or "Continue" action button targeting the first unfinished question
  * - "All done for today" completion banner once all 5 questions are attempted
  * - Handles loading, standard errors, and 409 "not enough questions yet" states
+ * - Renders WeekCalendar with 7-day activity circles
+ * - Displays streak completion card with Day count when today's fifth question is completed
  */
 export const Daily = () => {
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isInsufficient, setIsInsufficient] = useState(false);
   const [challenge, setChallenge] = useState(null);
+  const [streakData, setStreakData] = useState(null);
+  const [streakLoading, setStreakLoading] = useState(true);
 
   const fetchDailyChallenge = async () => {
     try {
@@ -57,9 +65,40 @@ export const Daily = () => {
     }
   };
 
+  const fetchStreakData = useCallback(async () => {
+    try {
+      setStreakLoading(true);
+      const data = await getStreak(7);
+      setStreakData(data);
+    } catch (err) {
+      console.warn('Could not load streak data on Daily page:', err.message);
+    } finally {
+      setStreakLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchDailyChallenge();
-  }, []);
+    fetchStreakData();
+
+    const handleStreakUpdate = (e) => {
+      if (e?.detail) {
+        setStreakData((prev) => ({
+          ...prev,
+          current: e.detail.current,
+          longest: e.detail.longest,
+          completedToday: true,
+        }));
+      } else {
+        fetchStreakData();
+      }
+    };
+
+    window.addEventListener('streak-updated', handleStreakUpdate);
+    return () => {
+      window.removeEventListener('streak-updated', handleStreakUpdate);
+    };
+  }, [fetchStreakData]);
 
   // Format the ISO date string "YYYY-MM-DD" into a friendly readable date
   const formatDisplayDate = (dateStr) => {
@@ -230,23 +269,51 @@ export const Daily = () => {
 
             {/* Completion Banner or Start/Continue CTA */}
             {challenge.completed ? (
-              <div
-                id="daily-completed-banner"
-                className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-3.5 text-emerald-200"
-              >
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                  <Award className="w-5 h-5 text-emerald-400" />
+              // When fifth question is completed, show completion card with new streak ("Day 4!").
+              // If increased is false, show normal completion message.
+              ((location.state?.streak && location.state.streak.increased) ||
+              (!location.state?.streak && streakData?.completedToday && (streakData?.current || 0) > 0)) ? (
+                <div
+                  id="daily-streak-completion-card"
+                  className="p-5 sm:p-6 rounded-2xl bg-gradient-to-tr from-amber-500/15 via-orange-500/10 to-transparent border border-amber-500/30 flex items-center gap-4 text-amber-200 shadow-lg shadow-amber-500/5"
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-amber-500/20">
+                    <Flame className="w-7 h-7 fill-white" />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-extrabold text-[11px] tracking-wider uppercase border border-amber-500/40">
+                        Streak Active!
+                      </span>
+                      <Sparkles className="w-4 h-4 text-amber-400" />
+                    </div>
+                    <h3 className="text-xl sm:text-2xl font-extrabold text-white">
+                      Day {location.state?.streak?.current ?? streakData?.current ?? 1}!
+                    </h3>
+                    <p className="text-xs text-amber-200/90 leading-relaxed">
+                      You finished today&apos;s daily challenge and kept your streak alive. Great habit!
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <span>All done for today!</span>
-                    <Sparkles className="w-4 h-4 text-emerald-400" />
-                  </h3>
-                  <p className="text-xs text-emerald-300/90 mt-0.5">
-                    You have finished all 5 questions. Come back tomorrow for 5 fresh interview questions!
-                  </p>
+              ) : (
+                <div
+                  id="daily-completed-banner"
+                  className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-3.5 text-emerald-200"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                    <Award className="w-5 h-5 text-emerald-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                      <span>All done for today!</span>
+                      <Sparkles className="w-4 h-4 text-emerald-400" />
+                    </h3>
+                    <p className="text-xs text-emerald-300/90 mt-0.5">
+                      You have finished all 5 questions. Come back tomorrow for 5 fresh interview questions!
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )
             ) : firstUnfinishedQuestion ? (
               <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-800/60">
                 <div className="text-xs text-slate-400">
@@ -266,6 +333,12 @@ export const Daily = () => {
               </div>
             ) : null}
           </div>
+
+          {/* Week Calendar */}
+          <WeekCalendar
+            activity={streakData?.recentActivity || []}
+            loading={streakLoading}
+          />
 
           {/* 5 Questions List Header */}
           <div className="space-y-3">

@@ -18,6 +18,7 @@ import {
   Calendar,
   Info,
   Award,
+  Flame,
 } from 'lucide-react';
 import {
   getQuestionById,
@@ -231,10 +232,14 @@ export const Practice = () => {
         nextReviewAt: res.nextReviewAt,
         challengeCompleted: res.challengeCompleted,
         completedCount: res.completedCount,
+        streak: res.streak,
       });
 
       if (res.challengeCompleted) {
         setIsDailyCompleted(true);
+        if (res.streak) {
+          window.dispatchEvent(new CustomEvent('streak-updated', { detail: res.streak }));
+        }
       }
     } catch (err) {
       console.error('Failed to submit MCQ check:', err);
@@ -308,10 +313,14 @@ export const Practice = () => {
         nextReviewAt: res.nextReviewAt,
         challengeCompleted: res.challengeCompleted,
         completedCount: res.completedCount,
+        streak: res.streak,
       });
 
       if (res.challengeCompleted) {
         setIsDailyCompleted(true);
+        if (res.streak) {
+          window.dispatchEvent(new CustomEvent('streak-updated', { detail: res.streak }));
+        }
       }
     } catch (err) {
       console.error('Failed to submit rating:', err);
@@ -857,23 +866,43 @@ export const Practice = () => {
                     (isDailyCompleted ||
                       submissionResult?.challengeCompleted ||
                       (!nextQuestionId && submitted)) && (
-                      <div
-                        id="daily-challenge-complete-banner"
-                        className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-3.5 text-emerald-200"
-                      >
-                        <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                          <Award className="w-5 h-5 text-emerald-400" />
+                      submissionResult?.streak?.increased ? (
+                        <div
+                          id="daily-challenge-complete-banner"
+                          className="p-4 rounded-xl bg-gradient-to-r from-amber-500/15 via-orange-500/10 to-transparent border border-amber-500/30 flex items-center gap-3.5 text-amber-200"
+                        >
+                          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-amber-500/20">
+                            <Flame className="w-6 h-6 fill-white" />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
+                              <span>Day {submissionResult.streak.current}! Daily Challenge Complete!</span>
+                              <Sparkles className="w-4 h-4 text-amber-400" />
+                            </h4>
+                            <p className="text-xs text-amber-300/90 mt-0.5">
+                              You have finished all 5 questions and kept your streak alive. Great habit!
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
-                            <span>Daily Challenge Complete!</span>
-                            <Sparkles className="w-4 h-4 text-emerald-400" />
-                          </h4>
-                          <p className="text-xs text-emerald-300/90 mt-0.5">
-                            You have finished all 5 questions for today. Great work!
-                          </p>
+                      ) : (
+                        <div
+                          id="daily-challenge-complete-banner"
+                          className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-3.5 text-emerald-200"
+                        >
+                          <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                            <Award className="w-5 h-5 text-emerald-400" />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
+                              <span>Daily Challenge Complete!</span>
+                              <Sparkles className="w-4 h-4 text-emerald-400" />
+                            </h4>
+                            <p className="text-xs text-emerald-300/90 mt-0.5">
+                              You have finished all 5 questions for today. Great work!
+                            </p>
+                          </div>
                         </div>
-                      </div>
+                      )
                     )}
 
                   {/* Navigation Buttons: Back to questions / daily & Next question */}
@@ -881,6 +910,7 @@ export const Practice = () => {
                     {dailyChallengeId ? (
                       <Link
                         to="/daily"
+                        state={{ streak: submissionResult?.streak }}
                         id="back-to-daily-btn"
                         className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition-all shadow-sm hover:border-slate-600 cursor-pointer"
                       >
