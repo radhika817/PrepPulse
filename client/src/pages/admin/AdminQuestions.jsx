@@ -28,6 +28,7 @@ import {
   bulkUpdateQuestionsStatus,
 } from '../../services/admin';
 import QuestionFormModal from './QuestionFormModal';
+import ImportModal from './ImportModal';
 
 const CATEGORIES = [
   'OS',
@@ -91,6 +92,17 @@ export const AdminQuestions = ({ onOpenCreate, onOpenEdit, onOpenImport }) => {
     } else {
       setQuestionToEdit(q);
       setFormModalOpen(true);
+    }
+  };
+
+  // JSON Import Modal State
+  const [importModalOpen, setImportModalOpen] = useState(false);
+
+  const handleOpenImport = () => {
+    if (onOpenImport) {
+      onOpenImport();
+    } else {
+      setImportModalOpen(true);
     }
   };
 
@@ -222,7 +234,7 @@ export const AdminQuestions = ({ onOpenCreate, onOpenEdit, onOpenImport }) => {
         {/* Action Buttons: New Question & Import */}
         <div className="flex items-center gap-2.5">
           <button
-            onClick={() => onOpenImport && onOpenImport()}
+            onClick={handleOpenImport}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 shadow-sm transition-all hover:scale-[1.02]"
           >
             <Upload className="w-3.5 h-3.5 text-indigo-400" />
@@ -757,6 +769,13 @@ export const AdminQuestions = ({ onOpenCreate, onOpenEdit, onOpenImport }) => {
         onClose={() => setFormModalOpen(false)}
         questionToEdit={questionToEdit}
         onSaved={fetchQuestions}
+      />
+
+      {/* JSON Import Modal */}
+      <ImportModal
+        isOpen={importModalOpen}
+        onClose={() => setImportModalOpen(false)}
+        onImportCompleted={fetchQuestions}
       />
     </div>
   );
