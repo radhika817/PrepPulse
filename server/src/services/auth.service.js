@@ -67,7 +67,7 @@ export const loginUser = async ({ email, password }) => {
 
   // Explicitly select passwordHash since it is hidden by default
   const user = await User.findOne({ email: normalizedEmail }).select('+passwordHash');
-  if (!user) {
+  if (!user || !user.passwordHash) {
     const error = new Error('Invalid email or password');
     error.statusCode = 401;
     error.code = 'INVALID_CREDENTIALS';
