@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   AlertCircle,
   LogOut,
+  ShieldCheck,
 } from 'lucide-react';
 import useHealth from '../hooks/useHealth';
 import { useAuth } from '../context/AuthContext';
@@ -34,6 +35,9 @@ export const Navbar = () => {
     { to: '/practice', label: 'Practice', icon: BookOpen },
     { to: '/revision', label: 'Revision', icon: RotateCcw },
     { to: '/bookmarks', label: 'Bookmarks', icon: Bookmark },
+    ...(user?.role === 'admin'
+      ? [{ to: '/admin', label: 'Admin', icon: ShieldCheck }]
+      : []),
   ];
 
   return (
@@ -59,7 +63,8 @@ export const Navbar = () => {
             {/* Navigation links (accessible to all or highlighted) */}
             <nav className="hidden md:flex items-center gap-1">
               {navLinks.map(({ to, label, icon: Icon }) => {
-                const isActive = location.pathname === to;
+                const isActive =
+                  location.pathname === to || (to === '/admin' && location.pathname.startsWith('/admin'));
                 return (
                   <Link
                     key={to}
