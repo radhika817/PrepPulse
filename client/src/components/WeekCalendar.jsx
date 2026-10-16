@@ -1,30 +1,27 @@
 import { Check } from 'lucide-react';
+import { Card } from './ui';
 
 /**
  * WeekCalendar Component
  * Renders the last 7 calendar days as small circles:
- * - Filled for completed days
+ * - Filled for completed days with streak orange accent
  * - Outlined for missed / incomplete days
- * - Today highlighted with distinct indicator
- *
- * @param {Object} props
- * @param {Array<{ date: string, completed: boolean }>} [props.activity] - Array of last 7 days
- * @param {boolean} [props.loading] - Loading indicator
+ * - Today highlighted with distinct indicator ring
  */
 export const WeekCalendar = ({ activity = [], loading = false }) => {
   if (loading) {
     return (
-      <div
+      <Card
         id="week-calendar-loading"
-        className="flex items-center justify-between gap-2 p-3 rounded-2xl bg-slate-900/40 border border-slate-800/60 animate-pulse"
+        className="flex items-center justify-between gap-2 p-4 animate-pulse"
       >
         {Array.from({ length: 7 }).map((_, idx) => (
           <div key={idx} className="flex flex-col items-center gap-1.5 flex-1">
-            <div className="w-6 h-3 bg-slate-800 rounded" />
-            <div className="w-8 h-8 rounded-full bg-slate-800" />
+            <div className="w-7 h-3 bg-slate-200 dark:bg-slate-800 rounded" />
+            <div className="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-800" />
           </div>
         ))}
-      </div>
+      </Card>
     );
   }
 
@@ -32,7 +29,6 @@ export const WeekCalendar = ({ activity = [], loading = false }) => {
     return null;
   }
 
-  // Activity contains the last N days up to today (the last item is today)
   const todayIndex = activity.length - 1;
 
   const getWeekday = (dateStr) => {
@@ -51,15 +47,15 @@ export const WeekCalendar = ({ activity = [], loading = false }) => {
   };
 
   return (
-    <div
+    <Card
       id="week-calendar"
-      className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800 shadow-md backdrop-blur-sm space-y-3"
+      className="p-5 space-y-3 shadow-sm"
     >
-      <div className="flex items-center justify-between text-xs text-slate-400">
-        <span className="font-semibold uppercase tracking-wider text-[11px] text-slate-400">
+      <div className="flex items-center justify-between text-xs">
+        <span className="font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           Last 7 Days Activity
         </span>
-        <span className="text-[11px] text-slate-500">
+        <span className="text-slate-600 dark:text-slate-400 font-medium">
           {activity.filter((d) => d.completed).length} of 7 days completed
         </span>
       </div>
@@ -79,23 +75,25 @@ export const WeekCalendar = ({ activity = [], loading = false }) => {
             >
               {/* Weekday label */}
               <span
-                className={`text-[10px] uppercase font-semibold ${
-                  isToday ? 'text-indigo-400 font-bold' : 'text-slate-400'
+                className={`text-[11px] uppercase font-semibold ${
+                  isToday
+                    ? 'text-brand-600 dark:text-brand-400 font-bold'
+                    : 'text-slate-500 dark:text-slate-400'
                 }`}
               >
                 {weekday}
               </span>
 
-              {/* Day Circle: Filled for completed, outlined for missed, highlighted for today */}
+              {/* Day Circle */}
               <div
                 title={`${item.date}: ${isCompleted ? 'Completed' : 'Missed'}${isToday ? ' (Today)' : ''}`}
                 className={`relative w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all ${
                   isCompleted
-                    ? 'bg-gradient-to-tr from-amber-500 to-orange-500 text-white shadow-md shadow-amber-500/20'
-                    : 'border-2 border-slate-700 bg-slate-950/40 text-slate-500'
+                    ? 'bg-orange-500 text-white shadow-sm font-bold'
+                    : 'border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-400 dark:text-slate-500'
                 } ${
                   isToday
-                    ? 'ring-2 ring-indigo-500 ring-offset-2 ring-offset-slate-900 font-bold'
+                    ? 'ring-2 ring-brand-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 font-bold'
                     : ''
                 }`}
               >
@@ -105,16 +103,16 @@ export const WeekCalendar = ({ activity = [], loading = false }) => {
                   <span className="text-xs font-mono">{dayNum}</span>
                 )}
 
-                {/* Small indicator pill for today */}
+                {/* Small indicator dot for today */}
                 {isToday && (
-                  <span className="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-indigo-400 ring-2 ring-slate-900" />
+                  <span className="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-brand-600 dark:bg-brand-400 ring-2 ring-white dark:ring-slate-900" />
                 )}
               </div>
             </div>
           );
         })}
       </div>
-    </div>
+    </Card>
   );
 };
 
