@@ -278,6 +278,7 @@ export const getBookmarks = async (req, res, next) => {
       .limit(limit)
       .populate({
         path: 'questionId',
+        match: { reviewStatus: 'approved' },
         select: '-explanation -answer -followUp -normalizedQuestion -__v',
       })
       .lean();
@@ -302,6 +303,47 @@ export const getBookmarks = async (req, res, next) => {
       total,
       totalPages,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * GET /api/v1/revision
+ * Returns questions due for review (nextReviewAt <= now) for current user.
+ * Silently drops any question that has become rejected or draft.
+ * Answer, explanation, and followUp are strictly excluded.
+ */
+export const getRevisionQuestions = async (req, res, next) => {
+  try {
+    const now = new Date();
+    const states = await UserQuestionState.find({
+      userId: req.user._id,
+      nextReviewAt: { $lte: now },
+    })
+      .sort({ nextReviewAt: 1 })
+      .populate({
+        path: 'questionId',
+        match: { reviewStatus: 'approved' },
+        select: '-explanation -answer -followUp -normalizedQuestion -__v',
+      })
+      .lean();
+
+    const items = states
+      .filter((s) => s.questionId)
+      .map((s) => {
+        const q = s.questionId;
+        const { answer: _ans, explanation: _exp, followUp: _fu, ...cleanQ } = q;
+        return {
+          ...cleanQ,
+          box: s.box,
+          nextReviewAt: s.nextReviewAt,
+          timesSeen: s.timesSeen,
+          lastRating: s.lastRating,
+        };
+      });
+
+    return res.json({ items });
   } catch (error) {
     next(error);
   }
@@ -617,6 +659,7 @@ export default {
   getQuestionById,
   toggleBookmark,
   getBookmarks,
+  getRevisionQuestions,
   revealQuestion,
   attemptQuestion,
   onChallengeCompleted,

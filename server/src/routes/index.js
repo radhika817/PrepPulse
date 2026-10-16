@@ -6,7 +6,7 @@ import questionRoutes from './question.routes.js';
 import dailyRoutes from './daily.routes.js';
 import streakRoutes from './streak.routes.js';
 import adminRoutes from './admin.routes.js';
-import { getBookmarks } from '../controllers/question.controller.js';
+import { getBookmarks, getRevisionQuestions } from '../controllers/question.controller.js';
 import { authenticate } from '../middleware/auth.js';
 import { validateQuery } from '../middleware/validate.js';
 import { paginationQuerySchema } from '../validators/question.query.validator.js';
@@ -24,6 +24,9 @@ router.use('/admin', adminRoutes);
 
 // GET /api/v1/bookmarks - paginated list of bookmarked questions for current user
 router.get('/bookmarks', authenticate, validateQuery(paginationQuerySchema), getBookmarks);
+
+// GET /api/v1/revision - questions due for recall review for current user
+router.get('/revision', authenticate, getRevisionQuestions);
 
 export default router;
 
