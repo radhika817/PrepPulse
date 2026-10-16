@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Lock, Mail, User, ArrowRight, Globe, AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { Button, Card, CardContent, Input, Select } from '../components/ui';
 
 export const Register = () => {
   const [name, setName] = useState('');
@@ -58,122 +59,103 @@ export const Register = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto py-10">
-      <div className="p-8 rounded-2xl bg-slate-900/60 border border-slate-800 shadow-xl space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold text-white tracking-tight">Create your account</h1>
-          <p className="text-xs text-slate-400">
-            Join PrepPulse and start building your daily preparation streak
-          </p>
-        </div>
-
-        {/* API Error Notification */}
-        {errorMessage && (
-          <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-2.5 text-xs text-rose-300">
-            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
-            <span className="leading-relaxed">{errorMessage}</span>
+    <div className="max-w-md mx-auto py-10 sm:py-12">
+      <Card className="shadow-lg border-slate-200 dark:border-slate-800">
+        <CardContent className="p-6 sm:p-8 space-y-6">
+          <div className="text-center space-y-1.5">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+              Create your account
+            </h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              Join PrepPulse and start building your daily interview preparation streak
+            </p>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Full Name</label>
-            <div className="relative">
-              <User className="w-4 h-4 text-slate-500 absolute left-3 top-3.5" />
-              <input
-                type="text"
-                required
-                disabled={loading}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Radhika Sharma"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all disabled:opacity-60"
-              />
+          {/* API Error Notification */}
+          {errorMessage && (
+            <div
+              role="alert"
+              className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2.5 text-xs text-rose-700 dark:text-rose-300"
+            >
+              <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+              <span className="leading-relaxed">{errorMessage}</span>
             </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              label="Full Name"
+              id="register-name"
+              type="text"
+              required
+              disabled={loading}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Radhika Sharma"
+            />
+
+            <Input
+              label="Email Address"
+              id="register-email"
+              type="email"
+              required
+              disabled={loading}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="student@example.com"
+            />
+
+            <Input
+              label="Password"
+              id="register-password"
+              type="password"
+              required
+              disabled={loading}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              helperText="At least 8 characters, one letter and one number"
+            />
+
+            <Select
+              label="Timezone (for daily challenge reset)"
+              id="register-timezone"
+              disabled={loading}
+              value={timezone}
+              onChange={(e) => setTimezone(e.target.value)}
+            >
+              <option value="Asia/Kolkata">Asia/Kolkata (IST - India)</option>
+              <option value="UTC">UTC (Coordinated Universal Time)</option>
+              <option value="America/New_York">America/New_York (EST/EDT)</option>
+              <option value="America/Los_Angeles">America/Los_Angeles (PST/PDT)</option>
+              <option value="Europe/London">Europe/London (GMT/BST)</option>
+              <option value="Asia/Singapore">Asia/Singapore (SGT)</option>
+              <option value="Asia/Dubai">Asia/Dubai (GST)</option>
+            </Select>
+
+            <Button
+              type="submit"
+              variant="primary"
+              size="md"
+              isLoading={loading}
+              disabled={loading}
+              className="w-full mt-2"
+            >
+              Create Account
+            </Button>
+          </form>
+
+          <div className="text-center text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800">
+            Already have an account?{' '}
+            <Link
+              to="/login"
+              className="text-brand-600 dark:text-brand-400 font-semibold hover:underline"
+            >
+              Sign in
+            </Link>
           </div>
-
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Email Address</label>
-            <div className="relative">
-              <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-3.5" />
-              <input
-                type="email"
-                required
-                disabled={loading}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="student@example.com"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all disabled:opacity-60"
-              />
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Password</label>
-            <div className="relative">
-              <Lock className="w-4 h-4 text-slate-500 absolute left-3 top-3.5" />
-              <input
-                type="password"
-                required
-                disabled={loading}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Min 8 chars, 1 letter, 1 number"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all disabled:opacity-60"
-              />
-            </div>
-            <p className="text-[11px] text-slate-500">At least 8 characters, one letter and one number</p>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">
-              Timezone <span className="text-slate-500 font-normal">(for daily challenge reset)</span>
-            </label>
-            <div className="relative">
-              <Globe className="w-4 h-4 text-slate-500 absolute left-3 top-3.5" />
-              <select
-                disabled={loading}
-                value={timezone}
-                onChange={(e) => setTimezone(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all disabled:opacity-60"
-              >
-                <option value="Asia/Kolkata">Asia/Kolkata (IST - India)</option>
-                <option value="UTC">UTC (Coordinated Universal Time)</option>
-                <option value="America/New_York">America/New_York (EST/EDT)</option>
-                <option value="America/Los_Angeles">America/Los_Angeles (PST/PDT)</option>
-                <option value="Europe/London">Europe/London (GMT/BST)</option>
-                <option value="Asia/Singapore">Asia/Singapore (SGT)</option>
-                <option value="Asia/Dubai">Asia/Dubai (GST)</option>
-              </select>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-md shadow-indigo-600/30 transition-all hover:scale-[1.01] active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed mt-2"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Creating account...</span>
-              </>
-            ) : (
-              <>
-                <span>Create Account</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </button>
-        </form>
-
-        <div className="text-center text-xs text-slate-400">
-          Already have an account?{' '}
-          <Link to="/login" className="text-indigo-400 font-semibold hover:underline">
-            Sign in
-          </Link>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
