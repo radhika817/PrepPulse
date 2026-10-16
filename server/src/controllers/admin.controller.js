@@ -328,3 +328,34 @@ export const updateAdminQuestion = async (req, res, next) => {
   }
 };
 
+/**
+ * POST /api/v1/admin/questions/bulk-status
+ * Bulk update reviewStatus (draft, approved, rejected) for up to 100 questions at once.
+ * Records reviewedBy and reviewedAt for all updated documents.
+ */
+export const bulkUpdateQuestionsStatus = async (req, res, next) => {
+  try {
+    const { ids, reviewStatus } = req.body;
+
+    const result = await Question.updateMany(
+      { _id: { $in: ids } },
+      {
+        $set: {
+          reviewStatus,
+          reviewedBy: req.user._id,
+          reviewedAt: new Date(),
+        },
+      }
+    );
+
+    return res.json({
+      message: `Successfully updated ${result.modifiedCount} questions to ${reviewStatus}`,
+      count: result.modifiedCount,
+      reviewStatus,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+

@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import { z } from 'zod';
 import {
   getAdminQuestions,
@@ -6,6 +7,7 @@ import {
   getAdminQuestionById,
   createAdminQuestion,
   updateAdminQuestion,
+  bulkUpdateQuestionsStatus,
 } from '../controllers/admin.controller.js';
 import { authenticate, requireRole } from '../middleware/auth.js';
 import { apiLimiter } from '../middleware/rateLimiter.js';
@@ -187,11 +189,31 @@ export const adminUpdateQuestionSchema = z
   })
   .strict();
 
+/**
+ * Validation schema for bulk status update
+ */
+export const adminBulkStatusSchema = z
+  .object({
+    ids: z
+      .array(
+        z.string().refine((id) => mongoose.Types.ObjectId.isValid(id), {
+          message: 'Invalid question ID format',
+        })
+      )
+      .min(1, 'At least one question ID is required')
+      .max(100, 'Cannot update more than 100 questions at once'),
+    reviewStatus: z.enum(VALID_REVIEW_STATUSES),
+  })
+  .strict();
+
 // GET /api/v1/admin/questions/stats (registered before /:id to avoid param capture)
 router.get('/questions/stats', getAdminQuestionStats);
 
 // GET /api/v1/admin/questions
 router.get('/questions', validateQuery(adminQuestionsQuerySchema), getAdminQuestions);
+
+// POST /api/v1/admin/questions/bulk-status
+router.post('/questions/bulk-status', validateBody(adminBulkStatusSchema), bulkUpdateQuestionsStatus);
 
 // GET /api/v1/admin/questions/:id
 router.get('/questions/:id', getAdminQuestionById);
