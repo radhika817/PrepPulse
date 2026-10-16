@@ -27,6 +27,7 @@ import {
   updateAdminQuestion,
   bulkUpdateQuestionsStatus,
 } from '../../services/admin';
+import QuestionFormModal from './QuestionFormModal';
 
 const CATEGORIES = [
   'OS',
@@ -70,6 +71,28 @@ export const AdminQuestions = ({ onOpenCreate, onOpenEdit, onOpenImport }) => {
   // Quick review modal state
   const [reviewModalQuestion, setReviewModalQuestion] = useState(null);
   const [reviewActionLoading, setReviewActionLoading] = useState(false);
+
+  // Question Form (Create / Edit) Modal State
+  const [formModalOpen, setFormModalOpen] = useState(false);
+  const [questionToEdit, setQuestionToEdit] = useState(null);
+
+  const handleOpenCreate = () => {
+    if (onOpenCreate) {
+      onOpenCreate();
+    } else {
+      setQuestionToEdit(null);
+      setFormModalOpen(true);
+    }
+  };
+
+  const handleOpenEdit = (q) => {
+    if (onOpenEdit) {
+      onOpenEdit(q);
+    } else {
+      setQuestionToEdit(q);
+      setFormModalOpen(true);
+    }
+  };
 
   // Fetch questions from API
   const fetchQuestions = useCallback(async () => {
@@ -206,7 +229,7 @@ export const AdminQuestions = ({ onOpenCreate, onOpenEdit, onOpenImport }) => {
             <span>Import JSON</span>
           </button>
           <button
-            onClick={() => onOpenCreate && onOpenCreate()}
+            onClick={handleOpenCreate}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/25 transition-all hover:scale-[1.02]"
           >
             <Plus className="w-4 h-4" />
@@ -502,7 +525,7 @@ export const AdminQuestions = ({ onOpenCreate, onOpenEdit, onOpenImport }) => {
                     </button>
 
                     <button
-                      onClick={() => onOpenEdit && onOpenEdit(q)}
+                      onClick={() => handleOpenEdit(q)}
                       className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
                       title="Edit Question"
                     >
@@ -693,7 +716,7 @@ export const AdminQuestions = ({ onOpenCreate, onOpenEdit, onOpenImport }) => {
                 onClick={() => {
                   const toEdit = reviewModalQuestion;
                   setReviewModalQuestion(null);
-                  if (onOpenEdit) onOpenEdit(toEdit);
+                  handleOpenEdit(toEdit);
                 }}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition-colors"
               >
@@ -727,6 +750,14 @@ export const AdminQuestions = ({ onOpenCreate, onOpenEdit, onOpenImport }) => {
           </div>
         </div>
       )}
+
+      {/* Question Form (Create & Edit) Modal */}
+      <QuestionFormModal
+        isOpen={formModalOpen}
+        onClose={() => setFormModalOpen(false)}
+        questionToEdit={questionToEdit}
+        onSaved={fetchQuestions}
+      />
     </div>
   );
 };
