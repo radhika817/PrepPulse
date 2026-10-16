@@ -68,6 +68,9 @@ export const loginUser = async ({ email, password }) => {
   // Explicitly select passwordHash since it is hidden by default
   const user = await User.findOne({ email: normalizedEmail }).select('+passwordHash');
   if (!user || !user.passwordHash) {
+    if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
+      console.warn(`⚠️ [Auth Debug] Login failed: User not found for email "${normalizedEmail}"`);
+    }
     const error = new Error('Invalid email or password');
     error.statusCode = 401;
     error.code = 'INVALID_CREDENTIALS';
@@ -76,6 +79,9 @@ export const loginUser = async ({ email, password }) => {
 
   const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
   if (!isPasswordValid) {
+    if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') {
+      console.warn(`⚠️ [Auth Debug] Login failed: Password mismatch for email "${normalizedEmail}"`);
+    }
     const error = new Error('Invalid email or password');
     error.statusCode = 401;
     error.code = 'INVALID_CREDENTIALS';
