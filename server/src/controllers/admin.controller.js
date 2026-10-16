@@ -137,3 +137,194 @@ export const getAdminQuestionById = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * Normalizes question text for reliable duplicate detection.
+ */
+export const normalizeQuestionText = (text) => {
+  if (!text) return '';
+  return text.toLowerCase().trim().replace(/\s+/g, ' ');
+};
+
+/**
+ * POST /api/v1/admin/questions
+ * Creates a new question. Default reviewStatus is "draft" unless explicitly set.
+ * Rejects duplicates with 409 DUPLICATE_QUESTION.
+ */
+export const createAdminQuestion = async (req, res, next) => {
+  try {
+    const normalizedQuestion = normalizeQuestionText(req.body.question);
+
+    // Duplicate check matching normalized text
+    const duplicate = await Question.findOne({ normalizedQuestion });
+    if (duplicate) {
+      return res.status(409).json({
+        error: {
+          code: 'DUPLICATE_QUESTION',
+          message: 'A question with identical or equivalent text already exists',
+        },
+      });
+    }
+
+    const reviewStatus = req.body.reviewStatus || 'draft';
+    const isReviewed = reviewStatus === 'approved' || reviewStatus === 'rejected';
+
+    const questionData = {
+      ...req.body,
+      normalizedQuestion,
+      reviewStatus,
+      reviewedBy: isReviewed ? req.user._id : null,
+      reviewedAt: isReviewed ? new Date() : null,
+    };
+
+    const newQuestion = await Question.create(questionData);
+    const populated = await Question.findById(newQuestion._id)
+      .select('+answer +followUp')
+      .populate('reviewedBy', 'name email role')
+      .lean();
+
+    return res.status(201).json({ question: populated });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * PATCH /api/v1/admin/questions/:id
+ * Updates fields of an existing question.
+ * Re-checks duplicates if question text is updated.
+ * Automatically records reviewedBy and reviewedAt when reviewStatus changes.
+ */
+export const updateAdminQuestion = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        error: {
+          code: 'INVALID_ID',
+          message: 'Invalid question ID format',
+        },
+      });
+    }
+
+    const question = await Question.findById(id).select('+answer +followUp');
+    if (!question) {
+      return res.status(404).json({
+        error: {
+          code: 'NOT_FOUND',
+          message: 'Question not found',
+        },
+      });
+    }
+
+    // Duplicate check if question text is changing
+    if (req.body.question && req.body.question.trim() !== question.question.trim()) {
+      const newNormalized = normalizeQuestionText(req.body.question);
+      const duplicate = await Question.findOne({
+        normalizedQuestion: newNormalized,
+        _id: { $ne: id },
+      });
+
+      if (duplicate) {
+        return res.status(409).json({
+          error: {
+            code: 'DUPLICATE_QUESTION',
+            message: 'A question with identical or equivalent text already exists',
+          },
+        });
+      }
+      question.normalizedQuestion = newNormalized;
+    }
+
+    // Verify consistency of merged data for MCQ and coding_link rules
+    const effectiveType = req.body.type || question.type;
+    const effectiveOptions = req.body.options !== undefined ? req.body.options : question.options;
+    const effectiveAnswer = req.body.answer !== undefined ? req.body.answer : question.answer;
+    const effectiveExplanation =
+      req.body.explanation !== undefined ? req.body.explanation : question.explanation;
+    const effectiveLink = req.body.link !== undefined ? req.body.link : question.link;
+
+    if (effectiveType === 'mcq') {
+      if (!Array.isArray(effectiveOptions) || effectiveOptions.length < 2) {
+        return res.status(400).json({
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'MCQ questions must provide at least 2 options',
+          },
+        });
+      }
+      const answerMatchesOption = effectiveOptions.some(
+        (opt) => opt.trim().toLowerCase() === effectiveAnswer.trim().toLowerCase()
+      );
+      if (!answerMatchesOption) {
+        return res.status(400).json({
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'The correct answer must be one of the provided options for MCQ',
+          },
+        });
+      }
+      if (typeof effectiveExplanation !== 'string' || effectiveExplanation.trim().length === 0) {
+        return res.status(400).json({
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Explanation is required for MCQ questions',
+          },
+        });
+      }
+    }
+
+    if (effectiveType === 'coding_link' && !effectiveLink) {
+      return res.status(400).json({
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'A valid link is required for coding_link question type',
+        },
+      });
+    }
+
+    // Record reviewer audit trail when reviewStatus changes
+    if (req.body.reviewStatus && req.body.reviewStatus !== question.reviewStatus) {
+      question.reviewedBy = req.user._id;
+      question.reviewedAt = new Date();
+    }
+
+    // Apply allowed body field updates
+    const updateKeys = [
+      'category',
+      'topic',
+      'difficulty',
+      'type',
+      'question',
+      'options',
+      'answer',
+      'explanation',
+      'followUp',
+      'link',
+      'tags',
+      'sourceType',
+      'sourceNote',
+      'reviewStatus',
+      'companyTags',
+    ];
+
+    updateKeys.forEach((key) => {
+      if (req.body[key] !== undefined) {
+        question[key] = req.body[key];
+      }
+    });
+
+    await question.save();
+
+    const updated = await Question.findById(id)
+      .select('+answer +followUp')
+      .populate('reviewedBy', 'name email role')
+      .lean();
+
+    return res.json({ question: updated });
+  } catch (error) {
+    next(error);
+  }
+};
+
