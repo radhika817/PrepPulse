@@ -8,6 +8,7 @@ import {
   createAdminQuestion,
   updateAdminQuestion,
   bulkUpdateQuestionsStatus,
+  importAdminQuestions,
 } from '../controllers/admin.controller.js';
 import { authenticate, requireRole } from '../middleware/auth.js';
 import { apiLimiter } from '../middleware/rateLimiter.js';
@@ -206,6 +207,18 @@ export const adminBulkStatusSchema = z
   })
   .strict();
 
+/**
+ * Validation schema for bulk JSON import
+ */
+export const adminImportQuestionsSchema = z
+  .object({
+    questions: z
+      .array(z.any())
+      .min(1, 'At least one question is required')
+      .max(300, 'Cannot import more than 300 questions at once'),
+  })
+  .strict();
+
 // GET /api/v1/admin/questions/stats (registered before /:id to avoid param capture)
 router.get('/questions/stats', getAdminQuestionStats);
 
@@ -214,6 +227,9 @@ router.get('/questions', validateQuery(adminQuestionsQuerySchema), getAdminQuest
 
 // POST /api/v1/admin/questions/bulk-status
 router.post('/questions/bulk-status', validateBody(adminBulkStatusSchema), bulkUpdateQuestionsStatus);
+
+// POST /api/v1/admin/questions/import
+router.post('/questions/import', validateBody(adminImportQuestionsSchema), importAdminQuestions);
 
 // GET /api/v1/admin/questions/:id
 router.get('/questions/:id', getAdminQuestionById);

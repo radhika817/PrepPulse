@@ -1,5 +1,104 @@
 import mongoose from 'mongoose';
+import { z } from 'zod';
 import { Question } from '../models/Question.js';
+
+export const VALID_CATEGORIES = [
+  'OS',
+  'DSA',
+  'OOP',
+  'CPP',
+  'DBMS',
+  'SQL',
+  'CN',
+  'COA',
+  'WEB',
+  'SYSDESIGN',
+  'APTITUDE',
+  'HR',
+];
+
+export const VALID_DIFFICULTIES = ['easy', 'medium', 'hard'];
+export const VALID_REVIEW_STATUSES = ['draft', 'approved', 'rejected'];
+export const VALID_SOURCE_TYPES = ['own', 'ai_draft', 'licensed'];
+
+/**
+ * Validation schema for creating a question via admin API
+ */
+export const adminCreateQuestionSchema = z
+  .object({
+    category: z.enum(VALID_CATEGORIES),
+    topic: z.string({ required_error: 'Topic is required' }).trim().min(1, 'Topic cannot be empty'),
+    difficulty: z.enum(VALID_DIFFICULTIES),
+    type: z.enum(['mcq', 'short', 'coding_link', 'hr']),
+    question: z
+      .string({ required_error: 'Question is required' })
+      .trim()
+      .min(5, 'Question text must be at least 5 characters long'),
+    options: z.array(z.string().trim()).default([]),
+    answer: z
+      .string({ required_error: 'Answer is required' })
+      .trim()
+      .min(1, 'Answer cannot be empty'),
+    explanation: z.string().trim().optional().default(''),
+    followUp: z.string().trim().optional().nullable(),
+    link: z.string().url('Link must be a valid URL').nullable().optional().default(null),
+    tags: z.array(z.string().trim()).default([]),
+    sourceType: z.enum(VALID_SOURCE_TYPES).default('own'),
+    sourceNote: z.string().default(''),
+    reviewStatus: z.enum(VALID_REVIEW_STATUSES).default('draft'),
+    companyTags: z.array(z.string().trim()).default([]),
+  })
+  .strict()
+  .refine(
+    (data) => {
+      if (data.type === 'mcq') {
+        return Array.isArray(data.options) && data.options.length >= 2;
+      }
+      return true;
+    },
+    {
+      message: 'MCQ questions must provide at least 2 options',
+      path: ['options'],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.type === 'mcq') {
+        return data.options.some(
+          (opt) => opt.trim().toLowerCase() === data.answer.trim().toLowerCase()
+        );
+      }
+      return true;
+    },
+    {
+      message: 'The correct answer must be one of the provided options for MCQ',
+      path: ['answer'],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.type === 'coding_link') {
+        return !!data.link;
+      }
+      return true;
+    },
+    {
+      message: 'A valid link is required for coding_link question type',
+      path: ['link'],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.type === 'mcq') {
+        return typeof data.explanation === 'string' && data.explanation.trim().length > 0;
+      }
+      return true;
+    },
+    {
+      message: 'Explanation is required for MCQ questions',
+      path: ['explanation'],
+    }
+  );
 
 /**
  * GET /api/v1/admin/questions
@@ -357,5 +456,72 @@ export const bulkUpdateQuestionsStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * POST /api/v1/admin/questions/import
+ * Batch imports up to 300 questions.
+ * Validates each item with Zod schema, skips duplicates by normalized text,
+ * forces reviewStatus to "draft", and returns summary without failing the batch.
+ */
+export const importAdminQuestions = async (req, res, next) => {
+  try {
+    const { questions } = req.body;
+
+    const invalid = [];
+    const toInsert = [];
+    let skippedDuplicates = 0;
+    const seenNormalized = new Set();
+
+    for (let i = 0; i < questions.length; i++) {
+      const item = questions[i];
+      const validation = adminCreateQuestionSchema.safeParse(item);
+
+      if (!validation.success) {
+        const errors = validation.error.issues.map(
+          (issue) => `${issue.path.length > 0 ? issue.path.join('.') + ': ' : ''}${issue.message}`
+        );
+        invalid.push({ index: i, errors });
+        continue;
+      }
+
+      const validData = validation.data;
+      const normalized = normalizeQuestionText(validData.question);
+
+      if (seenNormalized.has(normalized)) {
+        skippedDuplicates++;
+        continue;
+      }
+
+      const existingInDb = await Question.findOne({ normalizedQuestion: normalized });
+      if (existingInDb) {
+        seenNormalized.add(normalized);
+        skippedDuplicates++;
+        continue;
+      }
+
+      seenNormalized.add(normalized);
+      toInsert.push({
+        ...validData,
+        normalizedQuestion: normalized,
+        reviewStatus: 'draft',
+        reviewedBy: null,
+        reviewedAt: null,
+      });
+    }
+
+    if (toInsert.length > 0) {
+      await Question.insertMany(toInsert);
+    }
+
+    return res.json({
+      inserted: toInsert.length,
+      skippedDuplicates,
+      invalid,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 
