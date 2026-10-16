@@ -12,6 +12,9 @@ import Revision from './pages/Revision';
 import Bookmarks from './pages/Bookmarks';
 import Profile from './pages/Profile';
 
+import AdminRoute from './components/AdminRoute';
+import AdminDashboard from './pages/admin/AdminDashboard';
+
 export const App = () => {
   return (
     <Routes>
@@ -31,6 +34,11 @@ export const App = () => {
           <Route path="revision" element={<Revision />} />
           <Route path="bookmarks" element={<Bookmarks />} />
           <Route path="profile" element={<Profile />} />
+        </Route>
+
+        {/* Admin Protected Routes (Require Admin Role) */}
+        <Route element={<AdminRoute />}>
+          <Route path="admin" element={<AdminDashboard />} />
         </Route>
 
         {/* Catch-all redirect */}
