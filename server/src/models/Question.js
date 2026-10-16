@@ -103,6 +103,15 @@ const questionSchema = new mongoose.Schema(
       default: 'approved',
       index: true,
     },
+    reviewedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
+    reviewedAt: {
+      type: Date,
+      default: null,
+    },
     companyTags: {
       type: [String],
       default: [],

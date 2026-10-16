@@ -45,6 +45,8 @@ export const questionSchema = z
     sourceType: z.enum(['own', 'ai_draft', 'licensed']).default('own'),
     sourceNote: z.string().default(''),
     reviewStatus: z.enum(['draft', 'approved', 'rejected']).default('approved'),
+    reviewedBy: z.string().trim().nullable().optional().default(null),
+    reviewedAt: z.coerce.date().nullable().optional().default(null),
     companyTags: z.array(z.string().trim()).default([]),
   })
   .refine(
