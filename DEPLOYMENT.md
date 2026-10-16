@@ -79,6 +79,29 @@ Load the curated questions into your remote Atlas database before launching the 
 
 ---
 
+## Admin Role Assignment
+
+To maintain strict security, there is **no API endpoint** that grants administrator privileges. Admin role is granted exclusively via the CLI utility:
+
+### Local Development
+1. Register your user account in the web interface or via the registration API.
+2. From the `server/` directory, run:
+   ```bash
+   npm run make-admin -- you@example.com
+   ```
+   *(Reads `MONGO_URI` directly from your local `server/.env`).*
+
+### Production (MongoDB Atlas)
+Run the script from your local computer with `MONGO_URI` set only in that command:
+```bash
+MONGO_URI="mongodb+srv://<username>:<password>@cluster0.abcde.mongodb.net/preppulse?retryWrites=true&w=majority" npm run make-admin -- you@example.com
+```
+
+> [!CAUTION]
+> For production, always pass `MONGO_URI` only in that specific terminal invocation. Never commit secrets to git or write production database connection strings to local files.
+
+---
+
 ## Step 3: Deploy Backend on Render
 
 > [!NOTE]

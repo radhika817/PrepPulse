@@ -89,6 +89,8 @@ Five collections. Source and review info are embedded in `questions`; separate c
 | `sourceType` | `own` \| `ai_draft` \| `licensed` | |
 | `sourceNote` | String | licence name or reference, if any |
 | `reviewStatus` | `draft` \| `approved` \| `rejected` | only `approved` are served |
+| `reviewedBy` | ObjectId | optional; references user who reviewed/approved/rejected |
+| `reviewedAt` | Date | optional; timestamp when reviewStatus was updated |
 | `companyTags` | String[] | *later* |
 | `createdAt`, `updatedAt` | Date | |
 
@@ -171,11 +173,19 @@ Base path `/api/v1`. All routes except register and login require `Authorization
 
 **Admin (role `admin`)** *(Phase 12)*
 
+All admin routes are strictly rate-limited and require `authenticate` and `requireRole("admin")`. Admin responses include `answer`, `explanation`, and `followUp`.
+
 | Method | Path | Purpose |
 |---|---|---|
-| POST | `/admin/questions` | Create question |
-| PATCH | `/admin/questions/:id` | Edit or change review status |
-| GET | `/admin/questions?reviewStatus=draft` | Review queue |
+| GET | `/admin/questions` | List questions with filters (`reviewStatus`, `category`, `topic`, `difficulty`, `sourceType`, `q`, `page`, `limit` max 50). Returns all fields including `answer`, `explanation`, and `followUp`. |
+| GET | `/admin/questions/stats` | Aggregate question counts grouped by `reviewStatus`, `sourceType`, `category`, and pending `ai_draft` count. |
+| GET | `/admin/questions/:id` | Full details of a single question including `answer`, `explanation`, `followUp`, and reviewer metadata. |
+| POST | `/admin/questions` | Create question (`reviewStatus` defaults to `draft` unless explicitly `approved`). Rejects duplicates with 409. |
+| PATCH | `/admin/questions/:id` | Edit question fields and/or `reviewStatus` (`draft`, `approved`, `rejected`). Automatically sets `reviewedBy` and `reviewedAt`. Enforces duplicate check if question text changes, and validates MCQ options/answer. |
+| POST | `/admin/questions/bulk-status` | Bulk update `reviewStatus` (`draft`, `approved`, `rejected`) for up to 100 question IDs per request. |
+| POST | `/admin/questions/import` | Batch import up to 300 questions. Validates schema, skips duplicates by normalized text, forces all imported questions to `draft`, and returns `{ inserted, skippedDuplicates, invalid: [{ index, errors }] }` without failing the batch. |
+
+*Note: DELETE is intentionally not implemented. Removing a question means setting `reviewStatus` to `rejected`, preserving integrity of user attempts and bookmark states.*
 
 **Conventions:** JSON in and out; errors as `{ "error": { "code", "message" } }`; pagination as `page` and `limit`; all bodies validated with Zod.
 
