@@ -14,6 +14,7 @@ import Profile from './pages/Profile';
 
 import AdminRoute from './components/AdminRoute';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminQuestions from './pages/admin/AdminQuestions';
 
 export const App = () => {
   return (
@@ -39,6 +40,7 @@ export const App = () => {
         {/* Admin Protected Routes (Require Admin Role) */}
         <Route element={<AdminRoute />}>
           <Route path="admin" element={<AdminDashboard />} />
+          <Route path="admin/questions" element={<AdminQuestions />} />
         </Route>
 
         {/* Catch-all redirect */}
