@@ -6,7 +6,7 @@
 
 export const getAiConfig = () => {
   const provider = (process.env.LLM_PROVIDER || 'groq').trim().toLowerCase();
-  const apiKey = (process.env.LLM_API_KEY || '').trim();
+  const apiKey = (process.env.LLM_API_KEY || process.env.GROQ_API_KEY || '').trim();
   const model = (process.env.LLM_MODEL || 'llama-3.3-70b-versatile').trim();
   const timeoutMs = parseInt(process.env.LLM_TIMEOUT_MS || '20000', 10);
   const dailyLimit = parseInt(process.env.AI_DAILY_LIMIT || '15', 10);
