@@ -19,4 +19,4 @@ services:
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: CLIENT_URL
-        sync: false
+        value: https://prep-pulse-hazel.vercel.app

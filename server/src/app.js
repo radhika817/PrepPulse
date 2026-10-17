@@ -27,11 +27,21 @@ app.set('trust proxy', 1);
 // 1. Security HTTP headers
 app.use(helmet());
 
-// 2. Cross-Origin Resource Sharing (CORS) restricted strictly to CLIENT_URL list
-const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
-  .split(',')
-  .map((url) => url.trim().replace(/\/$/, ''))
-  .filter(Boolean);
+// 2. Cross-Origin Resource Sharing (CORS) restricted strictly to CLIENT_URL list and production client
+const getAllowedOrigins = () => {
+  const configured = (process.env.CLIENT_URL || '')
+    .split(',')
+    .map((url) => url.trim().replace(/^["']|["']$/g, '').replace(/\/$/, ''))
+    .filter(Boolean);
+
+  const defaults = [
+    'https://prep-pulse-hazel.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000',
+  ];
+
+  return Array.from(new Set([...configured, ...defaults]));
+};
 
 app.use(
   cors({
@@ -40,8 +50,13 @@ app.use(
       if (!origin) {
         return callback(null, true);
       }
-      const normalizedOrigin = origin.replace(/\/$/, '');
+      const normalizedOrigin = origin.trim().replace(/\/$/, '');
+      const allowedOrigins = getAllowedOrigins();
       if (allowedOrigins.includes(normalizedOrigin)) {
+        return callback(null, true);
+      }
+      // Allow Vercel preview and production deployments for PrepPulse
+      if (/^https:\/\/prep-pulse(-[a-z0-9-]+)?\.vercel\.app$/.test(normalizedOrigin)) {
         return callback(null, true);
       }
       // In development / test, allow localhost origins if not explicitly listed
