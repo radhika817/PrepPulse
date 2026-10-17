@@ -1,3 +1,4 @@
+
 import js from '@eslint/js';
 
 export default [
@@ -12,6 +13,10 @@ export default [
         Buffer: 'readonly',
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
+
+        // Add these two globals
+        fetch: 'readonly',
+        AbortController: 'readonly',
       },
     },
     rules: {
