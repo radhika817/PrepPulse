@@ -313,16 +313,21 @@ export const getBookmarks = async (req, res, next) => {
 
 /**
  * GET /api/v1/revision
- * Returns questions due for review (nextReviewAt <= now) for current user.
+ * Returns questions due for review (default, nextReviewAt <= now) or upcoming (scope=upcoming, nextReviewAt > now) for current user.
  * Silently drops any question that has become rejected or draft.
  * Answer, explanation, and followUp are strictly excluded.
  */
 export const getRevisionQuestions = async (req, res, next) => {
   try {
     const now = new Date();
+    const isUpcoming = req.query.scope === 'upcoming';
+    const reviewFilter = isUpcoming
+      ? { $gt: now, $ne: null }
+      : { $lte: now };
+
     const states = await UserQuestionState.find({
       userId: req.user._id,
-      nextReviewAt: { $lte: now },
+      nextReviewAt: reviewFilter,
     })
       .sort({ nextReviewAt: 1 })
       .populate({
@@ -347,6 +352,71 @@ export const getRevisionQuestions = async (req, res, next) => {
       });
 
     return res.json({ items });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * POST /api/v1/questions/:id/revise-later
+ * Saves a question for spaced revision review (due immediately).
+ * Does NOT create an Attempt, does NOT update daily five, streak, or accuracy.
+ * Preserves existing bookmark flag and Leitner box.
+ */
+export const reviseLaterQuestion = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        error: {
+          code: 'INVALID_ID',
+          message: 'Invalid question ID format',
+        },
+      });
+    }
+
+    const question = await Question.findOne({
+      _id: id,
+      reviewStatus: 'approved',
+    });
+
+    if (!question) {
+      return res.status(404).json({
+        error: {
+          code: 'QUESTION_NOT_FOUND',
+          message: 'Question not found',
+        },
+      });
+    }
+
+    let state = await UserQuestionState.findOne({
+      userId: req.user._id,
+      questionId: question._id,
+    });
+
+    if (!state) {
+      state = new UserQuestionState({
+        userId: req.user._id,
+        questionId: question._id,
+        bookmarked: false,
+        timesSeen: 0,
+        box: 0,
+      });
+    }
+
+    // Schedule for revision: due immediately, preserve box (or 0 if unset)
+    state.box = typeof state.box === 'number' ? state.box : 0;
+    state.nextReviewAt = new Date();
+    await state.save();
+
+    return res.json({
+      success: true,
+      message: 'Saved for revision',
+      questionId: question._id,
+      nextReviewAt: state.nextReviewAt,
+      box: state.box,
+    });
   } catch (error) {
     next(error);
   }
@@ -790,6 +860,7 @@ export default {
   attemptQuestion,
   onChallengeCompleted,
   getQuestionAiFeedback,
+  reviseLaterQuestion,
 };
 
 

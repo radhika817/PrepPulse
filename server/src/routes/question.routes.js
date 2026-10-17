@@ -11,6 +11,7 @@ import {
   getQuestionById,
   toggleBookmark,
   revealQuestion,
+  reviseLaterQuestion,
   attemptQuestion,
   getQuestionAiFeedback,
 } from '../controllers/question.controller.js';
@@ -32,6 +33,9 @@ router.get('/:id', getQuestionById);
 
 // POST /api/v1/questions/:id/reveal - reveal answer and explanation (stateless)
 router.post('/:id/reveal', revealQuestion);
+
+// POST /api/v1/questions/:id/revise-later - save question for revision (stateless attempt, keeps bookmark)
+router.post('/:id/revise-later', reviseLaterQuestion);
 
 // POST /api/v1/questions/:id/attempt - submit an answer or self-rating
 router.post('/:id/attempt', validateBody(attemptSchema), attemptQuestion);
