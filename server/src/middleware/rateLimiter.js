@@ -36,4 +36,23 @@ export const authLimiter = rateLimit({
   },
 });
 
+/**
+ * Short-window rate limiter for AI feedback requests (5 requests per minute per user).
+ */
+export const aiFeedbackLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.user?._id?.toString() || req.ip,
+  skip: () => process.env.NODE_ENV === 'test',
+  message: {
+    error: {
+      code: 'TOO_MANY_REQUESTS',
+      message: 'Too many AI feedback requests. Please wait a moment before trying again.',
+    },
+  },
+});
+
 export default apiLimiter;
+

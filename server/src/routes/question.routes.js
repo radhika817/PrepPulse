@@ -3,6 +3,8 @@ import { authenticate } from '../middleware/auth.js';
 import { validateQuery, validateBody } from '../middleware/validate.js';
 import { questionQuerySchema } from '../validators/question.query.validator.js';
 import { attemptSchema } from '../validators/attempt.validator.js';
+import { aiFeedbackInputSchema } from '../validators/aiFeedback.validator.js';
+import { aiFeedbackLimiter } from '../middleware/rateLimiter.js';
 import {
   getQuestions,
   getQuestionsMeta,
@@ -10,6 +12,7 @@ import {
   toggleBookmark,
   revealQuestion,
   attemptQuestion,
+  getQuestionAiFeedback,
 } from '../controllers/question.controller.js';
 
 const router = express.Router();
@@ -35,6 +38,14 @@ router.post('/:id/attempt', validateBody(attemptSchema), attemptQuestion);
 
 // POST /api/v1/questions/:id/bookmark - toggle bookmark status for current user
 router.post('/:id/bookmark', toggleBookmark);
+
+// POST /api/v1/questions/:id/ai-feedback - get structured AI feedback on typed answer
+router.post(
+  '/:id/ai-feedback',
+  aiFeedbackLimiter,
+  validateBody(aiFeedbackInputSchema),
+  getQuestionAiFeedback
+);
 
 export default router;
 

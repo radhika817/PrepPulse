@@ -6,6 +6,9 @@ import { DailyChallenge } from '../models/DailyChallenge.js';
 import { updateRevisionState } from '../services/revision.service.js';
 import { getTodayKey, getYesterdayKey } from '../utils/date.util.js';
 import { updateStreakOnCompletion, getEffectiveStreak } from '../services/streak.service.js';
+import { isAiConfigured } from '../config/ai.config.js';
+import { generateFeedback } from '../services/aiFeedback.service.js';
+import { checkAndIncrementDailyUsage } from '../services/aiUsage.service.js';
 
 /**
  * GET /api/v1/questions
@@ -653,6 +656,129 @@ export const attemptQuestion = async (req, res, next) => {
   }
 };
 
+/**
+ * POST /api/v1/questions/:id/ai-feedback
+ * Provides structured AI feedback on a student's typed answer for non-MCQ questions.
+ *
+ * Rules:
+ * - 400 for invalid ObjectId
+ * - 404 for question missing or reviewStatus !== 'approved'
+ * - 400 if question type is 'mcq'
+ * - 503 code AI_DISABLED if AI features are disabled/unconfigured
+ * - Reference answer loaded with .select('+answer') on server only and NOT returned in response
+ * - Daily limit enforced atomically via AiUsage collection; 429 if exceeded with remaining count
+ * - Personal data (name, email, id) never sent to provider
+ * - Logs only user id, question id, status, latency. Never logs answer text, prompt, output, or key.
+ * - Handles provider timeouts (504 AI_TIMEOUT), network errors (502 AI_UNAVAILABLE) without leaking details
+ */
+export const getQuestionAiFeedback = async (req, res, next) => {
+  const startTime = Date.now();
+  const { id } = req.params;
+  const { userAnswer } = req.body;
+
+  // 1. Validate ObjectId
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({
+      error: {
+        code: 'INVALID_ID',
+        message: 'Invalid question ID',
+      },
+    });
+  }
+
+  // 2. Check feature flag
+  if (!isAiConfigured()) {
+    return res.status(503).json({
+      error: {
+        code: 'AI_DISABLED',
+        message: 'AI feedback is currently disabled',
+      },
+    });
+  }
+
+  try {
+    // 3. Find question and load reference answer (server only)
+    const question = await Question.findById(id).select('+answer');
+
+    if (!question || question.reviewStatus !== 'approved') {
+      return res.status(404).json({
+        error: {
+          code: 'NOT_FOUND',
+          message: 'Question not found',
+        },
+      });
+    }
+
+    // 4. Reject MCQ questions
+    if (question.type === 'mcq') {
+      return res.status(400).json({
+        error: {
+          code: 'INVALID_QUESTION_TYPE',
+          message: 'AI feedback is not available for multiple choice questions',
+        },
+      });
+    }
+
+    // 5. Atomically check and increment daily usage
+    const usage = await checkAndIncrementDailyUsage(req.user._id, req.user.timezone);
+    if (!usage.allowed) {
+      return res.status(429).json({
+        error: {
+          code: 'AI_DAILY_LIMIT_EXCEEDED',
+          message: 'Daily AI feedback limit reached. Please try again tomorrow.',
+          remainingToday: 0,
+        },
+      });
+    }
+
+    // 6. Generate AI feedback (retries once if output malformed)
+    let feedback;
+    try {
+      feedback = await generateFeedback({
+        question: question.question,
+        referenceAnswer: question.answer,
+        userAnswer,
+      });
+    } catch (aiErr) {
+      const latency = Date.now() - startTime;
+      const statusCode = aiErr.statusCode || (aiErr.code === 'AI_TIMEOUT' ? 504 : 502);
+      console.log(
+        `[AI Feedback] userId: ${req.user._id}, questionId: ${question._id}, status: ${statusCode}, latencyMs: ${latency}`
+      );
+
+      if (aiErr.code === 'AI_TIMEOUT') {
+        return res.status(504).json({
+          error: {
+            code: 'AI_TIMEOUT',
+            message: 'AI feedback request timed out. Please try again.',
+          },
+        });
+      }
+
+      return res.status(502).json({
+        error: {
+          code: aiErr.code || 'AI_UNAVAILABLE',
+          message: 'AI feedback service is currently unavailable. Please try again later.',
+        },
+      });
+    }
+
+    const latency = Date.now() - startTime;
+    console.log(
+      `[AI Feedback] userId: ${req.user._id}, questionId: ${question._id}, status: 200, latencyMs: ${latency}`
+    );
+
+    // 7. Return feedback with remainingToday.
+    // Crucial: do NOT return question.answer!
+    return res.json({
+      ...feedback,
+      remainingToday: usage.remainingToday,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getQuestions,
   getQuestionsMeta,
@@ -663,6 +789,8 @@ export default {
   revealQuestion,
   attemptQuestion,
   onChallengeCompleted,
+  getQuestionAiFeedback,
 };
+
 
 
