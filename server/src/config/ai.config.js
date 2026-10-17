@@ -21,15 +21,33 @@ export const getAiConfig = () => {
 };
 
 /**
+ * Returns null if configured, or a descriptive reason string if disabled:
+ * 'missing_key' | 'missing_model' | 'unknown_provider'
+ */
+export const getAiConfigReason = () => {
+  const config = getAiConfig();
+  if (config.provider !== 'groq') {
+    return 'unknown_provider';
+  }
+  if (!config.apiKey || config.apiKey.length === 0) {
+    return 'missing_key';
+  }
+  if (!config.model || config.model.length === 0) {
+    return 'missing_model';
+  }
+  return null;
+};
+
+/**
  * Checks whether AI features are fully configured and ready to be used.
  * Returns true only when LLM_API_KEY and model are set and non-empty.
  */
 export const isAiConfigured = () => {
-  const config = getAiConfig();
-  return Boolean(config.apiKey && config.apiKey.length > 0 && config.model && config.model.length > 0);
+  return getAiConfigReason() === null;
 };
 
 export default {
   getAiConfig,
+  getAiConfigReason,
   isAiConfigured,
 };
