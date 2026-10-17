@@ -230,6 +230,7 @@ export const Practice = () => {
 
   // AI Feedback states
   const [aiFeatureEnabled, setAiFeatureEnabled] = useState(false);
+  const [aiFeedbackReason, setAiFeedbackReason] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiFeedback, setAiFeedback] = useState(null);
   const [aiError, setAiError] = useState(null);
@@ -283,25 +284,27 @@ export const Practice = () => {
     };
   }, [id, location.search, dailyChallengeId]);
 
-  // Check runtime AI feature flag on mount
+  // Check runtime AI feature flag on mount and when question changes
   useEffect(() => {
     let isMounted = true;
     getFeatures()
       .then((data) => {
         if (isMounted) {
           setAiFeatureEnabled(Boolean(data?.aiFeedback));
+          setAiFeedbackReason(data?.aiFeedbackReason || null);
         }
       })
       .catch(() => {
         if (isMounted) {
           setAiFeatureEnabled(false);
+          setAiFeedbackReason(null);
         }
       });
 
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [id]);
 
   // Load question details
   useEffect(() => {
