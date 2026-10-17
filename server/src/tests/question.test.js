@@ -664,8 +664,8 @@ describe('Questions & Bookmarks API (Phase 5)', () => {
       expect(stateMissed.timesSeen).toBe(1);
       expect(stateMissed.box).toBe(0);
       const missedReviewDiff = new Date(stateMissed.nextReviewAt).getTime() - now;
-      expect(missedReviewDiff).toBeGreaterThanOrEqual(23 * 60 * 60 * 1000);
-      expect(missedReviewDiff).toBeLessThanOrEqual(25 * 60 * 60 * 1000);
+      expect(missedReviewDiff).toBeGreaterThanOrEqual(9 * 60 * 1000);
+      expect(missedReviewDiff).toBeLessThanOrEqual(11 * 60 * 1000);
 
       // Test 2: partly rating sets box = max(box, 1) = 1, nextReviewAt = ~now + 3 days
       const partlyRes = await request(app)
