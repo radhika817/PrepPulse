@@ -141,19 +141,19 @@ MONGO_URI="mongodb+srv://<username>:<password>@cluster0.abcde.mongodb.net/preppu
    | `MONGO_URI` | `mongodb+srv://<username>:<password>@...` | Your MongoDB Atlas connection string |
    | `JWT_SECRET` | *(Random 32+ character string)* | e.g. run `openssl rand -hex 24` |
    | `JWT_EXPIRES_IN` | `7d` | Token lifetime |
-   | `CLIENT_URL` | `https://<your-app>.vercel.app` | Vercel production frontend URL (and preview URLs separated by commas) |
+   | `CLIENT_URL` | `https://prep-pulse-hazel.vercel.app` | Vercel production frontend URL (and preview URLs separated by commas) |
    | `LLM_PROVIDER` | `groq` | Optional: LLM provider (default: `groq`) |
    | `LLM_API_KEY` | *(Your Groq API key)* | Optional: Server-only key; feature is disabled if omitted |
-   | `LLM_MODEL` | `llama-3.3-70b-versatile` | Optional: Model name |
+   | `LLM_MODEL` | `openai/gpt-oss-120b` | Optional: Model name |
    | `LLM_TIMEOUT_MS` | `20000` | Optional: Request timeout in milliseconds |
    | `AI_DAILY_LIMIT` | `15` | Optional: Daily feedback requests limit per user |
 
 > [!NOTE]
 > **AI Feedback & Provider Cost Note:**
-> PrepPulse uses Groq (`llama-3.3-70b-versatile`) by default. Groq offers generous free-tier limits for developer portfolios. Daily usage is strictly capped at `AI_DAILY_LIMIT` (default 15 requests per user per calendar day in their timezone) via atomic MongoDB tracking. If `LLM_API_KEY` is omitted, the feature flag automatically returns `{ aiFeedback: false }` and all other PrepPulse features remain completely operational. The key lives solely in server environment variables and never reaches the client.
+> PrepPulse uses Groq (`openai/gpt-oss-120b` or `llama-3.3-70b-versatile`) by default. Groq offers generous free-tier limits for developer portfolios. Daily usage is strictly capped at `AI_DAILY_LIMIT` (default 15 requests per user per calendar day in their timezone) via atomic MongoDB tracking. If `LLM_API_KEY` is omitted, the feature flag automatically returns `{ aiFeedback: false }` and all other PrepPulse features remain completely operational. The key lives solely in server environment variables and never reaches the client.
 
 6. Click **Create Web Service**. Wait for the deployment to finish.
-7. Test the health endpoint: `https://<render-url>.onrender.com/api/v1/health` (should return `{"status":"ok"}`).
+7. Test the health endpoint: `https://preppulse-y925.onrender.com/api/v1/health` (should return `{"status":"ok"}`).
 
 ---
 
@@ -170,10 +170,10 @@ MONGO_URI="mongodb+srv://<username>:<password>@cluster0.abcde.mongodb.net/preppu
 5. Under **Environment Variables**, add:
    | Variable | Value | Notes |
    |---|---|---|
-   | `VITE_API_URL` | `https://<your-render-url>.onrender.com/api/v1` | Points to your live Render backend (must include `/api/v1`) |
+   | `VITE_API_URL` | `https://preppulse-y925.onrender.com/api/v1` | Points to your live Render backend (must include `/api/v1`) |
 6. Click **Deploy**.
-7. Once deployed, copy your production Vercel URL (e.g. `https://preppulse.vercel.app`).
-8. Return to your **Render Web Service** → **Environment Variables** and update `CLIENT_URL` with your actual Vercel URL.
+7. Once deployed, copy your production Vercel URL (e.g. `https://prep-pulse-hazel.vercel.app`).
+8. Return to your **Render Web Service** → **Environment Variables** and update `CLIENT_URL` with your actual Vercel URL (`https://prep-pulse-hazel.vercel.app`).
 
 > [!TIP]
 > `client/vercel.json` already contains single-page application (SPA) rewrite rules to route all subpaths (`/dashboard`, `/daily`, `/questions`, `/practice/:id`) to `/index.html` on browser refresh.
@@ -184,8 +184,8 @@ MONGO_URI="mongodb+srv://<username>:<password>@cluster0.abcde.mongodb.net/preppu
 
 After deploying both services, walk through this checklist:
 
-- [ ] **Health Check:** Open `https://<your-render-url>.onrender.com/api/v1/health` in a browser. Confirms `{"status":"ok"}`.
-- [ ] **Landing Page:** Visit your Vercel URL. Check that navbar displays `API Online`.
+- [ ] **Health Check:** Open `https://preppulse-y925.onrender.com/api/v1/health` in a browser. Confirms `{"status":"ok"}`.
+- [ ] **Landing Page:** Visit your Vercel URL (`https://prep-pulse-hazel.vercel.app`). Check that navbar displays `API Online`.
 - [ ] **Registration:** Sign up with a new account. Confirms JWT generation and password hashing.
 - [ ] **Navbar Streak Badge:** Confirm the flame badge shows `0` with `best: 0`.
 - [ ] **Browse Questions:** Go to `/questions`. Verify that seeded questions load, filter by category/difficulty, and search queries work.

@@ -2,10 +2,13 @@
 ### Practice every day. Prepare with purpose.
 
 [![CI](https://github.com/radhika817/PrepPulse/actions/workflows/ci.yml/badge.svg)](https://github.com/radhika817/PrepPulse/actions/workflows/ci.yml)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-blue?style=flat&logo=vercel)](https://prep-pulse-hazel.vercel.app/)
+[![API Status](https://img.shields.io/badge/API-Render-green?style=flat&logo=render)](https://preppulse-y925.onrender.com/api/v1/health)
 
-PrepPulse is a full-stack interview preparation platform for engineering students preparing for internships, campus placements and off-campus jobs. It combines a daily five-question challenge, a searchable question bank, self-graded "Show answer" practice, streaks, and a progress dashboard that points you at your weak topics.
+PrepPulse is a full-stack interview preparation platform for engineering students preparing for internships, campus placements, and off-campus jobs. It combines a daily five-question challenge, a searchable question bank, self-graded "Show answer" practice, spaced repetition revision, AI feedback on typed answers, streaks, and a progress dashboard that points you at your weak topics.
 
-> **Status:** MVP Complete (Phases 1–11). Built as a learning and portfolio project for campus placement and engineering interview preparation.
+> 🚀 **Live Demo:** [https://prep-pulse-hazel.vercel.app/](https://prep-pulse-hazel.vercel.app/)  
+> ⚡ **Backend API Health:** [https://preppulse-y925.onrender.com/api/v1/health](https://preppulse-y925.onrender.com/api/v1/health)
 
 ---
 
@@ -15,38 +18,33 @@ Large sites already have big question banks. PrepPulse focuses on the daily habi
 
 - **Show answer + self-rating** after every question, so open-ended theory questions work without auto-grading.
 - **Adaptive daily five:** part of each day's set is picked from your weakest topics.
-- **Spaced revision:** questions you miss come back after 1, 3 and 7 days.
+- **Spaced revision queue:** missed questions return in 10 minutes; mastered questions progress through Leitner intervals (1d, 3d, 7d).
+- **AI Answer Feedback:** instant evaluation of typed answers for short theory, HR, and coding questions.
 - **Placement-focused content:** core CS subjects, aptitude and HR rounds for campus placements.
 
 ---
 
 ## Features
 
-### MVP (building now)
-- Email and password authentication (JWT), user profile with time zone (default IST)
-- Question bank: DSA, DBMS, OS, CN, OOP, SQL, aptitude, HR
-- Search and filter by category, topic and difficulty
-- **Show answer** button on every question, followed by a self-rating (Knew it / Partly / Missed it)
-- MCQ auto-grading in practice mode
-- Daily challenge of five questions (3 general + 2 from weak topics)
-- Daily streaks: current and longest streak, completion calendar
-- Bookmarks
-- Revision queue with simple spaced repetition
-- Progress dashboard: attempts, topic accuracy, weak topics, activity
+### Core & Implemented Features
+- **Live Cloud Deployment:** Frontend on Vercel, backend API on Render, remote database on MongoDB Atlas.
+- **Authentication & Security:** JWT authentication, bcrypt password hashing, role-based access control.
+- **Question Bank:** 198 curated questions across DSA, DBMS, OS, CN, OOP, SQL, Web/Cloud, Aptitude, and HR.
+- **Search & Filters:** Real-time search, category/topic filters, difficulty levels, and company tags.
+- **Show Answer & Self-Rating:** Reveal answers with one click and grade recall (`Knew it`, `Partly`, `Missed it`).
+- **Revise Later:** Instantly add any question to your personalized revision queue.
+- **AI Feedback:** On-demand AI critique of typed answers (short, HR, coding) with Groq LLM integration and rate-limiting.
+- **Spaced Repetition System:** Due and Upcoming revision tabs with Leitner box scheduling and real-time badge updates.
+- **Adaptive Daily Challenge:** 5 questions daily (3 general + 2 focused on your weakest topics).
+- **Streaks & Activity Calendar:** Daily habit tracking with current/longest streak and interactive 7-day activity view.
+- **Progress Dashboard:** Comprehensive stats on topic accuracy, weak spots, total attempts, and review progress.
+- **Admin Panel:** Complete question management, CSV/JSON bulk import, and secure `make-admin` CLI utility.
 
-### Next
-- Admin panel to add, edit and approve questions
-- Streak milestone badges (3, 7, 14, 30, 100 days)
-- Company-wise preparation pages with source tracking
-- AI-drafted questions with an admin approve/reject screen
-- Optional email reminders
-
-### Future
-- AI mock interviews (technical and HR) with follow-up questions
-- AI feedback on written answers
+### Future Enhancements
+- AI mock interviews (technical and HR) with conversational follow-up questions
 - Voice-based mock interviews
-- Coding execution with test cases
-- College leaderboards and peer challenges
+- Coding execution sandbox with custom test cases
+- College leaderboards and peer challenge rooms
 - Resume-based question generation
 
 ---
@@ -96,7 +94,7 @@ Every question follows one format:
 | Database | MongoDB + Mongoose |
 | Auth | JWT, bcrypt password hashing |
 | Testing | Vitest / Jest, Supertest |
-| AI (planned) | LLM API, called only from the backend |
+| AI | Groq LLM API (`openai/gpt-oss-120b`, server-only, rate-limited) |
 | Deployment | Vercel (frontend), Render (backend), MongoDB Atlas (database) |
 
 See [SYSTEM_DESIGN.md](./SYSTEM_DESIGN.md) for architecture, data models, API design and core algorithms.
@@ -120,7 +118,7 @@ preppulse/
 │       ├── models/
 │       ├── routes/
 │       ├── controllers/
-│       ├── services/      # streak, daily challenge, progress logic
+│       ├── services/      # streak, daily challenge, progress, AI logic
 │       ├── middleware/    # auth, validation, rate limiting, errors
 │       ├── validators/    # Zod schemas
 │       └── seed/          # question JSON files + seed script
@@ -172,14 +170,15 @@ For deploying to production (MongoDB Atlas, Render, Vercel), see the complete [D
 - [x] **Phase 4:** Authentication and user profiles
 - [x] **Phase 5:** Question list, search, filters, bookmarks
 - [x] **Phase 6:** Question practice screen with Show answer and self-rating
-- [x] **Phase 7:** Seed the first curated questions (~200 questions across 11 topics)
+- [x] **Phase 7:** Seed curated questions (198 approved questions across 11 topics)
 - [x] **Phase 8:** Daily five-question challenge
-- [x] **Phase 9:** Streak tracking
+- [x] **Phase 9:** Streak tracking and activity calendar
 - [x] **Phase 10:** Progress dashboard, weak topics, revision queue
-- [x] **Phase 11:** Tests, CI, deployment (**MVP complete**)
-- [ ] **Phase 12:** Admin panel and achievements
-- [ ] **Phase 13:** Company pages and AI-drafted questions
-- [ ] **Phase 14:** AI answer feedback and mock interviews
+- [x] **Phase 11:** Tests (114 passing), CI workflow, and deployment documentation
+- [x] **Phase 12:** Admin panel, bulk CSV/JSON import, and `make-admin` utility
+- [x] **Phase 13:** Spaced repetition revision intervals & live navbar badge sync
+- [x] **Phase 14 (MVP):** AI feedback on typed answers with rate limiting
+- [ ] **Phase 15:** Voice-based mock interviews & college leaderboards
 
 ---
 
