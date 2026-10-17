@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Compass,
@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import api from '../services/api';
+import { getRevisionCount } from '../services/revision';
 import StreakBadge from './StreakBadge';
 
 export const Navbar = () => {
@@ -28,6 +28,7 @@ export const Navbar = () => {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [revisionDueCount, setRevisionDueCount] = useState(0);
+  const lastFetchedRef = useRef(0);
 
   // Close mobile drawer on route change
   useEffect(() => {
@@ -35,29 +36,59 @@ export const Navbar = () => {
   }, [location.pathname]);
 
   // Fetch due revisions count if user is authenticated
+  // Refreshes on mount, on focus/visibility (at most once every 60s), every 60s while open, and on revision-updated
   useEffect(() => {
     let isMounted = true;
-    const fetchDueCount = async () => {
+    const THROTTLE_MS = 60000;
+
+    const fetchDueCount = async (force = false) => {
       if (!isAuthenticated) {
         setRevisionDueCount(0);
         return;
       }
+
+      const now = Date.now();
+      if (!force && now - lastFetchedRef.current < THROTTLE_MS) {
+        return;
+      }
+      lastFetchedRef.current = now;
+
       try {
-        const res = await api.get('/revision');
+        const res = await getRevisionCount();
         if (isMounted) {
-          const items = res.data?.items || [];
-          setRevisionDueCount(items.length);
+          setRevisionDueCount(res?.due ?? 0);
         }
       } catch {
         // Silently ignore if offline or error
       }
     };
 
-    fetchDueCount();
-    window.addEventListener('revision-updated', fetchDueCount);
+    fetchDueCount(true);
+
+    // Refresh at most once every 60 seconds while open
+    const intervalId = setInterval(() => {
+      fetchDueCount(false);
+    }, THROTTLE_MS);
+
+    // Refresh when tab becomes visible again (throttled to at most once per 60s)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchDueCount(false);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Immediate refresh on user actions
+    const handleRevisionUpdated = () => {
+      fetchDueCount(true);
+    };
+    window.addEventListener('revision-updated', handleRevisionUpdated);
+
     return () => {
       isMounted = false;
-      window.removeEventListener('revision-updated', fetchDueCount);
+      clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('revision-updated', handleRevisionUpdated);
     };
   }, [isAuthenticated]);
 

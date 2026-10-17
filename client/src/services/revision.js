@@ -32,7 +32,19 @@ export const getRevisionQuestions = async (scope = 'due') => {
   return response.data;
 };
 
+/**
+ * Fetches due and upcoming question counts in the user's revision queue.
+ *
+ * @returns {Promise<{ due: number, upcoming: number }>}
+ */
+export const getRevisionCount = async () => {
+  const response = await api.get('/revision/count');
+  return response.data;
+};
+
 export default {
   reviseLater,
   getRevisionQuestions,
+  getRevisionCount,
 };
+
