@@ -28,6 +28,7 @@ import {
   submitAttempt,
 } from '../services/questions';
 import { getDaily } from '../services/daily';
+import { reviseLater } from '../services/revision';
 import { getFeatures, getAiFeedback } from '../services/ai';
 import {
   Button,
@@ -236,6 +237,10 @@ export const Practice = () => {
   const [aiError, setAiError] = useState(null);
   const [remainingToday, setRemainingToday] = useState(null);
 
+  // Revise Later states
+  const [isRevisingLater, setIsRevisingLater] = useState(false);
+  const [isRevisedLater, setIsRevisedLater] = useState(false);
+
   // Next question navigation state
   const [nextQuestionId, setNextQuestionId] = useState(null);
 
@@ -329,6 +334,8 @@ export const Practice = () => {
         setAiFeedback(null);
         setAiError(null);
         setAiLoading(false);
+        setIsRevisingLater(false);
+        setIsRevisedLater(false);
 
         const data = await getQuestionById(id);
         setQuestion(data);
@@ -441,6 +448,24 @@ export const Practice = () => {
     }
   };
 
+  // Revise Later Handler
+  const handleReviseLater = async () => {
+    if (!question || isRevisingLater || isRevisedLater) return;
+
+    try {
+      setIsRevisingLater(true);
+      await reviseLater(question._id);
+      setIsRevisedLater(true);
+    } catch (err) {
+      console.error('Failed to save for revision:', err);
+      setAttemptError(
+        err.response?.data?.error?.message || err.message || 'Failed to save for revision.'
+      );
+    } finally {
+      setIsRevisingLater(false);
+    }
+  };
+
   // Reveal Handler (Show Answer on any question)
   const handleShowAnswer = async () => {
     if (revealing || revealed || submitting) return;
@@ -510,6 +535,8 @@ export const Practice = () => {
           window.dispatchEvent(new CustomEvent('streak-updated', { detail: res.streak }));
         }
       }
+
+      window.dispatchEvent(new CustomEvent('revision-updated'));
     } catch (err) {
       console.error('Failed to submit rating:', err);
       setAttemptError(
@@ -906,6 +933,28 @@ export const Practice = () => {
                   </p>
 
                   <div className="flex items-center gap-2.5">
+                    <Button
+                      variant="secondary"
+                      size="md"
+                      id="revise-later-btn"
+                      onClick={handleReviseLater}
+                      isLoading={isRevisingLater}
+                      disabled={isRevisedLater || isRevisingLater || revealing || submitting}
+                      title={isRevisedLater ? 'Saved for revision' : 'Save for revision'}
+                    >
+                      {isRevisedLater ? (
+                        <>
+                          <Check className="w-4 h-4 mr-1.5 text-emerald-600 dark:text-emerald-400" />
+                          <span>Saved for revision</span>
+                        </>
+                      ) : (
+                        <>
+                          <RotateCcw className="w-4 h-4 mr-1.5 opacity-70" />
+                          <span>Revise later</span>
+                        </>
+                      )}
+                    </Button>
+
                     <Button
                       variant="secondary"
                       size="md"
