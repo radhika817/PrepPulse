@@ -51,10 +51,13 @@ export const StreakBadge = () => {
     return (
       <div
         id="navbar-streak-badge-loading"
-        className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400 animate-pulse text-xs"
+        role="status"
+        aria-label="Loading streak"
+        className="h-9 px-3 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 flex items-center gap-2 whitespace-nowrap select-none animate-pulse text-sm font-semibold"
       >
-        <Flame className="w-4 h-4 text-slate-400" />
-        <span className="w-6 h-3 bg-slate-200 dark:bg-slate-700 rounded" />
+        <Flame className="w-4 h-4 text-slate-300 dark:text-slate-600 shrink-0" />
+        <span className="tabular-nums font-semibold">–</span>
+        <span>day streak</span>
       </div>
     );
   }
@@ -63,48 +66,41 @@ export const StreakBadge = () => {
     return null;
   }
 
-  const { current = 0, longest = 0, completedToday = false } = streakData;
-  const isBroken = current === 0;
+  const { current = 0, longest = 0 } = streakData;
 
-  const hintText = completedToday
-    ? "Today's challenge completed! Great habit."
-    : "Complete today's five to keep your streak";
+  const getBadgeStyles = () => {
+    if (current === 0) {
+      return {
+        pill: 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700',
+        flame: 'text-slate-400 dark:text-slate-500',
+      };
+    }
+    if (current >= 7) {
+      return {
+        pill: 'bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900/40 dark:text-orange-200 dark:border-orange-700/70 shadow-sm',
+        flame: 'text-orange-600 fill-orange-600 dark:text-orange-400 dark:fill-orange-400',
+      };
+    }
+    return {
+      pill: 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950/40 dark:text-orange-300 dark:border-orange-800/60 shadow-sm',
+      flame: 'text-orange-500 fill-orange-500 dark:text-orange-400 dark:fill-orange-400',
+    };
+  };
+
+  const { pill: pillColor, flame: flameColor } = getBadgeStyles();
 
   return (
     <div
       id="navbar-streak-badge"
-      title={hintText}
-      className={`group relative flex items-center gap-2 px-2.5 py-1 rounded-xl text-xs font-medium border transition-all cursor-default select-none ${
-        isBroken
-          ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
-          : completedToday
-          ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 border-amber-200 dark:border-amber-800/60 shadow-sm'
-          : 'bg-orange-50 dark:bg-orange-950/40 text-orange-900 dark:text-orange-200 border-orange-200 dark:border-orange-800/60 shadow-sm'
-      }`}
+      aria-label={`Current streak: ${current} ${current === 1 ? 'day' : 'days'}, longest ${longest} ${longest === 1 ? 'day' : 'days'}`}
+      className={`group relative h-9 px-3 rounded-full text-sm font-semibold border flex items-center gap-2 whitespace-nowrap select-none cursor-default transition-all ${pillColor}`}
     >
-      <div className="flex items-center gap-1">
-        <Flame
-          className={`w-4 h-4 transition-transform group-hover:scale-110 ${
-            isBroken
-              ? 'text-slate-400 dark:text-slate-500'
-              : completedToday
-              ? 'text-amber-500 fill-amber-500'
-              : 'text-orange-500 fill-orange-500'
-          }`}
-        />
-        <span className="font-bold font-mono text-sm leading-none">{current}</span>
-      </div>
-
-      <span className="text-[11px] text-slate-500 dark:text-slate-400 border-l border-slate-200 dark:border-slate-700/80 pl-1.5 font-normal">
-        best: <span className="font-semibold text-slate-700 dark:text-slate-300">{longest}</span>
-      </span>
-
-      {/* Hint on hover */}
-      {!completedToday && (
-        <span className="absolute left-1/2 -translate-x-1/2 top-full mt-2 hidden group-hover:block z-50 whitespace-nowrap px-2.5 py-1 text-xs font-medium text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg pointer-events-none">
-          {hintText}
-        </span>
-      )}
+      <Flame
+        className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${flameColor}`}
+      />
+      <span className="tabular-nums font-semibold">{current}</span>
+      <span>day streak</span>
+      <span className="text-xs opacity-75 font-normal">best: {longest}</span>
     </div>
   );
 };
