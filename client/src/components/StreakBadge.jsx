@@ -57,7 +57,7 @@ export const StreakBadge = () => {
       >
         <Flame className="w-4 h-4 text-slate-300 dark:text-slate-600 shrink-0" />
         <span className="tabular-nums font-semibold">–</span>
-        <span>day streak</span>
+        <span className="hidden md:inline">day streak</span>
       </div>
     );
   }
@@ -88,10 +88,12 @@ export const StreakBadge = () => {
   };
 
   const { pill: pillColor, flame: flameColor } = getBadgeStyles();
+  const tooltipText = `Longest streak: ${longest} ${longest === 1 ? 'day' : 'days'}`;
 
   return (
     <div
       id="navbar-streak-badge"
+      title={tooltipText}
       aria-label={`Current streak: ${current} ${current === 1 ? 'day' : 'days'}, longest ${longest} ${longest === 1 ? 'day' : 'days'}`}
       className={`group relative h-9 px-3 rounded-full text-sm font-semibold border flex items-center gap-2 whitespace-nowrap select-none cursor-default transition-all ${pillColor}`}
     >
@@ -99,8 +101,12 @@ export const StreakBadge = () => {
         className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${flameColor}`}
       />
       <span className="tabular-nums font-semibold">{current}</span>
-      <span>day streak</span>
-      <span className="text-xs opacity-75 font-normal">best: {longest}</span>
+      <span className="hidden md:inline">day streak</span>
+
+      {/* Tooltip on hover */}
+      <span className="absolute left-1/2 -translate-x-1/2 top-full mt-2 hidden group-hover:block z-50 whitespace-nowrap px-2.5 py-1 text-xs font-medium text-slate-800 dark:text-slate-100 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg pointer-events-none">
+        {tooltipText}
+      </span>
     </div>
   );
 };

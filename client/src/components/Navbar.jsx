@@ -117,10 +117,10 @@ export const Navbar = () => {
   return (
     <header className="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
       <div className="max-w-content mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
           {/* Left: Brand Logo & Main Nav */}
-          <div className="flex items-center gap-6">
-            <Link to="/" className="flex items-center gap-2.5 group">
+          <div className="flex items-center gap-3 xl:gap-6 min-w-0">
+            <Link to="/" className="flex items-center gap-2.5 group shrink-0">
               <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-brand-600 text-white font-bold text-lg shadow-sm shadow-brand-600/30 group-hover:bg-brand-700 transition-all">
                 🎯
               </span>
@@ -135,7 +135,7 @@ export const Navbar = () => {
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-1">
+            <nav className="hidden lg:flex items-center gap-0.5 xl:gap-1 min-w-0">
               {navLinks.map(({ to, label, icon: Icon, badge }) => {
                 const isActive =
                   location.pathname === to ||
@@ -144,13 +144,13 @@ export const Navbar = () => {
                   <Link
                     key={to}
                     to={to}
-                    className={`relative flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium transition-all ${
+                    className={`relative flex items-center gap-1.5 xl:gap-2 px-2.5 xl:px-3 py-1.5 rounded-xl text-sm font-medium transition-all shrink-0 ${
                       isActive
                         ? 'bg-brand-50 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 font-semibold'
                         : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
                     }`}
                   >
-                    <Icon className="w-4 h-4 opacity-75" />
+                    <Icon className="w-4 h-4 opacity-75 shrink-0" />
                     <span>{label}</span>
                     {badge !== null && badge !== undefined && (
                       <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-brand-600 text-white">
@@ -164,7 +164,7 @@ export const Navbar = () => {
           </div>
 
           {/* Right: Streak, Theme Toggle, Auth, Mobile Menu button */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {/* Theme Toggle Button */}
             <button
               type="button"
@@ -181,19 +181,19 @@ export const Navbar = () => {
 
             {/* Authenticated user items */}
             {isAuthenticated && user ? (
-              <div className="hidden sm:flex items-center gap-3">
+              <div className="hidden sm:flex items-center gap-3 shrink-0">
                 <StreakBadge />
                 <Link
                   to="/profile"
-                  className="h-9 flex items-center gap-1.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs sm:text-sm font-semibold border border-slate-200 dark:border-slate-700 transition-colors"
+                  className="h-9 flex items-center gap-1.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs sm:text-sm font-semibold border border-slate-200 dark:border-slate-700 transition-colors shrink-0"
                 >
-                  <User className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
-                  <span className="max-w-[110px] truncate">{user.name}</span>
+                  <User className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400 shrink-0" />
+                  <span className="max-w-[90px] md:max-w-[110px] truncate">{user.name}</span>
                 </Link>
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="h-9 inline-flex items-center gap-1.5 px-2.5 text-xs font-medium text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors"
+                  className="h-9 inline-flex items-center gap-1.5 px-2.5 text-xs font-medium text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors shrink-0"
                   title="Sign out"
                 >
                   <LogOut className="w-3.5 h-3.5" />
