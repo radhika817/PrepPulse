@@ -1,11 +1,17 @@
 import { UserQuestionState } from '../models/UserQuestionState.js';
 
-const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+export const REVISION_INTERVALS = {
+  MISSED_MS: 10 * 60 * 1000, // 10 minutes
+  PARTLY_MS: 3 * 24 * 60 * 60 * 1000, // 3 days
+  KNEW_BOX_1_MS: 1 * 24 * 60 * 60 * 1000, // 1 day
+  KNEW_BOX_2_MS: 3 * 24 * 60 * 60 * 1000, // 3 days
+  KNEW_BOX_3_MS: 7 * 24 * 60 * 60 * 1000, // 7 days
+};
 
 /**
  * Calculates the next Leitner box and nextReviewAt timestamp based on user's self-rating.
  * Revision rules (SYSTEM_DESIGN.md section 5.5):
- * - missed: box = 0, nextReviewAt = now + 1 day
+ * - missed: box = 0, nextReviewAt = now + 10 minutes
  * - partly: box = Math.max(box, 1), nextReviewAt = now + 3 days
  * - knew: box += 1; next review after 1, 3, 7 days by box (box 1: +1d, box 2: +3d, box 3: +7d);
  *   after box 3, nextReviewAt = null (mastered).
@@ -21,14 +27,14 @@ export const calculateNextReview = (currentBox = 0, rating, now = new Date()) =>
   if (rating === 'missed') {
     return {
       box: 0,
-      nextReviewAt: new Date(baseTime + 1 * ONE_DAY_MS),
+      nextReviewAt: new Date(baseTime + REVISION_INTERVALS.MISSED_MS),
     };
   }
 
   if (rating === 'partly') {
     return {
       box: Math.max(currentBox || 0, 1),
-      nextReviewAt: new Date(baseTime + 3 * ONE_DAY_MS),
+      nextReviewAt: new Date(baseTime + REVISION_INTERVALS.PARTLY_MS),
     };
   }
 
@@ -37,19 +43,19 @@ export const calculateNextReview = (currentBox = 0, rating, now = new Date()) =>
     if (nextBox === 1) {
       return {
         box: 1,
-        nextReviewAt: new Date(baseTime + 1 * ONE_DAY_MS),
+        nextReviewAt: new Date(baseTime + REVISION_INTERVALS.KNEW_BOX_1_MS),
       };
     }
     if (nextBox === 2) {
       return {
         box: 2,
-        nextReviewAt: new Date(baseTime + 3 * ONE_DAY_MS),
+        nextReviewAt: new Date(baseTime + REVISION_INTERVALS.KNEW_BOX_2_MS),
       };
     }
     if (nextBox === 3) {
       return {
         box: 3,
-        nextReviewAt: new Date(baseTime + 7 * ONE_DAY_MS),
+        nextReviewAt: new Date(baseTime + REVISION_INTERVALS.KNEW_BOX_3_MS),
       };
     }
     // Mastered after box 3 (capped at 3 per UserQuestionState schema)
