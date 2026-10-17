@@ -166,7 +166,9 @@ Base path `/api/v1`. All routes except register and login require `Authorization
 | GET | `/bookmarks` | Saved questions |
 | GET | `/daily` | Today's five: `{ date, challengeId, completed, completedCount, questions }` (creates if missing) |
 | GET | `/streak` | Current effective streak, longest, `completedToday`, and `recentActivity` (`?days=28`, 7–90) |
-| GET | `/revision` | Questions due for review |
+| GET | `/revision` | Questions in revision queue (`?scope=due` [default, `nextReviewAt <= now`] or `?scope=upcoming` [`nextReviewAt > now`]) |
+| GET | `/revision/count` | Returns due and upcoming revision counts for current user: `{ due, upcoming }` |
+| POST | `/questions/:id/revise-later` | Schedule question for revision immediately without creating an attempt, keeping any earlier overdue date, box, and bookmark |
 | GET | `/progress/summary` | Totals, accuracy, streak |
 | GET | `/progress/topics` | Per-topic accuracy and weak topics |
 | GET | `/progress/activity` | Daily activity for the calendar |
@@ -270,11 +272,13 @@ Simple spaced repetition in `userQuestionState`:
 
 | Rating | Effect |
 |---|---|
-| `missed` | `box = 0`, `nextReviewAt = now + 1 day` |
+| `missed` | `box = 0`, `nextReviewAt = now + 10 minutes` |
 | `partly` | `box = max(box, 1)`, `nextReviewAt = now + 3 days` |
 | `knew` | `box += 1`; next review after 1, 3, 7 days by box; after box 3, `nextReviewAt = null` |
 
-`GET /revision` returns questions where `nextReviewAt <= now`, oldest first.
+- `POST /questions/:id/revise-later`: sets `nextReviewAt` to the earlier of the existing `nextReviewAt` and `now` (if no existing date or null, uses `now`). Box, bookmark, and all other fields remain unchanged.
+- `GET /revision`: returns questions where `nextReviewAt <= now` (or `?scope=upcoming` where `nextReviewAt > now`), oldest first.
+- `GET /revision/count`: returns `{ due, upcoming }` counts for the current user.
 
 ---
 
