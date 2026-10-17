@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button, Card, CardContent, Input, Select } from '../components/ui';
 
@@ -11,13 +11,24 @@ export const Register = () => {
   const [timezone, setTimezone] = useState('Asia/Kolkata');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [wakingMessage, setWakingMessage] = useState('');
+  const timerRef = useRef(null);
 
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
+    setWakingMessage('');
 
     // Client-side validation matching server rules
     if (name.trim().length < 2 || name.trim().length > 50) {
@@ -41,6 +52,10 @@ export const Register = () => {
     }
 
     setLoading(true);
+    timerRef.current = setTimeout(() => {
+      setWakingMessage('Server is waking up, this can take up to a minute...');
+    }, 5000);
+
     try {
       await register({
         name: name.trim(),
@@ -54,6 +69,11 @@ export const Register = () => {
         err.message || 'Registration failed. Please check your details.'
       );
     } finally {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+      setWakingMessage('');
       setLoading(false);
     }
   };
@@ -79,6 +99,17 @@ export const Register = () => {
             >
               <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
               <span className="leading-relaxed">{errorMessage}</span>
+            </div>
+          )}
+
+          {/* Server Waking Up Notification */}
+          {wakingMessage && (
+            <div
+              role="status"
+              className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 flex items-start gap-2.5 text-xs text-amber-700 dark:text-amber-300"
+            >
+              <Loader2 className="w-4 h-4 text-amber-500 shrink-0 mt-0.5 animate-spin" />
+              <span className="leading-relaxed">{wakingMessage}</span>
             </div>
           )}
 
@@ -138,7 +169,7 @@ export const Register = () => {
               variant="primary"
               size="md"
               isLoading={loading}
-              disabled={loading}
+              disabled={loading || Boolean(wakingMessage)}
               className="w-full mt-2"
             >
               Create Account

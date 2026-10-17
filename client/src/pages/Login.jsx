@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Button, Card, CardContent, Input } from '../components/ui';
 
@@ -9,6 +9,8 @@ export const Login = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [wakingMessage, setWakingMessage] = useState('');
+  const timerRef = useRef(null);
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -16,9 +18,18 @@ export const Login = () => {
 
   const from = location.state?.from?.pathname || '/dashboard';
 
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
+    setWakingMessage('');
 
     // Basic client-side validation
     if (!email.trim() || !password) {
@@ -27,6 +38,10 @@ export const Login = () => {
     }
 
     setLoading(true);
+    timerRef.current = setTimeout(() => {
+      setWakingMessage('Server is waking up, this can take up to a minute...');
+    }, 5000);
+
     try {
       await login({ email: email.trim(), password });
       navigate(from, { replace: true });
@@ -35,6 +50,11 @@ export const Login = () => {
         err.message || 'Unable to log in. Please check your credentials.'
       );
     } finally {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+      setWakingMessage('');
       setLoading(false);
     }
   };
@@ -60,6 +80,17 @@ export const Login = () => {
             >
               <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
               <span className="leading-relaxed">{errorMessage}</span>
+            </div>
+          )}
+
+          {/* Server Waking Up Notification */}
+          {wakingMessage && (
+            <div
+              role="status"
+              className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 flex items-start gap-2.5 text-xs text-amber-700 dark:text-amber-300"
+            >
+              <Loader2 className="w-4 h-4 text-amber-500 shrink-0 mt-0.5 animate-spin" />
+              <span className="leading-relaxed">{wakingMessage}</span>
             </div>
           )}
 
@@ -91,7 +122,7 @@ export const Login = () => {
               variant="primary"
               size="md"
               isLoading={loading}
-              disabled={loading}
+              disabled={loading || Boolean(wakingMessage)}
               className="w-full mt-2"
             >
               Sign In

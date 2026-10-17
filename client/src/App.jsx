@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -15,8 +16,19 @@ import Profile from './pages/Profile';
 import AdminRoute from './components/AdminRoute';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminQuestions from './pages/admin/AdminQuestions';
+import { checkHealth } from './services/api';
+
+let healthCheckSent = false;
 
 export const App = () => {
+  useEffect(() => {
+    // Send one silent GET /health on app load to wake sleeping backend early
+    if (!healthCheckSent) {
+      healthCheckSent = true;
+      checkHealth().catch(() => {});
+    }
+  }, []);
+
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
