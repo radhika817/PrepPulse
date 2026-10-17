@@ -395,6 +395,8 @@ export const reviseLaterQuestion = async (req, res, next) => {
       questionId: question._id,
     });
 
+    const now = new Date();
+
     if (!state) {
       state = new UserQuestionState({
         userId: req.user._id,
@@ -402,12 +404,15 @@ export const reviseLaterQuestion = async (req, res, next) => {
         bookmarked: false,
         timesSeen: 0,
         box: 0,
+        nextReviewAt: now,
       });
+    } else {
+      // Set nextReviewAt = earlier of existing nextReviewAt and now (if no date or null, use now)
+      if (!state.nextReviewAt || new Date(state.nextReviewAt).getTime() > now.getTime()) {
+        state.nextReviewAt = now;
+      }
     }
 
-    // Schedule for revision: due immediately, preserve box (or 0 if unset)
-    state.box = typeof state.box === 'number' ? state.box : 0;
-    state.nextReviewAt = new Date();
     await state.save();
 
     return res.json({
