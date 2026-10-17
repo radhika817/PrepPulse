@@ -550,17 +550,19 @@ export const Practice = () => {
       const serverMessage = err.response?.data?.error?.message;
 
       if (status === 429) {
-        setAiError(serverMessage || 'Daily AI feedback limit reached. Try again tomorrow.');
+        setAiError(serverMessage || 'Daily limit reached. Try again tomorrow.');
         if (typeof err.response?.data?.remainingToday === 'number') {
           setRemainingToday(err.response.data.remainingToday);
         } else {
           setRemainingToday(0);
         }
-      } else if (status === 502 || status === 504) {
-        setAiError('AI feedback is temporarily unavailable. Please try again.');
+      } else if (status === 502) {
+        setAiError('AI is unavailable, try again.');
       } else if (status === 503 || code === 'AI_DISABLED') {
         setAiFeatureEnabled(false);
-        setAiError(null);
+        setAiError('AI feedback is currently disabled.');
+      } else if (status === 504) {
+        setAiError('AI request timed out. Please try again.');
       } else {
         setAiError(serverMessage || err.message || 'Failed to get AI feedback. Please try again.');
       }
@@ -827,7 +829,7 @@ export const Practice = () => {
                     className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all resize-y"
                   />
 
-                  {aiFeatureEnabled && (
+                  {aiFeatureEnabled ? (
                     <div className="flex flex-wrap items-center justify-between gap-2.5 pt-1">
                       <div className="flex items-center gap-2.5">
                         <Button
@@ -854,12 +856,24 @@ export const Practice = () => {
                         )}
                       </div>
 
+                      {typedAnswer.trim().length < 20 && !aiLoading && (
+                        <span id="ai-char-hint" className="text-xs text-amber-600 dark:text-amber-400">
+                          Write at least 20 characters to get AI feedback
+                        </span>
+                      )}
+
                       {aiLoading && (
                         <span className="text-xs text-slate-500 dark:text-slate-400 animate-pulse">
                           Analyzing answer with AI coach...
                         </span>
                       )}
                     </div>
+                  ) : (
+                    import.meta.env.DEV && (
+                      <p id="ai-disabled-dev-notice" className="text-[11px] text-slate-400 dark:text-slate-500 italic">
+                        AI feedback is off ({aiFeedbackReason || 'disabled'})
+                      </p>
+                    )
                   )}
 
                   {/* AI Error Banner */}
@@ -991,15 +1005,80 @@ export const Practice = () => {
                   </div>
                 )}
 
-                {/* User Typed Answer Display */}
+                {/* User Typed Answer Display & Answer-View AI Feedback Trigger */}
                 {typedAnswer.trim() && (
-                  <Card className="p-4 space-y-1.5">
-                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
-                      Your formulation:
-                    </span>
-                    <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed max-w-prose">
-                      {typedAnswer}
-                    </p>
+                  <Card className="p-4 space-y-3">
+                    <div className="space-y-1.5">
+                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+                        Your formulation:
+                      </span>
+                      <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed max-w-prose">
+                        {typedAnswer}
+                      </p>
+                    </div>
+
+                    {/* Allow requesting AI feedback in the ANSWER view too */}
+                    {question.type !== 'mcq' && !aiFeedback && (
+                      <div className="pt-2.5 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                        {aiFeatureEnabled ? (
+                          <div className="flex flex-wrap items-center justify-between gap-2.5">
+                            <div className="flex items-center gap-2.5">
+                              <Button
+                                type="button"
+                                variant="secondary"
+                                size="sm"
+                                id="get-ai-feedback-revealed-btn"
+                                onClick={handleGetAiFeedback}
+                                isLoading={aiLoading}
+                                disabled={typedAnswer.trim().length < 20 || typedAnswer.length > 2000 || aiLoading}
+                                className="border-brand-300 text-brand-700 hover:bg-brand-50 dark:border-brand-800 dark:text-brand-300 dark:hover:bg-brand-950/50"
+                              >
+                                <Sparkles className="w-3.5 h-3.5 mr-1.5 text-brand-600 dark:text-brand-400" />
+                                <span>Get AI feedback</span>
+                              </Button>
+
+                              {typeof remainingToday === 'number' && (
+                                <span
+                                  id="ai-revealed-remaining-count"
+                                  className="text-xs text-slate-500 dark:text-slate-400 font-medium"
+                                >
+                                  ({remainingToday} left today)
+                                </span>
+                              )}
+                            </div>
+
+                            {typedAnswer.trim().length < 20 && !aiLoading && (
+                              <span id="ai-revealed-char-hint" className="text-xs text-amber-600 dark:text-amber-400">
+                                Write at least 20 characters to get AI feedback
+                              </span>
+                            )}
+
+                            {aiLoading && (
+                              <span className="text-xs text-slate-500 dark:text-slate-400 animate-pulse">
+                                Analyzing answer with AI coach...
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          import.meta.env.DEV && (
+                            <p id="ai-revealed-disabled-dev-notice" className="text-[11px] text-slate-400 dark:text-slate-500 italic">
+                              AI feedback is off ({aiFeedbackReason || 'disabled'})
+                            </p>
+                          )
+                        )}
+
+                        {/* AI Error Alert in revealed view */}
+                        {aiError && (
+                          <div
+                            id="ai-revealed-error-banner"
+                            className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2"
+                          >
+                            <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+                            <span>{aiError}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </Card>
                 )}
 
