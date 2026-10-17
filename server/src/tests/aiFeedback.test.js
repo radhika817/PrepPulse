@@ -109,12 +109,14 @@ beforeEach(async () => {
 describe('AI Feedback Feature & Prompts', () => {
   it('feature flag is false without an API key and true when configured', async () => {
     delete process.env.LLM_API_KEY;
+    delete process.env.GROQ_API_KEY;
     const resDisabled = await request(app)
       .get('/api/v1/features')
       .set('Authorization', `Bearer ${studentToken}`);
 
     expect(resDisabled.status).toBe(200);
-    expect(resDisabled.body).toEqual({ aiFeedback: false });
+    expect(resDisabled.body.aiFeedback).toBe(false);
+    expect(resDisabled.body.aiFeedbackReason).toBe('missing_key');
 
     // Enable key
     process.env.LLM_API_KEY = 'gsk_test_api_key_12345';
@@ -124,10 +126,57 @@ describe('AI Feedback Feature & Prompts', () => {
       .set('Authorization', `Bearer ${studentToken}`);
 
     expect(resEnabled.status).toBe(200);
-    expect(resEnabled.body).toEqual({ aiFeedback: true });
+    expect(resEnabled.body.aiFeedback).toBe(true);
+    expect(resEnabled.body.aiFeedbackReason).toBeNull();
     // Verify key was NOT returned
     expect(resEnabled.body.key).toBeUndefined();
     expect(resEnabled.body.apiKey).toBeUndefined();
+  });
+
+  it('omits aiFeedbackReason in production mode and includes it outside production', async () => {
+    const prevEnv = process.env.NODE_ENV;
+    try {
+      process.env.NODE_ENV = 'production';
+      delete process.env.LLM_API_KEY;
+      delete process.env.GROQ_API_KEY;
+      const resProd = await request(app)
+        .get('/api/v1/features')
+        .set('Authorization', `Bearer ${studentToken}`);
+
+      expect(resProd.status).toBe(200);
+      expect(resProd.body).toEqual({ aiFeedback: false });
+      expect(resProd.body.aiFeedbackReason).toBeUndefined();
+
+      process.env.NODE_ENV = 'development';
+      const resDev = await request(app)
+        .get('/api/v1/features')
+        .set('Authorization', `Bearer ${studentToken}`);
+
+      expect(resDev.status).toBe(200);
+      expect(resDev.body).toEqual({
+        aiFeedback: false,
+        aiFeedbackReason: 'missing_key',
+      });
+    } finally {
+      process.env.NODE_ENV = prevEnv;
+    }
+  });
+
+  it('correctly reports missing_model and unknown_provider reasons in development', async () => {
+    process.env.LLM_API_KEY = 'test_key';
+    process.env.LLM_MODEL = '';
+    const resNoModel = await request(app)
+      .get('/api/v1/features')
+      .set('Authorization', `Bearer ${studentToken}`);
+    expect(resNoModel.body.aiFeedbackReason).toBe('missing_model');
+
+    process.env.LLM_MODEL = 'llama-3.3-70b-versatile';
+    process.env.LLM_PROVIDER = 'unsupported_provider';
+    const resBadProvider = await request(app)
+      .get('/api/v1/features')
+      .set('Authorization', `Bearer ${studentToken}`);
+    expect(resBadProvider.body.aiFeedbackReason).toBe('unknown_provider');
+    delete process.env.LLM_PROVIDER;
   });
 
   it('prompt builder places user prompt injection inside data delimiters without altering system instructions', () => {
