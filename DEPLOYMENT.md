@@ -142,6 +142,16 @@ MONGO_URI="mongodb+srv://<username>:<password>@cluster0.abcde.mongodb.net/preppu
    | `JWT_SECRET` | *(Random 32+ character string)* | e.g. run `openssl rand -hex 24` |
    | `JWT_EXPIRES_IN` | `7d` | Token lifetime |
    | `CLIENT_URL` | `https://<your-app>.vercel.app` | Vercel production frontend URL (and preview URLs separated by commas) |
+   | `LLM_PROVIDER` | `groq` | Optional: LLM provider (default: `groq`) |
+   | `LLM_API_KEY` | *(Your Groq API key)* | Optional: Server-only key; feature is disabled if omitted |
+   | `LLM_MODEL` | `llama-3.3-70b-versatile` | Optional: Model name |
+   | `LLM_TIMEOUT_MS` | `20000` | Optional: Request timeout in milliseconds |
+   | `AI_DAILY_LIMIT` | `15` | Optional: Daily feedback requests limit per user |
+
+> [!NOTE]
+> **AI Feedback & Provider Cost Note:**
+> PrepPulse uses Groq (`llama-3.3-70b-versatile`) by default. Groq offers generous free-tier limits for developer portfolios. Daily usage is strictly capped at `AI_DAILY_LIMIT` (default 15 requests per user per calendar day in their timezone) via atomic MongoDB tracking. If `LLM_API_KEY` is omitted, the feature flag automatically returns `{ aiFeedback: false }` and all other PrepPulse features remain completely operational. The key lives solely in server environment variables and never reaches the client.
+
 6. Click **Create Web Service**. Wait for the deployment to finish.
 7. Test the health endpoint: `https://<render-url>.onrender.com/api/v1/health` (should return `{"status":"ok"}`).
 

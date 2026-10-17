@@ -170,6 +170,8 @@ Base path `/api/v1`. All routes except register and login require `Authorization
 | GET | `/progress/summary` | Totals, accuracy, streak |
 | GET | `/progress/topics` | Per-topic accuracy and weak topics |
 | GET | `/progress/activity` | Daily activity for the calendar |
+| GET | `/features` | Returns runtime feature flags: `{ aiFeedback: boolean }` |
+| POST | `/questions/:id/ai-feedback` | Structured AI evaluation on student's typed answer for non-MCQ questions (`{ userAnswer }`) with daily usage enforcement |
 
 **Admin (role `admin`)** *(Phase 12)*
 
@@ -299,6 +301,10 @@ Simple spaced repetition in `userQuestionState`:
 - Admin routes protected by a role check middleware.
 - Secrets only in environment variables.
 - Answers never included in list or detail responses.
+- AI security: `LLM_API_KEY` exists strictly on the server and is never passed to client, logs, error messages, or tests.
+- Daily usage limit: enforced atomically via `aiUsage` compound unique index `(userId, date in user timezone)`, capping requests to `AI_DAILY_LIMIT` (default 15) plus short-window limiter (5 req/min).
+- Prompt injection protection: student typed answers are placed strictly within `<student_answer>` delimiters as untrusted data; system instructions are fixed and cannot be changed by user input.
+- Privacy: no student identifiers (name, email, user id) are ever transmitted to the LLM provider. Log only userId, questionId, status, and latency.
 
 ---
 
