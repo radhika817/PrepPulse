@@ -312,6 +312,60 @@ export const getBookmarks = async (req, res, next) => {
 };
 
 /**
+ * GET /api/v1/revision/count
+ * Returns { due, upcoming } revision counts for current user.
+ * Silently excludes any question that has become rejected or draft.
+ */
+export const getRevisionCount = async (req, res, next) => {
+  try {
+    const now = new Date();
+    const result = await UserQuestionState.aggregate([
+      {
+        $match: {
+          userId: req.user._id,
+          nextReviewAt: { $ne: null },
+        },
+      },
+      {
+        $lookup: {
+          from: 'questions',
+          localField: 'questionId',
+          foreignField: '_id',
+          as: 'question',
+        },
+      },
+      {
+        $unwind: '$question',
+      },
+      {
+        $match: {
+          'question.reviewStatus': 'approved',
+        },
+      },
+      {
+        $facet: {
+          due: [
+            { $match: { nextReviewAt: { $lte: now } } },
+            { $count: 'count' },
+          ],
+          upcoming: [
+            { $match: { nextReviewAt: { $gt: now } } },
+            { $count: 'count' },
+          ],
+        },
+      },
+    ]);
+
+    const due = result[0]?.due[0]?.count || 0;
+    const upcoming = result[0]?.upcoming[0]?.count || 0;
+
+    return res.json({ due, upcoming });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * GET /api/v1/revision
  * Returns questions due for review (default, nextReviewAt <= now) or upcoming (scope=upcoming, nextReviewAt > now) for current user.
  * Silently drops any question that has become rejected or draft.
@@ -861,6 +915,7 @@ export default {
   toggleBookmark,
   getBookmarks,
   getRevisionQuestions,
+  getRevisionCount,
   revealQuestion,
   attemptQuestion,
   onChallengeCompleted,
