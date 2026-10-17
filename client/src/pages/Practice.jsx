@@ -28,6 +28,7 @@ import {
   submitAttempt,
 } from '../services/questions';
 import { getDaily } from '../services/daily';
+import { getFeatures, getAiFeedback } from '../services/ai';
 import {
   Button,
   Card,
@@ -35,6 +36,160 @@ import {
   Skeleton,
   EmptyState,
 } from '../components/ui';
+
+/**
+ * AI Feedback Card
+ * Renders structured feedback on the student's answer.
+ * All model outputs are rendered strictly as plain text (no dangerouslySetInnerHTML, no Markdown).
+ */
+const AiFeedbackCard = ({ feedback, remainingToday }) => {
+  if (!feedback) return null;
+
+  const ratingConfig = {
+    knew: {
+      label: 'Knew it',
+      badgeClass:
+        'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800',
+    },
+    partly: {
+      label: 'Partly',
+      badgeClass:
+        'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-300 dark:border-amber-800',
+    },
+    missed: {
+      label: 'Missed it',
+      badgeClass:
+        'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border-rose-300 dark:border-rose-800',
+    },
+  };
+
+  const currentRating = ratingConfig[feedback.suggestedRating] || {
+    label: feedback.suggestedRating,
+    badgeClass:
+      'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700',
+  };
+
+  return (
+    <Card
+      id="ai-feedback-card"
+      className="p-5 sm:p-6 space-y-4 border-indigo-200 dark:border-indigo-900/60 bg-gradient-to-b from-indigo-50/30 to-white dark:from-indigo-950/20 dark:to-slate-900 shadow-md"
+    >
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-indigo-100 dark:border-indigo-950">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-950/70 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+            <Sparkles className="w-4 h-4" />
+          </div>
+          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <span>AI Answer Feedback</span>
+            <span
+              id="ai-suggested-rating-badge"
+              className={`text-[11px] font-semibold px-2 py-0.5 rounded-full border ${currentRating.badgeClass}`}
+            >
+              Suggested: {currentRating.label}
+            </span>
+          </h3>
+        </div>
+
+        {typeof remainingToday === 'number' && (
+          <span
+            id="ai-card-remaining-count"
+            className="text-[11px] font-mono text-slate-500 dark:text-slate-400"
+          >
+            {remainingToday} requests left today
+          </span>
+        )}
+      </div>
+
+      {/* Mandatory visible disclaimer note */}
+      <div
+        id="ai-disclaimer-note"
+        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-900/40 text-amber-800 dark:text-amber-300 text-xs"
+      >
+        <Info className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
+        <span>AI feedback can be wrong. Treat it as a second opinion.</span>
+      </div>
+
+      {/* Summary */}
+      <div className="space-y-1">
+        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+          Summary
+        </span>
+        <p
+          id="ai-feedback-summary"
+          className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed max-w-prose whitespace-pre-wrap"
+        >
+          {feedback.summary}
+        </p>
+      </div>
+
+      {/* Strengths & Missing Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+        {/* Strengths */}
+        {Array.isArray(feedback.strengths) && feedback.strengths.length > 0 && (
+          <div className="space-y-2 p-3.5 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/50">
+            <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5 uppercase tracking-wider">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>Strengths</span>
+            </span>
+            <ul id="ai-feedback-strengths-list" className="space-y-1.5 list-disc list-inside text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+              {feedback.strengths.map((item, idx) => (
+                <li key={idx} className="leading-snug">
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Missing Points */}
+        {Array.isArray(feedback.missing) && feedback.missing.length > 0 && (
+          <div className="space-y-2 p-3.5 rounded-xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50">
+            <span className="text-xs font-bold text-amber-800 dark:text-amber-300 flex items-center gap-1.5 uppercase tracking-wider">
+              <AlertCircle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+              <span>Missing Points</span>
+            </span>
+            <ul id="ai-feedback-missing-list" className="space-y-1.5 list-disc list-inside text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+              {feedback.missing.map((item, idx) => (
+                <li key={idx} className="leading-snug">
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {/* Improved Answer */}
+      {feedback.improvedAnswer && (
+        <div className="space-y-1.5 pt-2">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+            Improved Answer
+          </span>
+          <div
+            id="ai-feedback-improved-answer"
+            className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap max-w-prose"
+          >
+            {feedback.improvedAnswer}
+          </div>
+        </div>
+      )}
+
+      {/* Reference Note (if present) */}
+      {feedback.referenceNote && (
+        <div
+          id="ai-feedback-reference-note"
+          className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-xs text-slate-600 dark:text-slate-300 space-y-1"
+        >
+          <span className="font-semibold text-slate-700 dark:text-slate-200 block">
+            Coach note on reference answer:
+          </span>
+          <p className="italic leading-relaxed">{feedback.referenceNote}</p>
+        </div>
+      )}
+    </Card>
+  );
+};
 
 export const Practice = () => {
   const { id } = useParams();
@@ -72,6 +227,13 @@ export const Practice = () => {
   const dailyChallengeId = searchParams.get('daily');
   const [dailyChallenge, setDailyChallenge] = useState(null);
   const [isDailyCompleted, setIsDailyCompleted] = useState(false);
+
+  // AI Feedback states
+  const [aiFeatureEnabled, setAiFeatureEnabled] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiFeedback, setAiFeedback] = useState(null);
+  const [aiError, setAiError] = useState(null);
+  const [remainingToday, setRemainingToday] = useState(null);
 
   // Next question navigation state
   const [nextQuestionId, setNextQuestionId] = useState(null);
@@ -121,6 +283,26 @@ export const Practice = () => {
     };
   }, [id, location.search, dailyChallengeId]);
 
+  // Check runtime AI feature flag on mount
+  useEffect(() => {
+    let isMounted = true;
+    getFeatures()
+      .then((data) => {
+        if (isMounted) {
+          setAiFeatureEnabled(Boolean(data?.aiFeedback));
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setAiFeatureEnabled(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   // Load question details
   useEffect(() => {
     if (!id) {
@@ -141,6 +323,9 @@ export const Practice = () => {
         setSubmitted(false);
         setSubmissionResult(null);
         setAttemptError(null);
+        setAiFeedback(null);
+        setAiError(null);
+        setAiLoading(false);
 
         const data = await getQuestionById(id);
         setQuestion(data);
@@ -330,6 +515,54 @@ export const Practice = () => {
       setTimerActive(true);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  // AI Feedback Handler for non-MCQ typed answer
+  const handleGetAiFeedback = async () => {
+    const trimmed = typedAnswer.trim();
+    if (trimmed.length < 20 || trimmed.length > 2000 || aiLoading || !question) return;
+
+    try {
+      setAiLoading(true);
+      setAiError(null);
+
+      const res = await getAiFeedback(question._id, trimmed);
+      setAiFeedback({
+        suggestedRating: res.suggestedRating,
+        summary: res.summary,
+        strengths: res.strengths,
+        missing: res.missing,
+        improvedAnswer: res.improvedAnswer,
+        referenceNote: res.referenceNote,
+      });
+
+      if (typeof res.remainingToday === 'number') {
+        setRemainingToday(res.remainingToday);
+      }
+    } catch (err) {
+      console.error('Failed to get AI feedback:', err);
+      const status = err.response?.status;
+      const code = err.response?.data?.error?.code;
+      const serverMessage = err.response?.data?.error?.message;
+
+      if (status === 429) {
+        setAiError(serverMessage || 'Daily AI feedback limit reached. Try again tomorrow.');
+        if (typeof err.response?.data?.remainingToday === 'number') {
+          setRemainingToday(err.response.data.remainingToday);
+        } else {
+          setRemainingToday(0);
+        }
+      } else if (status === 502 || status === 504) {
+        setAiError('AI feedback is temporarily unavailable. Please try again.');
+      } else if (status === 503 || code === 'AI_DISABLED') {
+        setAiFeatureEnabled(false);
+        setAiError(null);
+      } else {
+        setAiError(serverMessage || err.message || 'Failed to get AI feedback. Please try again.');
+      }
+    } finally {
+      setAiLoading(false);
     }
   };
 
@@ -551,26 +784,98 @@ export const Practice = () => {
                 </div>
               )}
 
-              {/* Non-MCQ Optional User Formulation Textarea */}
+              {/* Non-MCQ Optional User Formulation Textarea & AI Feedback Trigger */}
               {question.type !== 'mcq' && !revealed && !submitted && (
-                <div className="space-y-2 pt-2">
-                  <label
-                    htmlFor="user-answer-textarea"
-                    className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center justify-between"
-                  >
-                    <span>Your Answer (Optional)</span>
-                    <span className="text-[11px] text-slate-500 font-normal">
-                      Formulate your thoughts before revealing
-                    </span>
-                  </label>
+                <div className="space-y-3 pt-2">
+                  <div className="flex items-center justify-between">
+                    <label
+                      htmlFor="user-answer-textarea"
+                      className="text-xs font-semibold text-slate-600 dark:text-slate-400"
+                    >
+                      {aiFeatureEnabled ? 'Type your own answer' : 'Your Answer (Optional)'}
+                    </label>
+                    {aiFeatureEnabled ? (
+                      <span
+                        id="typed-answer-counter"
+                        className={`text-[11px] font-mono ${
+                          typedAnswer.length > 2000
+                            ? 'text-rose-600 dark:text-rose-400 font-bold'
+                            : typedAnswer.trim().length >= 20
+                            ? 'text-slate-500 dark:text-slate-400'
+                            : 'text-amber-600 dark:text-amber-400'
+                        }`}
+                      >
+                        {typedAnswer.length} / 2000 characters{typedAnswer.trim().length < 20 ? ' (min 20)' : ''}
+                      </span>
+                    ) : (
+                      <span className="text-[11px] text-slate-500 font-normal">
+                        Formulate your thoughts before revealing
+                      </span>
+                    )}
+                  </div>
+
                   <textarea
                     id="user-answer-textarea"
                     rows={4}
+                    maxLength={2000}
                     value={typedAnswer}
                     onChange={(e) => setTypedAnswer(e.target.value)}
                     placeholder="Formulate your response here to test active recall..."
                     className="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all resize-y"
                   />
+
+                  {aiFeatureEnabled && (
+                    <div className="flex flex-wrap items-center justify-between gap-2.5 pt-1">
+                      <div className="flex items-center gap-2.5">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          id="get-ai-feedback-btn"
+                          onClick={handleGetAiFeedback}
+                          isLoading={aiLoading}
+                          disabled={typedAnswer.trim().length < 20 || typedAnswer.length > 2000 || aiLoading}
+                          className="border-brand-300 text-brand-700 hover:bg-brand-50 dark:border-brand-800 dark:text-brand-300 dark:hover:bg-brand-950/50"
+                        >
+                          <Sparkles className="w-3.5 h-3.5 mr-1.5 text-brand-600 dark:text-brand-400" />
+                          <span>Get AI feedback</span>
+                        </Button>
+
+                        {typeof remainingToday === 'number' && (
+                          <span
+                            id="ai-remaining-count"
+                            className="text-xs text-slate-500 dark:text-slate-400 font-medium"
+                          >
+                            ({remainingToday} left today)
+                          </span>
+                        )}
+                      </div>
+
+                      {aiLoading && (
+                        <span className="text-xs text-slate-500 dark:text-slate-400 animate-pulse">
+                          Analyzing answer with AI coach...
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {/* AI Error Banner */}
+                  {aiError && (
+                    <div
+                      id="ai-feedback-error-banner"
+                      className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2"
+                    >
+                      <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+                      <span>{aiError}</span>
+                    </div>
+                  )}
+
+                  {/* AI Feedback Card (pre-reveal view) */}
+                  {aiFeedback && (
+                    <div className="pt-2">
+                      <AiFeedbackCard feedback={aiFeedback} remainingToday={remainingToday} />
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -695,6 +1000,11 @@ export const Practice = () => {
                   </Card>
                 )}
 
+                {/* AI Feedback Card (revealed view) */}
+                {aiFeedback && (
+                  <AiFeedbackCard feedback={aiFeedback} remainingToday={remainingToday} />
+                )}
+
                 {/* Distinct Model Answer & Explanation Panel */}
                 <Card id="model-answer-card" className="p-6 sm:p-7 space-y-5 border-brand-200 dark:border-brand-900 shadow-md">
                   <div className="space-y-2">
@@ -756,8 +1066,17 @@ export const Practice = () => {
                         id="rate-knew-btn"
                         onClick={() => handleRate('knew')}
                         disabled={submitting}
-                        className="p-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 transition-all font-semibold flex flex-col items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
+                        className={`p-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 border text-emerald-800 dark:text-emerald-200 transition-all font-semibold flex flex-col items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm relative ${
+                          aiFeedback?.suggestedRating === 'knew'
+                            ? 'border-emerald-500 ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-slate-900'
+                            : 'border-emerald-300 dark:border-emerald-800'
+                        }`}
                       >
+                        {aiFeedback?.suggestedRating === 'knew' && (
+                          <span className="absolute -top-2.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-600 text-white shadow-xs">
+                            AI Suggested
+                          </span>
+                        )}
                         <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                         <span className="text-sm">Knew it</span>
                         <span className="text-[11px] text-emerald-700 dark:text-emerald-300/80 font-normal">
@@ -771,8 +1090,17 @@ export const Practice = () => {
                         id="rate-partly-btn"
                         onClick={() => handleRate('partly')}
                         disabled={submitting}
-                        className="p-4 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/50 border border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-200 transition-all font-semibold flex flex-col items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
+                        className={`p-4 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/50 border text-amber-800 dark:text-amber-200 transition-all font-semibold flex flex-col items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm relative ${
+                          aiFeedback?.suggestedRating === 'partly'
+                            ? 'border-amber-500 ring-2 ring-amber-500 ring-offset-2 dark:ring-offset-slate-900'
+                            : 'border-amber-300 dark:border-amber-800'
+                        }`}
                       >
+                        {aiFeedback?.suggestedRating === 'partly' && (
+                          <span className="absolute -top-2.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-600 text-white shadow-xs">
+                            AI Suggested
+                          </span>
+                        )}
                         <HelpCircle className="w-6 h-6 text-amber-600 dark:text-amber-400" />
                         <span className="text-sm">Partly</span>
                         <span className="text-[11px] text-amber-700 dark:text-amber-300/80 font-normal">
@@ -786,8 +1114,17 @@ export const Practice = () => {
                         id="rate-missed-btn"
                         onClick={() => handleRate('missed')}
                         disabled={submitting}
-                        className="p-4 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 transition-all font-semibold flex flex-col items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
+                        className={`p-4 rounded-xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 border text-rose-800 dark:text-rose-200 transition-all font-semibold flex flex-col items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm relative ${
+                          aiFeedback?.suggestedRating === 'missed'
+                            ? 'border-rose-500 ring-2 ring-rose-500 ring-offset-2 dark:ring-offset-slate-900'
+                            : 'border-rose-300 dark:border-rose-800'
+                        }`}
                       >
+                        {aiFeedback?.suggestedRating === 'missed' && (
+                          <span className="absolute -top-2.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-600 text-white shadow-xs">
+                            AI Suggested
+                          </span>
+                        )}
                         <RotateCcw className="w-6 h-6 text-rose-600 dark:text-rose-400" />
                         <span className="text-sm">Missed it</span>
                         <span className="text-[11px] text-rose-700 dark:text-rose-300/80 font-normal">
